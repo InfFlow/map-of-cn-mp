@@ -1,0 +1,36 @@
+page {
+  --rose: #ff5c8a;
+  --rose-deep: #ff2d6f;
+  --rose-soft: #ffe3ec;
+  --ink: #43303a;
+  --ink-soft: #8a6f7b;
+  --bg: #fff6f9;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.card {
+  background: #fff;
+  border-radius: 24rpx;
+  box-shadow: 0 12rpx 30rpx rgba(255, 92, 138, 0.18);
+}
+
+.chip {
+  display: inline-block;
+  background: var(--rose-soft);
+  color: var(--rose-deep);
+  padding: 6rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  margin-right: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 80rpx 0;
+  font-size: 28rpx;
+}

@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/timeline/timeline",
+    "pages/detail/detail"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ff5c8a",
+    "navigationBarTitleText": "Map of Us",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#fff6f9"
+  },
+  "tabBar": {
+    "color": "#8a6f7b",
+    "selectedColor": "#ff2d6f",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "地图"
+      },
+      {
+        "pagePath": "pages/timeline/timeline",
+        "text": "时间线"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于在地图上显示你们去过的位置"
+    }
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}
