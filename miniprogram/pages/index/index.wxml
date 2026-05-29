@@ -1,42 +1,57 @@
 <view class="page">
-  <view class="header">
-    <view class="brand">
-      <view class="title">{{title}} ❤</view>
+  <view class="hero">
+    <view class="hero-bg"></view>
+    <view class="hero-inner">
+      <view class="kicker">OUR JOURNEY</view>
+      <view class="brand serif">{{title}}</view>
       <view class="subtitle">{{subtitle}}</view>
-    </view>
-    <view wx:if="{{days > 0}}" class="together">
-      <view class="days">在一起的第</view>
-      <view class="num">{{days}}</view>
-      <view class="days">天</view>
+      <view wx:if="{{days > 0}}" class="together">
+        <text class="heart">♡</text>
+        <text class="t">在一起</text>
+        <text class="num serif">{{days}}</text>
+        <text class="t">天</text>
+      </view>
     </view>
   </view>
 
-  <view class="stats">
+  <view class="stats card">
     <view class="stat">
-      <view class="stat-num">{{stats.provinceCount}}</view>
+      <view class="stat-num serif">{{stats.provinceCount}}</view>
       <view class="stat-label">点亮省份</view>
     </view>
+    <view class="divider"></view>
     <view class="stat">
-      <view class="stat-num">{{stats.cityCount}}</view>
+      <view class="stat-num serif">{{stats.cityCount}}</view>
       <view class="stat-label">点亮城市</view>
     </view>
+    <view class="divider"></view>
     <view class="stat">
-      <view class="stat-num">{{stats.journeyCount}}</view>
+      <view class="stat-num serif">{{stats.journeyCount}}</view>
       <view class="stat-label">段回忆</view>
     </view>
   </view>
 
-  <map
-    class="map"
-    id="map"
-    latitude="{{center.latitude}}"
-    longitude="{{center.longitude}}"
-    scale="{{scale}}"
-    markers="{{markers}}"
-    polygons="{{polygons}}"
-    include-points="{{includePoints}}"
-    bindmarkertap="onMarkerTap"
-  ></map>
+  <view class="map-wrap">
+    <view class="section-title">我们的足迹</view>
+    <view class="map-card card">
+      <map
+        class="map"
+        id="map"
+        latitude="{{center.latitude}}"
+        longitude="{{center.longitude}}"
+        scale="{{scale}}"
+        markers="{{markers}}"
+        polygons="{{polygons}}"
+        include-points="{{includePoints}}"
+        bindmarkertap="onMarkerTap"
+      ></map>
+      <view class="legend">
+        <text class="lg"><text class="sw province"></text>点亮省份</text>
+        <text class="lg"><text class="sw city">♥</text>城市回忆</text>
+      </view>
+    </view>
+    <view class="hint">轻点地图上的爱心，回到那一天 ›</view>
+  </view>
 
   <view wx:if="{{error}}" class="empty">{{error}}</view>
 </view>

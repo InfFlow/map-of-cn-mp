@@ -2,45 +2,56 @@
 <view wx:elif="{{error}}" class="empty">{{error}}</view>
 
 <view wx:else class="wrap">
-  <view class="head">
-    <view class="city">❤ {{trip.city}}</view>
-    <view class="date">{{trip.dateText}}</view>
-  </view>
-
-  <view class="title">{{trip.title}}</view>
-
-  <view class="meta">
-    <text wx:if="{{trip.season}}" class="chip">{{trip.season}}</text>
-    <text wx:if="{{trip.weather}}" class="chip">☁ {{trip.weather}}</text>
-    <text wx:if="{{trip.landmark}}" class="chip">📍 {{trip.landmark}}</text>
-    <text class="chip">{{trip.province}}</text>
-  </view>
-
-  <view wx:if="{{trip.intro}}" class="intro">{{trip.intro}}</view>
-
-  <view wx:if="{{trip.tags.length}}" class="meta">
-    <text wx:for="{{trip.tags}}" wx:key="*this" class="chip soft">#{{item}}</text>
-  </view>
-
-  <view wx:if="{{trip.photos.length}}" class="photos">
-    <view
-      wx:for="{{trip.photos}}"
-      wx:key="id"
-      class="photo"
-      style="background-image: {{item.grad}};"
-      bindtap="preview"
-      data-url="{{item.imageUrl}}"
-    >
-      <image wx:if="{{item.imageUrl}}" class="img" src="{{item.imageUrl}}" mode="aspectFill"></image>
-      <view class="photo-text">
-        <view class="photo-title">{{item.title}}</view>
-        <view wx:if="{{item.subtitle}}" class="photo-sub">{{item.subtitle}}</view>
-      </view>
+  <view class="hero" style="background-image: {{trip.coverGrad}};">
+    <image wx:if="{{trip.cover}}" class="hero-img" src="{{trip.cover}}" mode="aspectFill"></image>
+    <view class="hero-shade"></view>
+    <view class="hero-text">
+      <view class="hero-province">{{trip.province}} · {{trip.season}}</view>
+      <view class="hero-city serif">{{trip.city}}</view>
+      <view class="hero-date">{{trip.dateText}}</view>
     </view>
   </view>
 
-  <view wx:if="{{trip.notes.length}}" class="notes">
-    <view class="notes-title">手记</view>
-    <view wx:for="{{trip.notes}}" wx:key="*this" class="note">{{item}}</view>
+  <view class="sheet">
+    <view class="title serif">{{trip.title}}</view>
+
+    <view class="meta">
+      <text wx:if="{{trip.weather}}" class="chip">☁ {{trip.weather}}</text>
+      <text wx:if="{{trip.landmark}}" class="chip">📍 {{trip.landmark}}</text>
+    </view>
+
+    <view wx:if="{{trip.intro}}" class="intro">{{trip.intro}}</view>
+
+    <view wx:if="{{trip.tags.length}}" class="tags">
+      <text wx:for="{{trip.tags}}" wx:key="*this" class="chip soft">#{{item}}</text>
+    </view>
+
+    <view wx:if="{{trip.photos.length}}" class="block">
+      <view class="section-title">那天的画面</view>
+      <view class="photos">
+        <view
+          wx:for="{{trip.photos}}"
+          wx:key="id"
+          class="photo"
+          style="background-image: {{item.grad}};"
+          bindtap="preview"
+          data-url="{{item.imageUrl}}"
+        >
+          <image wx:if="{{item.imageUrl}}" class="img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <view class="photo-shade"></view>
+          <view class="photo-text">
+            <view class="photo-title">{{item.title}}</view>
+            <view wx:if="{{item.subtitle}}" class="photo-sub">{{item.subtitle}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{trip.notes.length}}" class="block">
+      <view class="section-title">手记</view>
+      <view wx:for="{{trip.notes}}" wx:key="*this" class="note">
+        <text class="quote">“</text>{{item}}
+      </view>
+    </view>
   </view>
 </view>

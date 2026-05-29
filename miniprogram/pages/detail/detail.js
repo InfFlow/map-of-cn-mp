@@ -20,13 +20,16 @@ Page({
         this.setData({ loading: false, error: '没有找到这段回忆' })
         return
       }
+      const photos = (j.photos || []).map((p) => ({
+        ...p,
+        grad: toneGradient(p.tone),
+      }))
       const trip = {
         ...j,
         dateText: prettyDate(j.date),
-        photos: (j.photos || []).map((p) => ({
-          ...p,
-          grad: toneGradient(p.tone),
-        })),
+        coverGrad: toneGradient(j.coverTone),
+        cover: (photos.find((p) => p.imageUrl) || {}).imageUrl || '',
+        photos,
       }
       wx.setNavigationBarTitle({ title: j.city })
       this.setData({ trip, loading: false })

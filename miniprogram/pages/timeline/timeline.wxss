@@ -1,81 +1,92 @@
 .wrap {
-  padding: 24rpx;
+  padding: 40rpx 32rpx 60rpx;
 }
 
-/* 纪念日卡片 */
-.anni {
-  padding: 28rpx 30rpx;
-  margin-bottom: 28rpx;
+/* 纪念日横向卡片 */
+.anni-block {
+  margin-bottom: 44rpx;
 }
-.anni-title {
+.anni-scroll {
+  white-space: nowrap;
+  margin: 0 -8rpx;
+}
+.anni-card {
+  display: inline-block;
+  width: 300rpx;
+  vertical-align: top;
+  white-space: normal;
+  margin: 6rpx 8rpx 18rpx;
+  padding: 26rpx 28rpx;
+  background:
+    radial-gradient(120% 80% at 100% 0%, #fff4e6 0%, rgba(255, 244, 230, 0) 60%),
+    #fffdfb;
+}
+.anni-mark {
   font-size: 30rpx;
-  font-weight: 700;
-  color: var(--rose-deep);
-  margin-bottom: 16rpx;
-}
-.anni-item {
-  position: relative;
-  padding-left: 28rpx;
-  margin-bottom: 16rpx;
-}
-.anni-dot {
-  position: absolute;
-  left: 0;
-  top: 12rpx;
-  width: 14rpx;
-  height: 14rpx;
-  border-radius: 50%;
-  background: var(--rose);
+  color: var(--rose);
+  margin-bottom: 10rpx;
 }
 .anni-label {
-  font-size: 28rpx;
-  font-weight: 600;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
 }
-.anni-meta {
+.anni-date {
+  font-size: 24rpx;
+  color: var(--gold);
+  margin-top: 12rpx;
+  letter-spacing: 1rpx;
+}
+.anni-city {
   font-size: 22rpx;
   color: var(--ink-soft);
-  margin-top: 2rpx;
+  margin-top: 4rpx;
 }
 
 /* 时间线 */
-.timeline {
-  position: relative;
-  padding-left: 8rpx;
-}
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 26rpx;
-  top: 16rpx;
-  bottom: 16rpx;
-  width: 4rpx;
-  background: var(--rose-soft);
+.tl-head {
+  margin-bottom: 26rpx;
 }
 .item {
   display: flex;
-  gap: 20rpx;
-  margin-bottom: 28rpx;
+  gap: 22rpx;
 }
-.dot {
-  flex: 0 0 52rpx;
-  height: 52rpx;
+.rail {
+  flex: 0 0 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.node {
+  width: 44rpx;
+  height: 44rpx;
   border-radius: 50%;
   background: #fff;
-  border: 3rpx solid var(--rose);
+  border: 2rpx solid var(--rose);
   color: var(--rose-deep);
+  font-size: 22rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24rpx;
-  z-index: 1;
+  box-shadow: 0 6rpx 16rpx rgba(232, 95, 129, 0.2);
+}
+.line {
+  flex: 1;
+  width: 3rpx;
+  background: linear-gradient(var(--rose-soft), rgba(255, 230, 236, 0.2));
+  margin: 8rpx 0;
+}
+.item:last-child .line {
+  display: none;
 }
 .body {
   flex: 1;
+  margin-bottom: 34rpx;
   overflow: hidden;
 }
 .cover {
   position: relative;
-  height: 220rpx;
+  height: 280rpx;
   background-size: cover;
   background-position: center;
 }
@@ -83,44 +94,69 @@
   width: 100%;
   height: 100%;
 }
-.cover-text {
+.cover-shade {
   position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.35) 100%);
+}
+.cover-top {
+  position: absolute;
+  top: 22rpx;
   left: 24rpx;
-  bottom: 18rpx;
   right: 24rpx;
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  color: #fff;
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35);
+  align-items: center;
 }
-.city {
-  font-size: 38rpx;
-  font-weight: 700;
+.season {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--rose-deep);
+  font-size: 21rpx;
+  padding: 5rpx 18rpx;
+  border-radius: 999rpx;
 }
 .date {
-  font-size: 24rpx;
+  color: #fff;
+  font-size: 23rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.4);
+  letter-spacing: 1rpx;
+}
+.cover-city {
+  position: absolute;
+  left: 26rpx;
+  bottom: 18rpx;
+  color: #fff;
+  font-size: 48rpx;
+  font-weight: 700;
+  text-shadow: 0 3rpx 12rpx rgba(0, 0, 0, 0.4);
 }
 .content {
-  padding: 22rpx 26rpx;
+  padding: 24rpx 28rpx 26rpx;
 }
 .title {
-  font-size: 30rpx;
-  font-weight: 600;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--ink);
 }
 .intro {
   font-size: 26rpx;
   color: var(--ink-soft);
-  line-height: 1.6;
-  margin-top: 8rpx;
+  line-height: 1.7;
+  margin-top: 10rpx;
 }
 .tags {
-  margin-top: 14rpx;
+  margin-top: 16rpx;
 }
 
 .footer {
   text-align: center;
   color: var(--ink-soft);
-  font-size: 24rpx;
-  padding: 24rpx 0 40rpx;
+  font-size: 25rpx;
+  line-height: 1.9;
+  padding: 30rpx 0 20rpx;
+}
+.footer-heart {
+  color: var(--rose);
+  font-size: 32rpx;
+  margin-bottom: 8rpx;
 }

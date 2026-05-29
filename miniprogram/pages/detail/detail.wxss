@@ -1,54 +1,97 @@
 .wrap {
-  padding: 32rpx;
+  padding-bottom: 70rpx;
 }
 
-.head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+/* 杂志式封面 */
+.hero {
+  position: relative;
+  height: 520rpx;
+  background-size: cover;
+  background-position: center;
 }
-.city {
-  font-size: 44rpx;
+.hero-img {
+  width: 100%;
+  height: 100%;
+}
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.5) 100%);
+}
+.hero-text {
+  position: absolute;
+  left: 44rpx;
+  right: 44rpx;
+  bottom: 80rpx;
+}
+.hero-province {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 24rpx;
+  letter-spacing: 2rpx;
+  margin-bottom: 12rpx;
+}
+.hero-city {
+  color: #fff;
+  font-size: 84rpx;
   font-weight: 700;
-  color: var(--rose-deep);
+  line-height: 1;
+  text-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.45);
 }
-.date {
+.hero-date {
+  color: rgba(255, 255, 255, 0.92);
   font-size: 26rpx;
-  color: var(--ink-soft);
+  margin-top: 16rpx;
+  letter-spacing: 1rpx;
 }
 
+/* 内容卡片（上移盖住封面） */
+.sheet {
+  position: relative;
+  margin: -56rpx 28rpx 0;
+  padding: 44rpx 40rpx 50rpx;
+  background: #fffdfb;
+  border-radius: 32rpx 32rpx 28rpx 28rpx;
+  border: 1rpx solid var(--line);
+  box-shadow: 0 -10rpx 40rpx rgba(232, 95, 129, 0.08);
+}
 .title {
-  font-size: 34rpx;
-  font-weight: 600;
-  margin: 16rpx 0 18rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.4;
 }
-
 .meta {
-  margin-bottom: 18rpx;
+  margin-top: 20rpx;
+}
+.intro {
+  font-size: 28rpx;
+  color: #6b5660;
+  line-height: 1.85;
+  margin-top: 22rpx;
+}
+.tags {
+  margin-top: 22rpx;
 }
 .chip.soft {
-  background: #fff;
-  border: 2rpx solid var(--rose-soft);
+  background: #fff3ea;
+  color: var(--gold);
 }
 
-.intro {
-  font-size: 30rpx;
-  line-height: 1.8;
-  color: var(--ink);
-  margin-bottom: 22rpx;
+.block {
+  margin-top: 48rpx;
 }
 
+/* 照片网格 */
 .photos {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
-  margin-bottom: 24rpx;
+  gap: 18rpx;
 }
 .photo {
   position: relative;
-  width: calc(50% - 8rpx);
-  height: 260rpx;
-  border-radius: 16rpx;
+  width: calc((100% - 18rpx) / 2);
+  height: 240rpx;
+  border-radius: 20rpx;
   overflow: hidden;
   background-size: cover;
   background-position: center;
@@ -57,40 +100,48 @@
   width: 100%;
   height: 100%;
 }
+.photo-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.45) 100%);
+}
 .photo-text {
   position: absolute;
-  left: 16rpx;
-  bottom: 14rpx;
-  right: 16rpx;
-  color: #fff;
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.4);
+  left: 20rpx;
+  right: 20rpx;
+  bottom: 18rpx;
 }
 .photo-title {
+  color: #fff;
   font-size: 26rpx;
   font-weight: 600;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.4);
 }
 .photo-sub {
-  font-size: 22rpx;
-  opacity: 0.92;
-  margin-top: 2rpx;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 21rpx;
+  margin-top: 4rpx;
 }
 
-.notes {
-  margin-top: 8rpx;
-}
-.notes-title {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: var(--rose-deep);
-  margin-bottom: 12rpx;
-}
+/* 手记 */
 .note {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 20rpx 24rpx;
+  position: relative;
+  background:
+    radial-gradient(120% 100% at 0% 0%, #fff4ec 0%, rgba(255, 244, 236, 0) 55%),
+    #fffaf6;
+  border: 1rpx solid var(--line);
+  border-left: 6rpx solid var(--rose);
+  border-radius: 18rpx;
+  padding: 26rpx 30rpx 26rpx 34rpx;
+  margin-bottom: 18rpx;
   font-size: 28rpx;
-  line-height: 1.7;
-  color: var(--ink);
-  margin-bottom: 14rpx;
-  box-shadow: 0 8rpx 20rpx rgba(255, 92, 138, 0.12);
+  line-height: 1.85;
+  color: #5f4b54;
+}
+.quote {
+  color: var(--rose);
+  font-size: 44rpx;
+  font-weight: 700;
+  margin-right: 6rpx;
+  vertical-align: -8rpx;
 }

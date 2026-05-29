@@ -1,36 +1,72 @@
 page {
-  --rose: #ff5c8a;
-  --rose-deep: #ff2d6f;
-  --rose-soft: #ffe3ec;
-  --ink: #43303a;
-  --ink-soft: #8a6f7b;
-  --bg: #fff6f9;
-  background: var(--bg);
+  /* 配色：柔和奶油 + 玫瑰 + 暖金点缀 */
+  --rose: #ff8aa6;
+  --rose-deep: #e85f81;
+  --rose-soft: #ffe6ec;
+  --gold: #d8a25a;
+  --ink: #4a3640;
+  --ink-soft: #a08791;
+  --line: rgba(74, 54, 64, 0.08);
+  --bg: #fdf6f2;
+  --bg-2: #fbeef0;
+
+  background:
+    radial-gradient(120% 60% at 50% 0%, #fdeef0 0%, rgba(253, 246, 242, 0) 60%),
+    var(--bg);
   color: var(--ink);
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+/* 衬线标题，营造回忆相册的质感 */
+.serif {
+  font-family: "Songti SC", "STSong", "SimSun", Georgia, "Times New Roman", serif;
+  letter-spacing: 1rpx;
 }
 
 .card {
-  background: #fff;
-  border-radius: 24rpx;
-  box-shadow: 0 12rpx 30rpx rgba(255, 92, 138, 0.18);
+  background: #fffdfb;
+  border-radius: 28rpx;
+  border: 1rpx solid var(--line);
+  box-shadow: 0 18rpx 40rpx rgba(232, 95, 129, 0.1);
 }
 
 .chip {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: var(--rose-soft);
   color: var(--rose-deep);
-  padding: 6rpx 20rpx;
+  padding: 8rpx 22rpx;
   border-radius: 999rpx;
-  font-size: 24rpx;
+  font-size: 23rpx;
+  line-height: 1.3;
   margin-right: 12rpx;
-  margin-bottom: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+/* 小标题：左侧短线 + 文字 */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 4rpx 22rpx;
+}
+.section-title::before {
+  content: '';
+  width: 40rpx;
+  height: 6rpx;
+  border-radius: 6rpx;
+  background: linear-gradient(90deg, var(--rose), var(--gold));
 }
 
 .loading,
 .empty {
   text-align: center;
   color: var(--ink-soft);
-  padding: 80rpx 0;
+  padding: 120rpx 0;
   font-size: 28rpx;
 }
