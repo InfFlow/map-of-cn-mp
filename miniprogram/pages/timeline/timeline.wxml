@@ -1,0 +1,45 @@
+<view class="wrap">
+  <view wx:if="{{loading}}" class="loading">加载中…</view>
+  <view wx:elif="{{error}}" class="empty">{{error}}</view>
+
+  <block wx:else>
+    <view wx:if="{{anniversaries.length}}" class="anni card">
+      <view class="anni-title">❤ 我们的纪念日</view>
+      <view wx:for="{{anniversaries}}" wx:key="id" class="anni-item">
+        <view class="anni-dot"></view>
+        <view class="anni-label">{{item.label}}</view>
+        <view class="anni-meta">{{item.dateText}} · {{item.city}}</view>
+      </view>
+    </view>
+
+    <view class="timeline">
+      <view
+        wx:for="{{trips}}"
+        wx:key="id"
+        class="item"
+        bindtap="openDetail"
+        data-id="{{item.id}}"
+      >
+        <view class="dot">❤</view>
+        <view class="body card">
+          <view class="cover" style="background-image: {{item.coverGrad}};">
+            <image wx:if="{{item.cover}}" class="cover-img" src="{{item.cover}}" mode="aspectFill"></image>
+            <view class="cover-text">
+              <text class="city">{{item.city}}</text>
+              <text class="date">{{item.dateText}}</text>
+            </view>
+          </view>
+          <view class="content">
+            <view class="title">{{item.title}}</view>
+            <view class="intro">{{item.intro}}</view>
+            <view class="tags">
+              <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="chip">{{tag}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="footer">这张地图会跟着我们之后的每一次出发，一点一点长大。</view>
+  </block>
+</view>

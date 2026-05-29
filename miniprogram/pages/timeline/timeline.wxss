@@ -1,0 +1,126 @@
+.wrap {
+  padding: 24rpx;
+}
+
+/* 纪念日卡片 */
+.anni {
+  padding: 28rpx 30rpx;
+  margin-bottom: 28rpx;
+}
+.anni-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--rose-deep);
+  margin-bottom: 16rpx;
+}
+.anni-item {
+  position: relative;
+  padding-left: 28rpx;
+  margin-bottom: 16rpx;
+}
+.anni-dot {
+  position: absolute;
+  left: 0;
+  top: 12rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: var(--rose);
+}
+.anni-label {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.anni-meta {
+  font-size: 22rpx;
+  color: var(--ink-soft);
+  margin-top: 2rpx;
+}
+
+/* 时间线 */
+.timeline {
+  position: relative;
+  padding-left: 8rpx;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 26rpx;
+  top: 16rpx;
+  bottom: 16rpx;
+  width: 4rpx;
+  background: var(--rose-soft);
+}
+.item {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 28rpx;
+}
+.dot {
+  flex: 0 0 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: #fff;
+  border: 3rpx solid var(--rose);
+  color: var(--rose-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  z-index: 1;
+}
+.body {
+  flex: 1;
+  overflow: hidden;
+}
+.cover {
+  position: relative;
+  height: 220rpx;
+  background-size: cover;
+  background-position: center;
+}
+.cover-img {
+  width: 100%;
+  height: 100%;
+}
+.cover-text {
+  position: absolute;
+  left: 24rpx;
+  bottom: 18rpx;
+  right: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: #fff;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35);
+}
+.city {
+  font-size: 38rpx;
+  font-weight: 700;
+}
+.date {
+  font-size: 24rpx;
+}
+.content {
+  padding: 22rpx 26rpx;
+}
+.title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.intro {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-top: 8rpx;
+}
+.tags {
+  margin-top: 14rpx;
+}
+
+.footer {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 24rpx;
+  padding: 24rpx 0 40rpx;
+}
