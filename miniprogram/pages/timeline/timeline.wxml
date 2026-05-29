@@ -3,11 +3,16 @@
   <view wx:elif="{{error}}" class="empty">{{error}}</view>
 
   <block wx:else>
-    <view wx:if="{{anniversaries.length}}" class="anni-block">
-      <view class="section-title">我们的纪念日</view>
-      <scroll-view scroll-x class="anni-scroll" show-scrollbar="{{false}}">
-        <view wx:for="{{anniversaries}}" wx:key="id" class="anni-card card">
-          <view class="anni-mark">♡</view>
+    <view class="head rise d1">
+      <view class="kicker">TIMELINE</view>
+      <view class="h1 display">我们走过的日子</view>
+      <view class="sub">{{trips.length}} 段旅程 · 按时间回看</view>
+    </view>
+
+    <view wx:if="{{anniversaries.length}}" class="anni-block rise d2">
+      <view class="section-title"><view class="dot"></view>纪念日</view>
+      <scroll-view scroll-x class="anni-scroll" show-scrollbar="{{false}}" enhanced>
+        <view wx:for="{{anniversaries}}" wx:key="id" class="anni-card">
           <view class="anni-label">{{item.label}}</view>
           <view class="anni-date">{{item.dateText}}</view>
           <view class="anni-city">{{item.city}}</view>
@@ -15,20 +20,20 @@
       </scroll-view>
     </view>
 
-    <view class="section-title tl-head">旅程时间线</view>
+    <view class="section-title rise d3"><view class="dot"></view>旅程</view>
     <view class="timeline">
       <view
         wx:for="{{trips}}"
         wx:key="id"
-        class="item"
+        class="item rise d3"
         bindtap="openDetail"
         data-id="{{item.id}}"
       >
         <view class="rail">
-          <view class="node">♥</view>
+          <view class="node"></view>
           <view class="line"></view>
         </view>
-        <view class="body card">
+        <view class="body card pressable" hover-class="pressed" hover-stay-time="80">
           <view class="cover" style="background-image: {{item.coverGrad}};">
             <image wx:if="{{item.cover}}" class="cover-img" src="{{item.cover}}" mode="aspectFill"></image>
             <view class="cover-shade"></view>
@@ -36,10 +41,10 @@
               <text class="season">{{item.season}}</text>
               <text class="date">{{item.dateText}}</text>
             </view>
-            <view class="cover-city serif">{{item.city}}</view>
+            <view class="cover-city display">{{item.city}}</view>
           </view>
           <view class="content">
-            <view class="title serif">{{item.title}}</view>
+            <view class="title">{{item.title}}</view>
             <view class="intro">{{item.intro}}</view>
             <view class="tags">
               <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="chip">{{tag}}</text>
@@ -49,10 +54,9 @@
       </view>
     </view>
 
-    <view class="footer">
-      <view class="footer-heart">♡</view>
+    <view class="footer rise d4">
       <view>这张地图会跟着我们之后的</view>
-      <view>每一次出发，一点一点长大。</view>
+      <view>每一次出发，一点一点长大</view>
     </view>
   </block>
 </view>

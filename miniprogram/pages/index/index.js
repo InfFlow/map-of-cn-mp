@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { prettyDate, toneGradient } = require('../../utils/util')
 
 const app = getApp()
 
@@ -28,6 +29,7 @@ Page({
     markers: [],
     polygons: [],
     includePoints: [],
+    recent: [],
     error: '',
   },
 
@@ -48,15 +50,18 @@ Page({
         journeyId: j.id,
         latitude: j.latitude,
         longitude: j.longitude,
-        iconPath: '/assets/heart.png',
-        width: 30,
-        height: 30,
+        iconPath: '/assets/pin.png',
+        width: 26,
+        height: 32,
+        anchor: { x: 0.5, y: 1 },
         callout: {
           content: `${j.city} · ${j.title}`,
-          color: '#ff2d6f',
+          color: '#1f1d1b',
           fontSize: 12,
           borderRadius: 10,
-          padding: 6,
+          borderWidth: 1,
+          borderColor: '#00000014',
+          padding: 8,
           bgColor: '#ffffff',
           display: 'BYCLICK',
         },
@@ -65,8 +70,8 @@ Page({
       const polygons = polys.map((p) => ({
         points: p.points,
         strokeWidth: 1,
-        strokeColor: '#ff2d6fAA',
-        fillColor: '#ff5c8a4D',
+        strokeColor: '#b65b3cCC',
+        fillColor: '#b65b3c2E',
       }))
 
       const includePoints = markers.map((m) => ({
@@ -74,11 +79,24 @@ Page({
         longitude: m.longitude,
       }))
 
+      const recent = [...journeys]
+        .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+        .slice(0, 6)
+        .map((j) => ({
+          id: j.id,
+          city: j.city,
+          title: j.title,
+          dateText: prettyDate(j.date),
+          grad: toneGradient(j.coverTone),
+          cover: (j.photos || []).map((p) => p.imageUrl).find(Boolean) || '',
+        }))
+
       this._markers = markers
       this.setData({
         markers,
         polygons,
         includePoints,
+        recent,
         days: daysTogether(data.anniversaries),
         stats: {
           provinceCount: new Set(journeys.map((j) => j.province)).size,
@@ -94,5 +112,14 @@ Page({
   onMarkerTap(e) {
     const marker = (this._markers || []).find((m) => m.id === e.detail.markerId)
     if (marker) wx.navigateTo({ url: `/pages/detail/detail?id=${marker.journeyId}` })
+  },
+
+  openDetail(e) {
+    const id = e.currentTarget.dataset.id
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
+  },
+
+  goTimeline() {
+    wx.switchTab({ url: '/pages/timeline/timeline' })
   },
 })

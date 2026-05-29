@@ -1,158 +1,159 @@
 .page {
-  padding-bottom: 60rpx;
+  padding: 24rpx 0 70rpx;
 }
 
-/* 英雄区 */
-.hero {
-  position: relative;
-  padding: 70rpx 48rpx 90rpx;
-  overflow: hidden;
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(90% 120% at 85% -10%, #ffd9c2 0%, rgba(255, 217, 194, 0) 55%),
-    radial-gradient(80% 100% at 0% 0%, #ffd0dd 0%, rgba(255, 208, 221, 0) 60%),
-    linear-gradient(160deg, #ff9bb3 0%, #ff7d9e 45%, #f07193 100%);
-}
-.hero-bg::after {
-  content: '';
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: -2rpx;
-  height: 70rpx;
-  background: var(--bg);
-  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-}
-.hero-inner {
-  position: relative;
+/* 大标题区 */
+.head {
+  padding: 36rpx 40rpx 8rpx;
 }
 .kicker {
-  font-size: 22rpx;
-  letter-spacing: 8rpx;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 21rpx;
+  letter-spacing: 6rpx;
+  color: var(--muted);
   margin-bottom: 14rpx;
 }
-.brand {
-  font-size: 70rpx;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.1;
-  text-shadow: 0 6rpx 24rpx rgba(176, 60, 90, 0.35);
+.h1 {
+  font-size: 76rpx;
+  line-height: 1.02;
+  color: var(--ink);
 }
-.subtitle {
-  font-size: 26rpx;
-  color: rgba(255, 255, 255, 0.92);
-  margin-top: 14rpx;
+.sub {
+  font-size: 27rpx;
+  color: var(--ink-2);
+  margin-top: 16rpx;
 }
 .together {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10rpx;
-  margin-top: 30rpx;
-  padding: 14rpx 28rpx;
-  background: rgba(255, 255, 255, 0.22);
-  border: 1rpx solid rgba(255, 255, 255, 0.45);
-  border-radius: 999rpx;
-  backdrop-filter: blur(6rpx);
-}
-.together .heart {
-  color: #fff;
-  font-size: 28rpx;
-}
-.together .t {
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 24rpx;
+  margin-top: 22rpx;
+  font-size: 26rpx;
+  color: var(--ink-2);
 }
 .together .num {
-  color: #fff;
-  font-size: 44rpx;
-  font-weight: 700;
+  font-size: 34rpx;
+  font-weight: 800;
+  letter-spacing: -0.5rpx;
+  color: var(--accent);
+  margin: 0 4rpx;
 }
 
-/* 统计 */
+/* 数据条 */
 .stats {
   display: flex;
   align-items: center;
-  margin: -50rpx 32rpx 0;
-  padding: 34rpx 20rpx;
-  position: relative;
-  z-index: 2;
+  margin: 30rpx 32rpx 0;
+  padding: 32rpx 16rpx;
 }
 .stat {
   flex: 1;
   text-align: center;
 }
 .stat-num {
-  font-size: 50rpx;
-  font-weight: 700;
-  color: var(--rose-deep);
+  font-size: 52rpx;
+  color: var(--ink);
   line-height: 1;
 }
 .stat-label {
   font-size: 23rpx;
-  color: var(--ink-soft);
+  color: var(--muted);
   margin-top: 12rpx;
 }
-.divider {
+.vline {
   width: 1rpx;
-  height: 56rpx;
-  background: var(--line);
+  height: 52rpx;
+  background: var(--hairline);
 }
 
-/* 地图 */
-.map-wrap {
-  margin: 44rpx 32rpx 0;
-}
-.map-card {
-  position: relative;
-  padding: 16rpx;
-  overflow: hidden;
-}
-.map {
-  width: 100%;
-  height: 720rpx;
-  border-radius: 20rpx;
+/* 区块 */
+.block {
+  margin: 48rpx 32rpx 0;
 }
 .legend {
-  position: absolute;
-  left: 30rpx;
-  bottom: 30rpx;
+  margin-left: auto;
   display: flex;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 .lg {
   display: inline-flex;
   align-items: center;
   gap: 8rpx;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1rpx solid var(--line);
-  border-radius: 999rpx;
-  padding: 6rpx 16rpx;
   font-size: 21rpx;
-  color: var(--ink-soft);
+  font-weight: 500;
+  color: var(--muted);
 }
 .sw {
-  width: 18rpx;
-  height: 18rpx;
+  width: 16rpx;
+  height: 16rpx;
   border-radius: 4rpx;
   display: inline-block;
 }
-.sw.province {
-  background: rgba(255, 92, 138, 0.3);
-  border: 1rpx solid var(--rose-deep);
+.sw-p {
+  background: rgba(182, 91, 60, 0.18);
+  border: 1rpx solid var(--accent);
 }
-.sw.city {
-  background: none;
-  color: var(--rose-deep);
-  font-size: 20rpx;
-  line-height: 1;
+.sw-c {
+  border-radius: 50%;
+  background: var(--accent);
 }
-.hint {
-  text-align: center;
-  font-size: 23rpx;
-  color: var(--ink-soft);
-  margin-top: 22rpx;
+
+/* 地图 */
+.map-card {
+  padding: 14rpx;
+  overflow: hidden;
+}
+.map {
+  width: 100%;
+  height: 700rpx;
+  border-radius: 18rpx;
+}
+
+/* 最近的回忆横滑 */
+.recent {
+  white-space: nowrap;
+  margin: 0 -8rpx;
+}
+.rcard {
+  display: inline-block;
+  width: 280rpx;
+  vertical-align: top;
+  white-space: normal;
+  margin: 0 8rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--hairline);
+  border-radius: 22rpx;
+  overflow: hidden;
+  box-shadow: 0 14rpx 30rpx rgba(31, 29, 27, 0.05);
+}
+.rcover {
+  position: relative;
+  height: 200rpx;
+  background-size: cover;
+  background-position: center;
+}
+.rimg {
+  width: 100%;
+  height: 100%;
+}
+.rcity {
+  position: absolute;
+  left: 22rpx;
+  bottom: 18rpx;
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 700;
+  text-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.35);
+}
+.rmeta {
+  padding: 18rpx 22rpx 22rpx;
+}
+.rtitle {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rdate {
+  font-size: 22rpx;
+  color: var(--muted);
+  margin-top: 8rpx;
 }

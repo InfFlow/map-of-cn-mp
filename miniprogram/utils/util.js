@@ -1,23 +1,24 @@
 // tone -> 渐变色，照片没图时作占位，也用于卡片配色
+// 低饱和、克制的高级色（去掉糖果粉），整体偏浅
 const TONES = {
-  'tone-spring': ['#ffd6e8', '#ff9ab5'],
-  'tone-sea': ['#8fd3ff', '#4fa8e0'],
-  'tone-water': ['#9ad9ff', '#5bb6e8'],
-  'tone-lake': ['#a8e6cf', '#56c596'],
-  'tone-island': ['#aef3e0', '#5fd1c4'],
-  'tone-city': ['#cdbdf0', '#9b8cf0'],
-  'tone-sunset': ['#ffb88c', '#ff7eb3'],
-  'tone-warm': ['#ffd28f', '#ff9a76'],
-  'tone-brick': ['#e0a899', '#c97b6a'],
-  'tone-night': ['#4b4b73', '#7d7db0'],
-  'tone-rain': ['#b8c6db', '#8fa3bf'],
-  'tone-osmanthus': ['#ffe7a3', '#ffce5c'],
-  'tone-paper': ['#f3ece0', '#ddccb0'],
-  'tone-tea': ['#d8e6b8', '#a8c97f'],
+  'tone-spring': ['#e3e9da', '#bcc8aa'],
+  'tone-sea': ['#d4e0e6', '#a6bcc7'],
+  'tone-water': ['#d6e2e3', '#a8c2c4'],
+  'tone-lake': ['#d7e4da', '#abc4b1'],
+  'tone-island': ['#dae8e2', '#aecbc2'],
+  'tone-city': ['#e0ddE6', '#b6afc4'],
+  'tone-sunset': ['#eedcca', '#d6ad8b'],
+  'tone-warm': ['#eedfc6', '#d7b98c'],
+  'tone-brick': ['#e4cdbf', '#c39c87'],
+  'tone-night': ['#d2d5de', '#9aa0b1'],
+  'tone-rain': ['#d9dde2', '#aab2bc'],
+  'tone-osmanthus': ['#f0e6c8', '#d9c38c'],
+  'tone-paper': ['#ece7db', '#cbc1ab'],
+  'tone-tea': ['#e0e4d2', '#b9c39e'],
 }
 
 function toneGradient(tone) {
-  const c = TONES[tone] || ['#ffd6e8', '#ff9ab5']
+  const c = TONES[tone] || ['#e6e3dd', '#c4bdb1']
   return `linear-gradient(135deg, ${c[0]} 0%, ${c[1]} 100%)`
 }
 
