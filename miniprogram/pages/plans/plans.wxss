@@ -389,18 +389,21 @@
   position: fixed;
   inset: 0;
   background: rgba(27, 23, 18, 0.42);
-  z-index: 100;
+  z-index: 1100;
 }
 .sheet {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 101;
+  z-index: 1101;
   background: var(--bg);
-  padding: 34rpx 44rpx 48rpx;
+  padding: 34rpx 44rpx calc(48rpx + env(safe-area-inset-bottom));
   border-top-left-radius: 18rpx;
   border-top-right-radius: 18rpx;
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transform: translateY(110%);
   transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -500,6 +503,10 @@
   display: flex;
   gap: 18rpx;
   margin-top: 34rpx;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  padding-top: 18rpx;
 }
 .btn {
   flex: 1;
