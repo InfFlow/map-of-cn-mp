@@ -1,5 +1,5 @@
 .page {
-  padding: 24rpx 44rpx 200rpx;
+  padding: 24rpx 44rpx 360rpx;
 }
 
 /* 报头（与首页一致） */
@@ -198,8 +198,8 @@
   position: fixed;
   left: 28rpx;
   right: 28rpx;
-  bottom: 32rpx;
-  z-index: 60;
+  bottom: calc(130rpx + env(safe-area-inset-bottom));
+  z-index: 1001;
   display: flex;
   align-items: center;
   justify-content: space-between;

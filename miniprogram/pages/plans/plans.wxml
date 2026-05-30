@@ -229,7 +229,7 @@
     <text class="field-label">备注</text>
     <input class="field-input" value="{{expenseEditor.memo}}" placeholder="如 午饭 / 门票" bindinput="onExpMemo" />
   </view>
-  <view class="sheet-actions">
+  <view class="sheet-acts">
     <view class="btn ghost" hover-class="pressed" catchtap="closeExpenseEditor">取消</view>
     <view class="btn solid" hover-class="pressed" catchtap="saveExpense">保存</view>
   </view>
