@@ -27,6 +27,7 @@ Page({
     scale: 4,
     markers: [],
     polygons: [],
+    polyline: [],
     includePoints: [],
     ledger: [],
     recent: [],
@@ -120,6 +121,24 @@ Page({
         longitude: m.longitude,
       }))
 
+      // 足迹连线：按日期顺序把走过的城市连成一条墨色虚线路径
+      const routePoints = [...journeys]
+        .filter((j) => j.latitude && j.longitude)
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+        .map((j) => ({ latitude: j.latitude, longitude: j.longitude }))
+      const polyline =
+        routePoints.length > 1
+          ? [
+              {
+                points: routePoints,
+                color: '#1b1712B3',
+                width: 2,
+                dottedLine: true,
+                arrowLine: true,
+              },
+            ]
+          : []
+
       const recent = [...journeys]
         .sort((a, b) => String(b.date).localeCompare(String(a.date)))
         .slice(0, 6)
@@ -158,6 +177,7 @@ Page({
       this.setData({
         markers,
         polygons,
+        polyline,
         includePoints,
         ledger,
         recent,
@@ -165,7 +185,7 @@ Page({
         unlocked,
         days: daysTogether(data.anniversaries),
         stats,
-        mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} / 34 省 · ${stats.cityCount} 城`,
+        mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} / 34 省 · ${stats.cityCount} 城${routePoints.length > 1 ? ' · 足迹连线' : ''}`,
         loading: false,
         error: '',
       })

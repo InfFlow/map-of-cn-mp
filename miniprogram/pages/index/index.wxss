@@ -127,6 +127,11 @@
   border-radius: 50%;
   background: var(--ink);
 }
+.sw-line {
+  width: 22rpx;
+  height: 0;
+  border-top: 2rpx dashed var(--ink);
+}
 
 /* 地图：单色描边相框 + 四角刻度 + 图注 */
 .map-frame {
@@ -147,7 +152,7 @@
 .tick.br { right: -2rpx; bottom: -2rpx; border-left: 0; border-top: 0; }
 .map {
   width: 100%;
-  height: 460rpx;
+  height: 520rpx;
   display: block;
 }
 .map-cap {
