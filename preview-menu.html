@@ -10,7 +10,8 @@
   .bar{background:var(--bg);color:var(--ink);text-align:center;padding:13px;font-weight:600;font-size:14px;}
   .screen{height:706px;overflow:auto;background:var(--bg);position:relative;}
   .pad{padding:14px 20px 90px;}
-  .rule{height:1.5px;background:var(--ink);margin-top:6px;}
+  .rule{height:1.5px;background:var(--ink);margin-top:6px;position:relative;}
+  .rule::after{content:"";position:absolute;left:0;right:0;top:5px;height:1px;background:var(--line);}
   .hair{height:1px;background:var(--line);}
   .mt{margin-top:24px;}
   .mast-row{display:flex;justify-content:space-between;align-items:baseline;}

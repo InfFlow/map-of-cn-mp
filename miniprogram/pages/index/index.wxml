@@ -34,16 +34,19 @@
       <view class="stat">
         <view class="n display">{{stats.provinceCount}}</view>
         <view class="l">省份</view>
+        <view class="le">Provinces</view>
       </view>
       <view class="stat">
         <view class="vr"></view>
         <view class="n display">{{stats.cityCount}}</view>
         <view class="l">城市</view>
+        <view class="le">Cities</view>
       </view>
       <view class="stat">
         <view class="vr"></view>
         <view class="n display">{{stats.journeyCount}}</view>
         <view class="l">回忆</view>
+        <view class="le">Memories</view>
       </view>
     </view>
 

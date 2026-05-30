@@ -42,6 +42,19 @@ page {
   height: 2rpx;
   background: var(--ink);
 }
+/* 报头双线（杂志感）：主墨线下方再压一道发丝线 */
+.mast .rule {
+  position: relative;
+}
+.mast .rule::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 7rpx;
+  height: 1rpx;
+  background: var(--line);
+}
 .hair {
   height: 1rpx;
   background: var(--line);

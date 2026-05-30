@@ -79,8 +79,16 @@
 .stat .l {
   font-size: 22rpx;
   letter-spacing: 4rpx;
-  color: var(--muted);
-  margin-top: 12rpx;
+  color: var(--ink-2);
+  margin-top: 14rpx;
+}
+.stat .le {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 16rpx;
+  font-style: italic;
+  letter-spacing: 1rpx;
+  color: var(--faint);
+  margin-top: 4rpx;
 }
 
 /* 区块 */

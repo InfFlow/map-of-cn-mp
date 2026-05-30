@@ -43,7 +43,7 @@ const polyPaths = polys
       p.points
         .map((pt, i) => `${i ? 'L' : 'M'}${px(pt.longitude).toFixed(1)},${py(pt.latitude).toFixed(1)}`)
         .join(' ') + ' Z'
-    return `<path d="${d}" fill="#1b171214" stroke="#1b1712" stroke-width="1" stroke-opacity=".7"/>`
+    return `<path d="${d}" fill="#1b17120D" stroke="#1b1712" stroke-width="1" stroke-opacity="1"/>`
   })
   .join('\n')
 function pinSvg(x, y) {
@@ -90,9 +90,9 @@ const indexScreen = `
       <div class="lede">两个人，一座座点亮的城。在一起的第 <span class="em serif">${days}</span> 天。</div>
     </div>
     <div class="stats">
-      <div class="stat"><div class="n display">${stats.province}</div><div class="l">省份</div></div>
-      <div class="stat vr"><div class="n display">${stats.city}</div><div class="l">城市</div></div>
-      <div class="stat vr"><div class="n display">${stats.trip}</div><div class="l">回忆</div></div>
+      <div class="stat"><div class="n display">${stats.province}</div><div class="l">省份</div><div class="le">Provinces</div></div>
+      <div class="stat vr"><div class="n display">${stats.city}</div><div class="l">城市</div><div class="le">Cities</div></div>
+      <div class="stat vr"><div class="n display">${stats.trip}</div><div class="l">回忆</div><div class="le">Memories</div></div>
     </div>
     <div class="sec"><span class="sec-zh">足迹地图</span><span class="legend"><span class="lg"><span class="sw sw-area"></span>省份</span><span class="lg"><span class="sw sw-pin"></span>城市</span></span></div>
     <div class="map-frame"><span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>${mapSvg}</div>
@@ -191,7 +191,8 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .bar{background:var(--bg);color:var(--ink);text-align:center;padding:13px;font-weight:600;font-size:14px;}
   .screen{height:706px;overflow:auto;background:var(--bg);}
   .pad{padding:14px 20px 30px;}
-  .rule{height:1.5px;background:var(--ink);margin-top:6px;}
+  .rule{height:1.5px;background:var(--ink);margin-top:6px;position:relative;}
+  .rule::after{content:"";position:absolute;left:0;right:0;top:5px;height:1px;background:var(--line);}
   .hair{height:1px;background:var(--line);}
   .mt{margin-top:26px;} .mt2{margin-top:30px;}
   .mast-row{display:flex;justify-content:space-between;align-items:baseline;}
@@ -213,7 +214,8 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .stat{flex:1;text-align:center;padding:16px 0 14px;position:relative;}
   .stat.vr::before{content:"";position:absolute;left:0;top:16px;bottom:14px;width:1px;background:var(--line);}
   .stat .n{font-size:33px;line-height:1;}
-  .stat .l{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:6px;}
+  .stat .l{font-size:11px;letter-spacing:2px;color:var(--ink2);margin-top:7px;}
+  .stat .le{font-family:Georgia,"Songti SC",serif;font-style:italic;font-size:8.5px;letter-spacing:.5px;color:var(--faint);margin-top:2px;}
   .legend{display:flex;gap:11px;}
   .lg{display:flex;align-items:center;gap:4px;font-size:9px;letter-spacing:1px;color:var(--muted);}
   .sw{width:8px;height:8px;}

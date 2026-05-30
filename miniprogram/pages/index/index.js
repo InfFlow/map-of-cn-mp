@@ -85,8 +85,8 @@ Page({
       const polygons = polys.map((p) => ({
         points: p.points,
         strokeWidth: 1,
-        strokeColor: '#1b1712B3',
-        fillColor: '#1b171214',
+        strokeColor: '#1b1712',
+        fillColor: '#1b17120D',
       }))
 
       const includePoints = markers.map((m) => ({
