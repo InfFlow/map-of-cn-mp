@@ -425,6 +425,19 @@
   margin-bottom: 12rpx;
   border-bottom: 2rpx solid var(--ink);
 }
+.sheet-x {
+  position: absolute;
+  top: 26rpx;
+  right: 34rpx;
+  width: 52rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  color: var(--ink-2);
+  z-index: 2;
+}
 .field {
   margin-top: 22rpx;
 }
@@ -441,16 +454,28 @@
   width: 100%;
   background: var(--surface);
   border: 1rpx solid var(--line);
-  padding: 18rpx 20rpx;
   font-size: 27rpx;
   color: var(--ink);
   box-sizing: border-box;
 }
+.field-input,
+.field-picker {
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0 24rpx;
+}
 .field-area {
-  min-height: 120rpx;
+  min-height: 132rpx;
+  padding: 18rpx 24rpx;
+  line-height: 1.55;
 }
 .field-picker {
   color: var(--ink-2);
+  display: flex;
+  align-items: center;
+}
+.field-ph {
+  color: var(--muted);
 }
 .field-row {
   display: flex;
