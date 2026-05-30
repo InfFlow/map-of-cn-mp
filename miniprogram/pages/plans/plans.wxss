@@ -606,3 +606,175 @@
   color: var(--bg);
   border-color: var(--ink);
 }
+
+/* ---------------- 地图可视化 ---------------- */
+.plan-map-wrap {
+  margin-top: 26rpx;
+  border: 1rpx solid var(--ink);
+  background: var(--surface);
+}
+.plan-map {
+  width: 100%;
+  height: 380rpx;
+  display: block;
+}
+.plan-map-legend {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  padding: 16rpx 20rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.pm-no {
+  font-size: 34rpx;
+  color: var(--ink);
+  line-height: 1;
+}
+.pm-txt {
+  font-size: 23rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+.plan-map-empty {
+  margin-top: 24rpx;
+  padding: 28rpx 24rpx;
+  border: 1rpx dashed var(--line);
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--faint);
+  letter-spacing: 1rpx;
+}
+
+/* 目的地卡：天数角标 */
+.stop-day {
+  flex: none;
+  font-size: 19rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+  color: var(--bg);
+  background: var(--ink);
+  padding: 2rpx 10rpx;
+  border-radius: 4rpx;
+}
+
+/* ---------------- 按天行程总览 ---------------- */
+.day-grp {
+  margin-top: 18rpx;
+}
+.day-grp:first-child {
+  margin-top: 4rpx;
+}
+.day-grp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid var(--ink);
+}
+.day-grp-no {
+  font-size: 30rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: var(--ink);
+}
+.day-grp-cnt {
+  font-size: 22rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+.day-stop {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 18rpx 4rpx;
+  border-bottom: 1rpx solid var(--line-soft);
+}
+.day-stop-no {
+  flex: none;
+  width: 48rpx;
+  font-size: 26rpx;
+  color: var(--faint);
+}
+.day-stop-mid {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.day-stop-name {
+  font-size: 27rpx;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-stop-time {
+  font-size: 21rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+.day-stop-go {
+  flex: none;
+  font-size: 32rpx;
+  color: var(--faint);
+}
+
+/* ---------------- 预算汇总（按分类条形） ---------------- */
+.bud-sum {
+  margin-bottom: 6rpx;
+}
+.bud-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+.bud-cat {
+  flex: none;
+  width: 56rpx;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+.bud-track {
+  flex: 1;
+  height: 14rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  overflow: hidden;
+}
+.bud-fill {
+  height: 100%;
+  background: var(--ink);
+}
+.bud-val {
+  flex: none;
+  min-width: 92rpx;
+  text-align: right;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+/* 编辑器：天数步进 */
+.day-step {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+.day-step-btn {
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 36rpx;
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+}
+.day-step-val {
+  font-size: 30rpx;
+  color: var(--ink);
+  min-width: 120rpx;
+  text-align: center;
+}

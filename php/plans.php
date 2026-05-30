@@ -32,7 +32,7 @@ try {
     if ($ids) {
         $ph = implode(',', array_fill(0, count($ids), '?'));
         $ss = $pdo->prepare(
-            "SELECT id, plan_id, name, address, latitude, longitude, note, planned_time, sort_order
+            "SELECT id, plan_id, name, address, latitude, longitude, note, planned_time, day, sort_order
              FROM plan_stops WHERE plan_id IN ($ph) ORDER BY sort_order ASC, id ASC"
         );
         $ss->execute($ids);
@@ -45,6 +45,7 @@ try {
                 'longitude' => $s['longitude'] === null ? null : (float) $s['longitude'],
                 'note' => $s['note'],
                 'plannedTime' => $s['planned_time'],
+                'day' => (int) ($s['day'] ?? 1),
             ];
         }
     }

@@ -61,6 +61,26 @@
         </view>
         <view wx:if="{{active.note}}" class="plan-note">{{active.note}}</view>
 
+        <!-- 地图可视化：编号点位 + 墨色虚线路线 -->
+        <view wx:if="{{geoStopCount > 0}}" class="plan-map-wrap">
+          <map
+            class="plan-map"
+            latitude="{{mapCenter.latitude}}"
+            longitude="{{mapCenter.longitude}}"
+            markers="{{mapMarkers}}"
+            polyline="{{mapPolyline}}"
+            include-points="{{mapInclude}}"
+            show-location="{{false}}"
+            enable-rotate="{{false}}"
+            enable-overlooking="{{false}}"
+          ></map>
+          <view class="plan-map-legend">
+            <text class="pm-no serif">{{geoStopCount}}</text>
+            <text class="pm-txt">个地点已在地图上连成路线</text>
+          </view>
+        </view>
+        <view wx:elif="{{active.stops.length}}" class="plan-map-empty">给目的地点「定位」后，路线会出现在地图上</view>
+
         <view wx:if="{{canEdit}}" class="plan-acts">
           <view class="chip-btn" hover-class="pressed" bindtap="openPlanEdit">编辑</view>
           <view class="chip-btn" hover-class="pressed" bindtap="togglePlan">{{active.visible ? '设为隐藏' : '取消隐藏'}}</view>
@@ -109,6 +129,7 @@
               </view>
               <view class="stop-main" bindtap="openStopEdit" data-id="{{item.id}}">
                 <view class="stop-top">
+                  <text wx:if="{{item.dayTag}}" class="stop-day">{{item.dayTag}}</text>
                   <text wx:if="{{item.plannedTime}}" class="stop-time">{{item.plannedTime}}</text>
                   <text class="stop-name">{{item.name}}</text>
                   <text wx:if="{{item.latitude == null}}" class="stop-nogeo">未定位</text>
@@ -173,11 +194,40 @@
         </view>
       </view>
 
+      <!-- 按天总览 -->
+      <view wx:if="{{multiDay}}" class="block rise d4">
+        <view class="sec">
+          <text class="sec-zh">按天行程</text>
+          <text class="sec-en">Day by Day · {{dayGroups.length}} 天</text>
+        </view>
+        <view wx:for="{{dayGroups}}" wx:key="day" class="day-grp">
+          <view class="day-grp-head">
+            <text class="day-grp-no serif">DAY {{item.day}}</text>
+            <text class="day-grp-cnt">{{item.stops.length}} 站</text>
+          </view>
+          <view wx:for="{{item.stops}}" wx:for-item="st" wx:key="id" class="day-stop {{st.latitude != null ? 'pressable' : ''}}" hover-class="{{st.latitude != null ? 'pressed' : ''}}" data-id="{{st.id}}" bindtap="{{st.latitude != null ? 'openStopLocation' : ''}}">
+            <text class="day-stop-no serif">{{st.no}}</text>
+            <view class="day-stop-mid">
+              <text class="day-stop-name">{{st.name}}</text>
+              <text wx:if="{{st.plannedTime}}" class="day-stop-time">{{st.plannedTime}}</text>
+            </view>
+            <text wx:if="{{st.latitude != null}}" class="day-stop-go">›</text>
+          </view>
+        </view>
+      </view>
+
       <!-- 记账 · 预算花费 -->
       <view wx:if="{{openid}}" class="block rise d4">
         <view class="sec">
           <text class="sec-zh">花费记账</text>
           <text class="sec-en">Budget · ¥{{expenseTotal}}</text>
+        </view>
+        <view wx:if="{{budgetBars.length}}" class="bud-sum">
+          <view wx:for="{{budgetBars}}" wx:key="key" class="bud-row">
+            <text class="bud-cat">{{item.name}}</text>
+            <view class="bud-track"><view class="bud-fill" style="width:{{item.pct}}%"></view></view>
+            <text class="bud-val serif">¥{{item.value}}</text>
+          </view>
         </view>
         <view wx:if="{{!expenses.length}}" class="empty sm">
           <view class="empty-zh">还没有记账</view>
@@ -283,8 +333,16 @@
     <input class="field-input" value="{{stopEditor.name}}" placeholder="如：西湖 · 断桥" data-field="name" bindinput="onStopField" />
   </view>
   <view class="field">
+    <text class="field-label">第几天</text>
+    <view class="day-step">
+      <view class="day-step-btn" hover-class="pressed" data-d="-1" catchtap="stopDayDelta">−</view>
+      <text class="day-step-val serif">第 {{stopEditor.day}} 天</text>
+      <view class="day-step-btn" hover-class="pressed" data-d="1" catchtap="stopDayDelta">＋</view>
+    </view>
+  </view>
+  <view class="field">
     <text class="field-label">时间</text>
-    <input class="field-input" value="{{stopEditor.plannedTime}}" placeholder="如：第一天 09:00（可选）" data-field="plannedTime" bindinput="onStopField" />
+    <input class="field-input" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选）" data-field="plannedTime" bindinput="onStopField" />
   </view>
   <view class="field">
     <text class="field-label">地址</text>
