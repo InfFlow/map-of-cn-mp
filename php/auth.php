@@ -79,7 +79,7 @@ try {
     );
     $stmt->execute([':o' => $openid, ':n' => $nickname, ':a' => $avatar]);
 
-    $row = $pdo->prepare('SELECT openid, nickname, avatar_url FROM app_users WHERE openid = ?');
+    $row = $pdo->prepare('SELECT openid, nickname, avatar_url, is_admin FROM app_users WHERE openid = ?');
     $row->execute([$openid]);
     $user = $row->fetch();
 
@@ -87,6 +87,7 @@ try {
         'openid' => $user['openid'],
         'nickname' => $user['nickname'],
         'avatarUrl' => $user['avatar_url'],
+        'isAdmin' => (int) ($user['is_admin'] ?? 0) === 1,
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 } catch (Throwable $e) {
     http_response_code(500);

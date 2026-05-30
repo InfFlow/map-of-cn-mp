@@ -28,4 +28,26 @@ module.exports = {
   createOrder: (data) => request('/order.php', { method: 'POST', data }),
   // 我的订单：openid -> { orders: [...] }
   getMyOrders: (openid) => request(`/order.php?openid=${encodeURIComponent(openid)}`),
+  // 小程序内管理接口：{ action, openid, ... } -> 结果。action 见 admin_api.php
+  admin: (data) => request('/admin_api.php', { method: 'POST', data }),
+  // 上传菜品图片（multipart）：(filePath, openid) -> { imageUrl }
+  uploadDishImage: (filePath, openid) =>
+    new Promise((resolve, reject) => {
+      wx.uploadFile({
+        url: `${getApp().globalData.apiBase}/admin_api.php`,
+        filePath,
+        name: 'image',
+        formData: { action: 'upload_image', openid },
+        success: (res) => {
+          try {
+            const data = JSON.parse(res.data)
+            if (data && data.imageUrl) resolve(data)
+            else reject(data)
+          } catch (e) {
+            reject(e)
+          }
+        },
+        fail: reject,
+      })
+    }),
 }

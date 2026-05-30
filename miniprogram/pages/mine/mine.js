@@ -22,7 +22,59 @@ Page({
   onShow() {
     const user = app.getUser()
     this.setData({ user, monogram: this.monogram(user), nickInput: (user && user.nickname) || '' })
-    if (user && user.openid) this.loadOrders()
+    if (user && user.openid) {
+      this.loadOrders()
+      this.refreshAdmin()
+    }
+  },
+
+  // 刷新管理员状态（老登录态可能没有 isAdmin 字段）
+  async refreshAdmin() {
+    const user = this.data.user
+    if (!user || !user.openid) return
+    try {
+      const { isAdmin } = await api.admin({ action: 'check_admin', openid: user.openid })
+      if (!!isAdmin !== !!user.isAdmin) {
+        const next = { ...user, isAdmin: !!isAdmin }
+        app.globalData.user = next
+        wx.setStorageSync('user', next)
+        this.setData({ user: next })
+      }
+    } catch (e) {}
+  },
+
+  openAdmin() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/admin/admin' })
+  },
+
+  claimAdmin() {
+    const user = this.data.user
+    if (!user || !user.openid) return
+    wx.showModal({
+      title: '管理员认领',
+      editable: true,
+      placeholderText: '输入管理员口令',
+      success: async (r) => {
+        if (!r.confirm) return
+        const passcode = (r.content || '').trim()
+        if (!passcode) return
+        wx.showLoading({ title: '校验中', mask: true })
+        try {
+          await api.admin({ action: 'claim_admin', openid: user.openid, passcode })
+          const next = { ...user, isAdmin: true }
+          app.globalData.user = next
+          wx.setStorageSync('user', next)
+          this.setData({ user: next })
+          wx.hideLoading()
+          wx.showToast({ title: '已认领', icon: 'success' })
+          setTimeout(() => wx.navigateTo({ url: '/pages/admin/admin' }), 500)
+        } catch (e) {
+          wx.hideLoading()
+          wx.showToast({ title: (e && e.data && e.data.message) || '口令不正确', icon: 'none' })
+        }
+      },
+    })
   },
 
   onPullDownRefresh() {

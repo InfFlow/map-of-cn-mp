@@ -5,7 +5,8 @@
     "pages/detail/detail",
     "pages/menu/menu",
     "pages/order/order",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/admin/admin"
   ],
   "window": {
     "navigationBarBackgroundColor": "#f4f1ea",
