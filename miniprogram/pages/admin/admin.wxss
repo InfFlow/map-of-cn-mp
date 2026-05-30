@@ -488,12 +488,25 @@
 }
 .geo-in {
   flex: 1;
+  min-width: 0;
 }
 .geo-btn {
   flex: none;
   white-space: nowrap;
   padding: 18rpx 22rpx;
   font-size: 24rpx;
+  border: 1rpx solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+.geo-btn-wide {
+  margin-top: 14rpx;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 26rpx;
+  letter-spacing: 1rpx;
   border: 1rpx solid var(--ink);
   background: var(--ink);
   color: var(--bg);
@@ -548,4 +561,16 @@
   border: 1rpx dashed var(--line);
   font-size: 24rpx;
   color: var(--ink-2);
+}
+.photo-pending {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 4rpx 0;
+  font-size: 20rpx;
+  background: rgba(27, 23, 18, 0.72);
+  color: var(--bg);
 }

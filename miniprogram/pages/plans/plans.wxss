@@ -138,6 +138,7 @@
 }
 .plan-acts {
   display: flex;
+  flex-wrap: wrap;
   gap: 16rpx;
   margin-top: 24rpx;
 }
@@ -519,6 +520,7 @@
 /* 行程分享 / 导出 */
 .plan-share {
   display: flex;
+  flex-wrap: wrap;
   gap: 14rpx;
   margin-top: 14rpx;
 }
