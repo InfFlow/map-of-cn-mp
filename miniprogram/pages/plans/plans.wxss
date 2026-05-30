@@ -455,13 +455,14 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  /* 抬到自定义 tabBar（高 98rpx + 1rpx 边框 + 安全区）之上，避免底部「取消/保存」被遮挡 */
+  bottom: calc(100rpx + env(safe-area-inset-bottom));
   z-index: 1101;
   background: var(--bg);
-  padding: 34rpx 44rpx calc(48rpx + env(safe-area-inset-bottom));
+  padding: 34rpx 44rpx 28rpx;
   border-top-left-radius: 18rpx;
   border-top-right-radius: 18rpx;
-  max-height: 88vh;
+  max-height: 82vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   transform: translateY(110%);
