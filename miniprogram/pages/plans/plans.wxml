@@ -289,10 +289,11 @@
 <view wx:if="{{planEditor.show}}" class="mask" catchtap="closePlanEditor"></view>
 <view class="sheet {{planEditor.show ? 'show' : ''}}" catchtouchmove="true">
   <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closePlanEditor">✕</view>
   <view class="sheet-title">{{planEditor.mode === 'add' ? '新建计划' : '编辑计划'}}</view>
   <view class="field">
     <text class="field-label">计划标题</text>
-    <input class="field-input" value="{{planEditor.title}}" placeholder="如：杭州三日" bindinput="onPlanTitle" />
+    <input class="field-input" value="{{planEditor.title}}" placeholder="如：杭州三日" placeholder-class="field-ph" bindinput="onPlanTitle" />
   </view>
   <view class="field">
     <text class="field-label">出发日期</text>
@@ -302,7 +303,7 @@
   </view>
   <view class="field">
     <text class="field-label">备注</text>
-    <textarea class="field-area" value="{{planEditor.note}}" placeholder="这趟行程的主题、预算、注意事项…" bindinput="onPlanNote" auto-height />
+    <textarea class="field-area" value="{{planEditor.note}}" placeholder="这趟行程的主题、预算、注意事项…" placeholder-class="field-ph" bindinput="onPlanNote" auto-height />
   </view>
   <view class="field">
     <text class="field-label">封面色调</text>
@@ -327,10 +328,11 @@
 <view wx:if="{{stopEditor.show}}" class="mask" catchtap="closeStopEditor"></view>
 <view class="sheet {{stopEditor.show ? 'show' : ''}}" catchtouchmove="true">
   <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeStopEditor">✕</view>
   <view class="sheet-title">{{stopEditor.mode === 'add' ? '添加目的地' : '编辑目的地'}}</view>
   <view class="field">
     <text class="field-label">地点名称</text>
-    <input class="field-input" value="{{stopEditor.name}}" placeholder="如：西湖 · 断桥" data-field="name" bindinput="onStopField" />
+    <input class="field-input" value="{{stopEditor.name}}" placeholder="如：西湖 · 断桥" placeholder-class="field-ph" data-field="name" bindinput="onStopField" />
   </view>
   <view class="field">
     <text class="field-label">第几天</text>
@@ -342,12 +344,12 @@
   </view>
   <view class="field">
     <text class="field-label">时间</text>
-    <input class="field-input" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选）" data-field="plannedTime" bindinput="onStopField" />
+    <input class="field-input" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选）" placeholder-class="field-ph" data-field="plannedTime" bindinput="onStopField" />
   </view>
   <view class="field">
     <text class="field-label">地址</text>
     <view class="field-row">
-      <input class="field-input grow" value="{{stopEditor.address}}" placeholder="详细地址，用于定位" data-field="address" bindinput="onStopField" />
+      <input class="field-input grow" value="{{stopEditor.address}}" placeholder="详细地址，用于定位" placeholder-class="field-ph" data-field="address" bindinput="onStopField" />
       <view class="geo-btn {{stopEditor.geoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeStop">{{stopEditor.geoLoading ? '定位中' : '定位'}}</view>
     </view>
     <text wx:if="{{stopEditor.latitude}}" class="geo-hint">坐标 {{stopEditor.longitude}}, {{stopEditor.latitude}}</text>
@@ -355,7 +357,7 @@
   </view>
   <view class="field">
     <text class="field-label">备注</text>
-    <textarea class="field-area" value="{{stopEditor.note}}" placeholder="想做的事、门票、tips…" data-field="note" bindinput="onStopField" auto-height />
+    <textarea class="field-area" value="{{stopEditor.note}}" placeholder="想做的事、门票、tips…" placeholder-class="field-ph" data-field="note" bindinput="onStopField" auto-height />
   </view>
   <view class="sheet-acts">
     <view class="btn ghost" hover-class="pressed" catchtap="closeStopEditor">取消</view>
