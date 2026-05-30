@@ -127,6 +127,25 @@ Page({
     this.setData({ nickInput: e.detail.value })
   },
 
+  // 微信「头像昵称填写」：选好头像后上传到服务器换永久 URL，再写入登录态
+  async onChooseAvatar(e) {
+    const tempUrl = e.detail && e.detail.avatarUrl
+    const user = this.data.user
+    if (!tempUrl || !user || !user.openid) return
+    wx.showLoading({ title: '上传中', mask: true })
+    try {
+      const { imageUrl } = await api.uploadImage(tempUrl, user.openid)
+      const next = await app.login({ avatarUrl: imageUrl })
+      this.setData({ user: next, monogram: this.monogram(next) })
+      wx.hideLoading()
+      wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+      wx.showToast({ title: '已更新头像', icon: 'success' })
+    } catch (err) {
+      wx.hideLoading()
+      wx.showToast({ title: '头像更新失败', icon: 'none' })
+    }
+  },
+
   async saveName() {
     const name = (this.data.nickInput || '').trim()
     if (!name || this.data.savingName) return

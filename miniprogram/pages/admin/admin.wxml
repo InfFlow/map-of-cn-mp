@@ -296,7 +296,8 @@
             <input class="fld" value="{{journeyEditor.latitude}}" placeholder="纬度" placeholder-class="ph" data-f="latitude" bindinput="onJourneyField" />
           </view>
         </view>
-        <view class="geo-btn-wide pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '填城市/地标后，一键高德定位'}}</view>
+        <view class="geo-btn-wide pressable" hover-class="pressed" bindtap="locateJourneyHere">{{journeyEditor.locating ? '定位中…' : '＋ 用我当前位置自动填坐标'}}</view>
+        <view class="geo-btn-wide alt pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '或：填城市/地标后高德定位'}}</view>
 
         <view class="fl">标签（逗号分隔）</view>
         <input class="fld" value="{{journeyEditor.tagsText}}" placeholder="如 西湖，断桥，龙井" placeholder-class="ph" data-f="tagsText" bindinput="onJourneyField" />
@@ -305,7 +306,7 @@
         <textarea class="fld area" value="{{journeyEditor.notesText}}" placeholder="每行一条手记" placeholder-class="ph" data-f="notesText" bindinput="onJourneyField" auto-height />
 
         <view class="fl">打卡照片墙</view>
-        <view wx:if="{{!journeyEditor.id}}" class="photo-hint">现在选好的照片，保存这段足迹时会自动上传</view>
+        <view wx:if="{{!journeyEditor.id}}" class="photo-hint">可一次选多张，保存这段足迹时会自动上传</view>
         <view class="photo-grid">
           <view wx:for="{{journeyEditor.photos}}" wx:key="id" class="photo-cell">
             <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill" />

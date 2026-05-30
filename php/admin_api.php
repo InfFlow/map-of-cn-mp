@@ -163,7 +163,7 @@ try {
         'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
         'expenses', 'add_expense', 'del_expense',
         'add_journey_photo', 'del_journey_photo',
-        'geo', 'ai_recommend', 'upload_image',
+        'geo', 'regeo', 'ai_recommend', 'upload_image',
         /* 菜单后台：菜品 / 分类 / 订单 —— 情侣双方都可编辑 */
         'overview', 'orders', 'set_order_status',
         'add_category', 'update_category', 'toggle_category', 'del_category', 'reorder_categories',
@@ -775,6 +775,37 @@ try {
                 'province' => $g['province'] ?? '',
                 'city' => is_string($g['city'] ?? '') ? $g['city'] : '',
                 'formatted' => $g['formatted_address'] ?? $address,
+            ]);
+        }
+
+        /* ============ 高德逆地理编码（当前定位经纬度 → 省/市，足迹「定位当前位置」） ============ */
+        case 'regeo': {
+            $key = (string) ($config['amap_key'] ?? '');
+            if ($key === '') {
+                fail('未配置高德 key', 503);
+            }
+            $lng = isset($body['longitude']) ? (float) $body['longitude'] : 0.0;
+            $lat = isset($body['latitude']) ? (float) $body['latitude'] : 0.0;
+            if ($lng === 0.0 || $lat === 0.0) {
+                fail('缺少经纬度');
+            }
+            $res = amap_get('geocode/regeo', ['location' => $lng . ',' . $lat, 'extensions' => 'base'], $key);
+            if (!$res || ($res['status'] ?? '0') !== '1' || empty($res['regeocode'])) {
+                fail('未找到该位置', 404);
+            }
+            $comp = $res['regeocode']['addressComponent'] ?? [];
+            $province = is_string($comp['province'] ?? '') ? $comp['province'] : '';
+            // 直辖市的 city 为空数组，退回到 district（如 北京市→朝阳区）
+            $city = (isset($comp['city']) && is_string($comp['city']) && $comp['city'] !== '')
+                ? $comp['city']
+                : (is_string($comp['district'] ?? '') ? $comp['district'] : '');
+            out([
+                'ok' => true,
+                'longitude' => $lng,
+                'latitude' => $lat,
+                'province' => $province,
+                'city' => $city,
+                'formatted' => (string) ($res['regeocode']['formatted_address'] ?? ''),
             ]);
         }
 

@@ -403,47 +403,84 @@ Page({
         photos: src ? (src.photos || []) : [],
         pendingPhotos: [],
         geoLoading: false,
+        locating: false,
         uploading: false,
+      },
+    })
+  },
+  // 用设备当前定位一键填坐标，并尝试逆地理编码补全省/市
+  locateJourneyHere() {
+    if (this.data.journeyEditor.locating) return
+    this.setData({ ['journeyEditor.locating']: true })
+    wx.getLocation({
+      type: 'gcj02',
+      success: async (r) => {
+        const patch = {
+          ['journeyEditor.longitude']: String(r.longitude),
+          ['journeyEditor.latitude']: String(r.latitude),
+        }
+        try {
+          const g = await api.admin({ action: 'regeo', openid: this.data.openid, longitude: r.longitude, latitude: r.latitude })
+          if (g && g.province && !this.data.journeyEditor.province) patch['journeyEditor.province'] = g.province
+          if (g && g.city && !this.data.journeyEditor.city) patch['journeyEditor.city'] = g.city
+        } catch (e) {
+          /* 未部署 regeo 或失败：坐标已填，省/市保持手填 */
+        }
+        patch['journeyEditor.locating'] = false
+        this.setData(patch)
+        wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+        wx.showToast({ title: '已用当前位置', icon: 'success' })
+      },
+      fail: () => {
+        this.setData({ ['journeyEditor.locating']: false })
+        wx.showToast({ title: '定位失败，请允许定位权限', icon: 'none' })
       },
     })
   },
   async chooseJourneyPhoto() {
     const ed = this.data.journeyEditor
-    // 新足迹（尚未保存）：先暂存本地预览，保存时一并上传
+    // 新足迹（尚未保存）：一次可多选，先暂存本地预览，保存时一并上传
     if (!ed.id) {
       wx.chooseMedia({
-        count: 1,
+        count: 9,
         mediaType: ['image'],
         sizeType: ['compressed'],
         success: (res) => {
-          const file = res.tempFiles[0]
-          if (!file) return
-          const pending = (this.data.journeyEditor.pendingPhotos || []).concat([file.tempFilePath])
+          const paths = (res.tempFiles || []).map((f) => f.tempFilePath).filter(Boolean)
+          if (!paths.length) return
+          const pending = (this.data.journeyEditor.pendingPhotos || []).concat(paths)
           this.setData({ ['journeyEditor.pendingPhotos']: pending })
         },
       })
       return
     }
     wx.chooseMedia({
-      count: 1,
+      count: 9,
       mediaType: ['image'],
       sizeType: ['compressed'],
       success: async (res) => {
-        const file = res.tempFiles[0]
-        if (!file) return
+        const paths = (res.tempFiles || []).map((f) => f.tempFilePath).filter(Boolean)
+        if (!paths.length) return
         this.setData({ ['journeyEditor.uploading']: true })
-        wx.showLoading({ title: '上传中', mask: true })
+        let done = 0
+        wx.showLoading({ title: `上传 0/${paths.length}`, mask: true })
+        for (const fp of paths) {
+          try {
+            await this.uploadOneJourneyPhoto(fp, ed)
+          } catch (e) {
+            /* 单张失败不阻塞其余 */
+          }
+          done += 1
+          wx.showLoading({ title: `上传 ${done}/${paths.length}`, mask: true })
+        }
         try {
-          await this.uploadOneJourneyPhoto(file.tempFilePath, ed)
           await this.loadJourneys()
           const fresh = this.data.journeys.find((x) => x.id === ed.id)
           this.setData({ ['journeyEditor.photos']: fresh ? fresh.photos || [] : [], ['journeyEditor.uploading']: false })
-          wx.hideLoading()
         } catch (e) {
           this.setData({ ['journeyEditor.uploading']: false })
-          wx.hideLoading()
-          wx.showToast({ title: '上传失败', icon: 'none' })
         }
+        wx.hideLoading()
       },
     })
   },
