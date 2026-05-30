@@ -38,6 +38,15 @@
   color: var(--ink-2);
   font-size: 25rpx;
 }
+.year-recap {
+  margin-top: 12rpx;
+  display: inline-block;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink);
+  padding: 6rpx 16rpx;
+  border: 1rpx solid var(--ink);
+}
 
 .add-row {
   margin-bottom: 34rpx;
@@ -103,6 +112,13 @@
   color: var(--ink-2);
   margin-top: 10rpx;
   line-height: 1.55;
+}
+.wish-done-date {
+  margin-top: 10rpx;
+  font-size: 21rpx;
+  letter-spacing: 1rpx;
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
 }
 .wish-del {
   flex: none;
