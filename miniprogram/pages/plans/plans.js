@@ -42,6 +42,18 @@ Page({
     areaH: 0,
     dragId: 0,
 
+    // 地图可视化
+    mapMarkers: [],
+    mapPolyline: [],
+    mapInclude: [],
+    mapCenter: { latitude: 34.5, longitude: 110 },
+    geoStopCount: 0,
+    // 按天分组
+    multiDay: false,
+    dayGroups: [],
+    // 预算汇总（按分类）
+    budgetBars: [],
+
     legs: {}, // `${fromId}_${toId}` -> { loading, open, recommend, opt, steps }
 
     expCats: EXP_CATS,
@@ -52,7 +64,7 @@ Page({
     planEditor: { show: false, mode: 'add', id: '', title: '', toneIndex: 0, coverTone: TONE_LIST[0], planDate: '', note: '' },
     stopEditor: {
       show: false, mode: 'add', id: 0, planId: '',
-      name: '', address: '', plannedTime: '', note: '',
+      name: '', address: '', plannedTime: '', note: '', day: 1,
       latitude: '', longitude: '', geoLoading: false,
     },
   },
@@ -128,28 +140,97 @@ Page({
   applyActive() {
     const plan = this.data.plans[this.data.activeIndex] || null
     if (!plan) {
-      this.setData({ active: null, areaH: 0 })
+      this.setData({
+        active: null, areaH: 0,
+        mapMarkers: [], mapPolyline: [], mapInclude: [], geoStopCount: 0,
+        multiDay: false, dayGroups: [], budgetBars: [],
+      })
       return
     }
-    const stops = plan.stops.map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0'), _y: i * this.data.rowH }))
+    const dayVals = plan.stops.map((s) => Number(s.day) || 1)
+    const multiDay = dayVals.length > 0 && Math.max(...dayVals) > 1
+    const stops = plan.stops.map((s, i) => {
+      const day = Number(s.day) || 1
+      return {
+        ...s,
+        no: String(i + 1).padStart(2, '0'),
+        _y: i * this.data.rowH,
+        day,
+        dayTag: multiDay ? 'D' + day : '',
+      }
+    })
     const active = { ...plan, stops }
-    this.setData({ active, areaH: stops.length * this.data.rowH })
+
+    // 地图：编号标记 + 按顺序连成墨色虚线路线
+    const geo = stops.filter((s) => s.latitude != null && s.longitude != null)
+    const mapMarkers = geo.map((s) => ({
+      id: s.id,
+      latitude: s.latitude,
+      longitude: s.longitude,
+      iconPath: '/assets/pin.png',
+      width: 26,
+      height: 32,
+      anchor: { x: 0.5, y: 1 },
+      label: {
+        content: s.no,
+        color: '#1b1712', fontSize: 10,
+        anchorX: -8, anchorY: -34,
+        bgColor: '#faf8f3', borderColor: '#1b1712', borderWidth: 1, borderRadius: 8, padding: 3,
+      },
+      callout: {
+        content: `${s.no} · ${s.name}`,
+        color: '#1f1d1b', fontSize: 12, borderRadius: 10, borderWidth: 1,
+        borderColor: '#00000014', padding: 8, bgColor: '#ffffff', display: 'BYCLICK',
+      },
+    }))
+    const mapPolyline = geo.length > 1
+      ? [{ points: geo.map((s) => ({ latitude: s.latitude, longitude: s.longitude })), color: '#1b1712B3', width: 2, dottedLine: true, arrowLine: true }]
+      : []
+    const mapInclude = geo.map((s) => ({ latitude: s.latitude, longitude: s.longitude }))
+    const mapCenter = geo.length ? { latitude: geo[0].latitude, longitude: geo[0].longitude } : this.data.mapCenter
+
+    // 按天分组
+    const dayMap = {}
+    stops.forEach((s) => { (dayMap[s.day] = dayMap[s.day] || []).push(s) })
+    const dayGroups = Object.keys(dayMap)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .map((d) => ({ day: d, label: '第 ' + d + ' 天', stops: dayMap[d] }))
+
+    this.setData({
+      active, areaH: stops.length * this.data.rowH,
+      mapMarkers, mapPolyline, mapInclude, mapCenter, geoStopCount: geo.length,
+      multiDay, dayGroups,
+    })
     this.loadExpenses()
+  },
+
+  openStopLocation(e) {
+    const id = e.currentTarget.dataset.id
+    const s = (this.data.active && this.data.active.stops || []).find((x) => x.id === id)
+    if (!s || s.latitude == null || s.longitude == null) return
+    wx.openLocation({ latitude: Number(s.latitude), longitude: Number(s.longitude), name: s.name, address: s.address || '', scale: 16 })
   },
 
   /* ---------------- 记账 ---------------- */
   async loadExpenses() {
     const p = this.data.active
     if (!p || !this.data.openid) {
-      this.setData({ expenses: [], expenseTotal: 0 })
+      this.setData({ expenses: [], expenseTotal: 0, budgetBars: [] })
       return
     }
     try {
       const r = await api.admin({ action: 'expenses', openid: this.data.openid, planId: p.id })
       const expenses = (r.expenses || []).map((e) => ({ ...e, catName: EXP_CAT_LABEL[e.category] || '其他' }))
-      this.setData({ expenses, expenseTotal: r.total || 0 })
+      const catSum = {}
+      expenses.forEach((e) => { catSum[e.category] = (catSum[e.category] || 0) + Number(e.amount || 0) })
+      const max = Math.max(1, ...EXP_CATS.map((c) => catSum[c.key] || 0))
+      const budgetBars = EXP_CATS
+        .map((c) => ({ key: c.key, name: c.name, value: Math.round((catSum[c.key] || 0) * 100) / 100, pct: Math.round(((catSum[c.key] || 0) / max) * 100) }))
+        .filter((b) => b.value > 0)
+      this.setData({ expenses, expenseTotal: r.total || 0, budgetBars })
     } catch (e) {
-      this.setData({ expenses: [], expenseTotal: 0 })
+      this.setData({ expenses: [], expenseTotal: 0, budgetBars: [] })
     }
   },
 
@@ -318,7 +399,7 @@ Page({
     const p = this.data.active
     if (!p) return
     this.setData({
-      stopEditor: { show: true, mode: 'add', id: 0, planId: p.id, name: '', address: '', plannedTime: '', note: '', latitude: '', longitude: '', geoLoading: false },
+      stopEditor: { show: true, mode: 'add', id: 0, planId: p.id, name: '', address: '', plannedTime: '', note: '', day: 1, latitude: '', longitude: '', geoLoading: false },
     })
   },
   openStopEdit(e) {
@@ -328,7 +409,7 @@ Page({
     this.setData({
       stopEditor: {
         show: true, mode: 'edit', id: s.id, planId: this.data.active.id,
-        name: s.name || '', address: s.address || '', plannedTime: s.plannedTime || '', note: s.note || '',
+        name: s.name || '', address: s.address || '', plannedTime: s.plannedTime || '', note: s.note || '', day: Number(s.day) || 1,
         latitude: s.latitude == null ? '' : String(s.latitude), longitude: s.longitude == null ? '' : String(s.longitude),
         geoLoading: false,
       },
@@ -340,6 +421,11 @@ Page({
   onStopField(e) {
     const k = e.currentTarget.dataset.field
     this.setData({ [`stopEditor.${k}`]: e.detail.value })
+  },
+  stopDayDelta(e) {
+    const d = Number(e.currentTarget.dataset.d) || 0
+    const cur = Number(this.data.stopEditor.day) || 1
+    this.setData({ 'stopEditor.day': Math.max(1, Math.min(60, cur + d)) })
   },
   async geocodeStop() {
     const ed = this.data.stopEditor
@@ -382,6 +468,7 @@ Page({
       address: ed.address || '',
       plannedTime: ed.plannedTime || '',
       note: ed.note || '',
+      day: Number(ed.day) || 1,
       latitude: ed.latitude || '',
       longitude: ed.longitude || '',
     }
