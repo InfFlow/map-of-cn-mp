@@ -61,7 +61,10 @@
     </view>
 
     <view wx:else class="empty">
-      还没有照片。去「编辑我们的回忆 › 足迹」给某座城上传几张吧。
+      <view class="empty-fig empty-fig-album"></view>
+      <view class="empty-zh">还没有照片</view>
+      <view class="empty-en">No photos yet</view>
+      <view class="empty-hint">去「编辑我们的回忆 › 足迹」给某座城上传几张吧</view>
     </view>
 
     <view class="foot rise d4">

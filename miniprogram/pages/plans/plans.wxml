@@ -10,6 +10,7 @@
   <view class="hero rise d1">
     <view class="kicker">出发之前</view>
     <view class="h1 display">我们的<view class="br"></view>旅行计划</view>
+    <view wx:if="{{!loading && plans.length}}" class="hero-sub">共 {{plans.length}} 个计划 · {{totalStops}} 个目的地</view>
   </view>
 
   <!-- 骨架屏 -->
@@ -44,11 +45,7 @@
 
     <!-- 空状态 -->
     <view wx:if="{{!active}}" class="empty">
-      <view class="empty-art">
-        <view class="ea-ring"></view>
-        <view class="ea-diamond"></view>
-        <view class="ea-dot"></view>
-      </view>
+      <view class="empty-fig empty-fig-plans"></view>
       <view class="empty-zh">还没有旅行计划</view>
       <view class="empty-en">No itineraries yet</view>
       <view wx:if="{{canEdit}}" class="btn-line" bindtap="openPlanAdd">＋ 新建一个计划</view>
@@ -136,7 +133,7 @@
               <view class="stop-rail">
                 <text class="stop-no serif">{{item.no}}</text>
               </view>
-              <view class="stop-main" bindtap="openStopEdit" data-id="{{item.id}}">
+              <view class="stop-main pressable" hover-class="pressed" bindtap="openStopEdit" data-id="{{item.id}}">
                 <view class="stop-top">
                   <text wx:if="{{item.dayTag}}" class="stop-day">{{item.dayTag}}</text>
                   <text wx:if="{{item.plannedTime}}" class="stop-time">{{item.plannedTime}}</text>
@@ -169,7 +166,7 @@
           wx:if="{{index < active.stops.length - 1}}"
           class="leg"
         >
-          <view class="leg-head" bindtap="toggleLeg" data-index="{{index}}">
+          <view class="leg-head pressable" hover-class="pressed" bindtap="toggleLeg" data-index="{{index}}">
             <view class="leg-route">
               <text class="leg-a">{{item.name}}</text>
               <text class="leg-arrow">→</text>

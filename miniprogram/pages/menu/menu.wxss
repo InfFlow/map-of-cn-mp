@@ -134,8 +134,9 @@
   line-height: 1.6;
 }
 .badge.rec {
-  background: var(--ink);
-  color: var(--bg);
+  /* 推荐标描边化，与整体线条风统一 */
+  background: transparent;
+  color: var(--ink);
   border-color: var(--ink);
   font-weight: 700;
 }
@@ -146,8 +147,9 @@
   margin-top: 10rpx;
 }
 .dish-price {
-  font-size: 27rpx;
-  color: var(--ink-2);
+  font-size: 30rpx;
+  color: var(--ink);
+  letter-spacing: 1rpx;
   margin-top: 12rpx;
 }
 

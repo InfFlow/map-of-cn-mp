@@ -32,7 +32,8 @@
         <view
           wx:for="{{categories}}"
           wx:key="id"
-          class="catchip {{activeCat === item.id ? 'on' : ''}}"
+          class="catchip pressable {{activeCat === item.id ? 'on' : ''}}"
+          hover-class="pressed"
           bindtap="jumpTo"
           data-cat="{{item.id}}"
         >{{item.name}}</view>

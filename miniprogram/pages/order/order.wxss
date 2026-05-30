@@ -57,8 +57,9 @@
   gap: 22rpx;
 }
 .oitem-price {
-  font-size: 26rpx;
-  color: var(--ink-2);
+  font-size: 28rpx;
+  color: var(--ink);
+  letter-spacing: 1rpx;
   flex: 0 0 auto;
 }
 .oitem-remark {

@@ -153,7 +153,8 @@ Page({
         }
       })
       const activeIndex = Math.min(this.data.activeIndex, Math.max(plans.length - 1, 0))
-      this.setData({ plans, activeIndex, loading: false, ready: true, legs: {} })
+      const totalStops = plans.reduce((n, p) => n + (p.stops ? p.stops.length : 0), 0)
+      this.setData({ plans, activeIndex, totalStops, loading: false, ready: true, legs: {} })
       this.applyActive()
     } catch (e) {
       this.setData({ loading: false, ready: true, error: '加载失败，请检查网络' })

@@ -34,30 +34,42 @@
 
     <view class="block rise d2">
       <view class="admin-entry pressable" hover-class="pressed" bindtap="openAdmin">
-        <view class="ae-mid">
-          <text class="ae-zh serif">编辑我们的回忆</text>
-          <text class="ae-sub">足迹 · 纪念日 · 菜品 · 订单</text>
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-memory"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">编辑我们的回忆</text>
+            <text class="ae-sub">足迹 · 纪念日 · 菜品 · 订单</text>
+          </view>
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
       <view class="admin-entry pressable" hover-class="pressed" bindtap="openWish">
-        <view class="ae-mid">
-          <text class="ae-zh serif">心愿清单</text>
-          <text class="ae-sub">想一起去的地方</text>
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-wish"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">心愿清单</text>
+            <text class="ae-sub">想一起去的地方</text>
+          </view>
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
       <view class="admin-entry pressable" hover-class="pressed" bindtap="openAlbum">
-        <view class="ae-mid">
-          <text class="ae-zh serif">照片相册</text>
-          <text class="ae-sub">我们拍过的每一帧</text>
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-album"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">照片相册</text>
+            <text class="ae-sub">我们拍过的每一帧</text>
+          </view>
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
       <view class="admin-entry pressable" hover-class="pressed" bindtap="openStats">
-        <view class="ae-mid">
-          <text class="ae-zh serif">足迹统计</text>
-          <text class="ae-sub">省 · 城 · 里程 · 消费</text>
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-stats"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">足迹统计</text>
+            <text class="ae-sub">省 · 城 · 里程 · 消费</text>
+          </view>
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
