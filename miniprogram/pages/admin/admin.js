@@ -400,6 +400,7 @@ Page({
         tagsText: src ? (src.tags || []).join('，') : '',
         notesText: src ? (src.notes || []).join('\n') : '',
         photos: src ? (src.photos || []) : [],
+        pendingPhotos: [],
         geoLoading: false,
         uploading: false,
       },
@@ -407,8 +408,19 @@ Page({
   },
   async chooseJourneyPhoto() {
     const ed = this.data.journeyEditor
+    // 新足迹（尚未保存）：先暂存本地预览，保存时一并上传
     if (!ed.id) {
-      wx.showToast({ title: '请先保存这段足迹', icon: 'none' })
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sizeType: ['compressed'],
+        success: (res) => {
+          const file = res.tempFiles[0]
+          if (!file) return
+          const pending = (this.data.journeyEditor.pendingPhotos || []).concat([file.tempFilePath])
+          this.setData({ ['journeyEditor.pendingPhotos']: pending })
+        },
+      })
       return
     }
     wx.chooseMedia({
@@ -421,16 +433,7 @@ Page({
         this.setData({ ['journeyEditor.uploading']: true })
         wx.showLoading({ title: '上传中', mask: true })
         try {
-          const { imageUrl } = await api.uploadDishImage(file.tempFilePath, this.data.openid)
-          await api.admin({
-            action: 'add_journey_photo',
-            openid: this.data.openid,
-            journeyId: ed.id,
-            imageUrl,
-            title: ed.city || '',
-            subtitle: ed.title || '',
-            tone: ed.coverTone || 'tone-ink',
-          })
+          await this.uploadOneJourneyPhoto(file.tempFilePath, ed)
           await this.loadJourneys()
           const fresh = this.data.journeys.find((x) => x.id === ed.id)
           this.setData({ ['journeyEditor.photos']: fresh ? fresh.photos || [] : [], ['journeyEditor.uploading']: false })
@@ -442,6 +445,24 @@ Page({
         }
       },
     })
+  },
+  async uploadOneJourneyPhoto(tempFilePath, ed) {
+    const { imageUrl } = await api.uploadDishImage(tempFilePath, this.data.openid)
+    await api.admin({
+      action: 'add_journey_photo',
+      openid: this.data.openid,
+      journeyId: ed.id,
+      imageUrl,
+      title: ed.city || '',
+      subtitle: ed.title || '',
+      tone: ed.coverTone || 'tone-ink',
+    })
+  },
+  delPendingPhoto(e) {
+    const i = Number(e.currentTarget.dataset.index)
+    const pending = (this.data.journeyEditor.pendingPhotos || []).slice()
+    pending.splice(i, 1)
+    this.setData({ ['journeyEditor.pendingPhotos']: pending })
   },
   delJourneyPhoto(e) {
     const id = e.currentTarget.dataset.id
@@ -521,8 +542,24 @@ Page({
       notes,
     }
     if (ed.id) payload.id = ed.id
-    await this.act(payload, '已保存')
-    this.setData({ ['journeyEditor.show']: false })
+    const res = await this.act(payload, '已保存')
+    const pending = ed.pendingPhotos || []
+    if (!ed.id && res && res.id && pending.length) {
+      wx.showLoading({ title: `上传照片 0/${pending.length}`, mask: true })
+      const newEd = { ...ed, id: res.id }
+      let done = 0
+      for (const fp of pending) {
+        try {
+          await this.uploadOneJourneyPhoto(fp, newEd)
+        } catch (e) {
+          /* 单张失败不阻塞其余 */
+        }
+        done += 1
+        wx.showLoading({ title: `上传照片 ${done}/${pending.length}`, mask: true })
+      }
+      wx.hideLoading()
+    }
+    this.setData({ ['journeyEditor.show']: false, ['journeyEditor.pendingPhotos']: [] })
     await this.loadJourneys()
   },
   async toggleJourney(e) {

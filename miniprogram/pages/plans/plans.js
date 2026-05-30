@@ -70,6 +70,13 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
+    // 登录可能发生在「我的」页，回到本页时同步编辑权限
+    const user = app.getUser()
+    const openid = user && user.openid ? user.openid : ''
+    if (openid && openid !== this.data.openid) {
+      this.setData({ openid, canEdit: true })
+      if (this.data.ready) this.refreshAdminThenLoad()
+    }
   },
 
   onPullDownRefresh() {

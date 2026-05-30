@@ -288,11 +288,15 @@
         </scroll-view>
 
         <view class="fl">坐标（用于地图点亮）</view>
-        <view class="fl-row geo-row">
-          <input class="fld geo-in" value="{{journeyEditor.longitude}}" placeholder="经度" placeholder-class="ph" data-f="longitude" bindinput="onJourneyField" />
-          <input class="fld geo-in" value="{{journeyEditor.latitude}}" placeholder="纬度" placeholder-class="ph" data-f="latitude" bindinput="onJourneyField" />
-          <text class="geo-btn pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '高德定位'}}</text>
+        <view class="fl-row">
+          <view class="fl-col">
+            <input class="fld" value="{{journeyEditor.longitude}}" placeholder="经度" placeholder-class="ph" data-f="longitude" bindinput="onJourneyField" />
+          </view>
+          <view class="fl-col">
+            <input class="fld" value="{{journeyEditor.latitude}}" placeholder="纬度" placeholder-class="ph" data-f="latitude" bindinput="onJourneyField" />
+          </view>
         </view>
+        <view class="geo-btn-wide pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '填城市/地标后，一键高德定位'}}</view>
 
         <view class="fl">标签（逗号分隔）</view>
         <input class="fld" value="{{journeyEditor.tagsText}}" placeholder="如 西湖，断桥，龙井" placeholder-class="ph" data-f="tagsText" bindinput="onJourneyField" />
@@ -301,12 +305,17 @@
         <textarea class="fld area" value="{{journeyEditor.notesText}}" placeholder="每行一条手记" placeholder-class="ph" data-f="notesText" bindinput="onJourneyField" auto-height />
 
         <view class="fl">打卡照片墙</view>
-        <view wx:if="{{!journeyEditor.id}}" class="photo-hint">保存这段足迹后即可添加照片</view>
-        <view wx:else class="photo-grid">
+        <view wx:if="{{!journeyEditor.id}}" class="photo-hint">现在选好的照片，保存这段足迹时会自动上传</view>
+        <view class="photo-grid">
           <view wx:for="{{journeyEditor.photos}}" wx:key="id" class="photo-cell">
             <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill" />
             <view wx:else class="photo-img {{item.tone}}"></view>
             <text class="photo-rm" catchtap="delJourneyPhoto" data-id="{{item.id}}">×</text>
+          </view>
+          <view wx:for="{{journeyEditor.pendingPhotos}}" wx:key="*this" wx:for-index="pi" class="photo-cell">
+            <image class="photo-img" src="{{item}}" mode="aspectFill" />
+            <text class="photo-pending">待上传</text>
+            <text class="photo-rm" catchtap="delPendingPhoto" data-index="{{pi}}">×</text>
           </view>
           <view class="photo-add pressable" hover-class="pressed" bindtap="chooseJourneyPhoto">
             <text>{{journeyEditor.uploading ? '上传中…' : '＋ 照片'}}</text>

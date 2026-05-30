@@ -27,6 +27,7 @@
     <!-- 计划选择条 -->
     <view class="block rise d2">
       <scroll-view scroll-x class="tab-scroll" show-scrollbar="{{false}}" enhanced>
+        <view wx:if="{{canEdit}}" class="ptab add" bindtap="openPlanAdd">＋ 新建计划</view>
         <view
           wx:for="{{plans}}"
           wx:key="id"
@@ -38,7 +39,6 @@
           <text class="ptab-meta">{{item.stops.length}} 站{{item.planDateText ? ' · ' + item.planDateText : ''}}</text>
           <text wx:if="{{!item.visible}}" class="ptab-hidden">隐藏</text>
         </view>
-        <view wx:if="{{canEdit}}" class="ptab add" bindtap="openPlanAdd">＋ 新建计划</view>
       </scroll-view>
     </view>
 
