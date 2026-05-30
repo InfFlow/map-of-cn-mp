@@ -2,58 +2,73 @@
 <view wx:elif="{{error}}" class="empty">{{error}}</view>
 
 <view wx:else class="wrap">
-  <view class="hero" style="background-image: {{trip.coverGrad}};">
-    <image wx:if="{{trip.cover}}" class="hero-img" src="{{trip.cover}}" mode="aspectFill"></image>
-    <view class="hero-shade"></view>
-    <view class="hero-text">
-      <view class="hero-province">{{trip.province}} · {{trip.season}}</view>
-      <view class="hero-city display">{{trip.city}}</view>
-      <view class="hero-date">{{trip.dateText}}</view>
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">{{trip.province}}</text>
+      <text class="mast-vol">{{trip.dateShort}}</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="d-head rise d1">
+    <view class="kicker">{{trip.season}}</view>
+    <view class="d-city display">{{trip.city}}</view>
+    <view class="d-title serif">{{trip.title}}</view>
+  </view>
+
+  <view class="d-cover rise d2" style="background-image: {{trip.coverGrad}};">
+    <image wx:if="{{trip.cover}}" class="d-cover-img" src="{{trip.cover}}" mode="aspectFill"></image>
+  </view>
+
+  <view wx:if="{{trip.intro}}" class="d-lede rise d2">{{trip.intro}}</view>
+
+  <view class="d-facts rise d2">
+    <view wx:if="{{trip.weather}}" class="fact">
+      <text class="fk">天气 / WEATHER</text>
+      <text class="fv">{{trip.weather}}</text>
+    </view>
+    <view wx:if="{{trip.landmark}}" class="fact">
+      <text class="fk">地标 / LANDMARK</text>
+      <text class="fv">{{trip.landmark}}</text>
     </view>
   </view>
 
-  <view class="sheet rise d1">
-    <view class="title">{{trip.title}}</view>
+  <view wx:if="{{trip.tags.length}}" class="d-tags rise d3">
+    <text wx:for="{{trip.tags}}" wx:key="*this" class="chip">#{{item}}</text>
+  </view>
 
-    <view class="meta">
-      <text wx:if="{{trip.weather}}" class="chip">☁ {{trip.weather}}</text>
-      <text wx:if="{{trip.landmark}}" class="chip">📍 {{trip.landmark}}</text>
+  <view wx:if="{{trip.photos.length}}" class="block rise d3">
+    <view class="sec">
+      <text class="sec-zh">那天的画面</text>
+      <text class="sec-en">Frames</text>
     </view>
-
-    <view wx:if="{{trip.intro}}" class="intro">{{trip.intro}}</view>
-
-    <view wx:if="{{trip.tags.length}}" class="tags">
-      <text wx:for="{{trip.tags}}" wx:key="*this" class="chip soft">#{{item}}</text>
-    </view>
-
-    <view wx:if="{{trip.photos.length}}" class="block">
-      <view class="section-title"><view class="dot"></view>那天的画面</view>
-      <view class="photos">
-        <view
-          wx:for="{{trip.photos}}"
-          wx:key="id"
-          class="photo pressable"
-          hover-class="pressed"
-          hover-stay-time="80"
-          style="background-image: {{item.grad}};"
-          bindtap="preview"
-          data-url="{{item.imageUrl}}"
-        >
-          <image wx:if="{{item.imageUrl}}" class="img" src="{{item.imageUrl}}" mode="aspectFill"></image>
-          <view class="photo-shade"></view>
-          <view class="photo-text">
-            <view class="photo-title">{{item.title}}</view>
-            <view wx:if="{{item.subtitle}}" class="photo-sub">{{item.subtitle}}</view>
-          </view>
+    <view class="photos">
+      <view
+        wx:for="{{trip.photos}}"
+        wx:key="id"
+        class="photo-cell"
+        bindtap="preview"
+        data-url="{{item.imageUrl}}"
+      >
+        <view class="photo pressable" hover-class="pressed" hover-stay-time="80" style="background-image: {{item.grad}};">
+          <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
         </view>
+        <view class="photo-cap">{{item.title}}</view>
+        <view wx:if="{{item.subtitle}}" class="photo-sub">{{item.subtitle}}</view>
       </view>
     </view>
+  </view>
 
-    <view wx:if="{{trip.notes.length}}" class="block">
-      <view class="section-title"><view class="dot"></view>手记</view>
-      <view wx:for="{{trip.notes}}" wx:key="*this" class="note">
-        <text class="quote">“</text>{{item}}
-      </view>
+  <view wx:if="{{trip.notes.length}}" class="block rise d4">
+    <view class="sec">
+      <text class="sec-zh">手记</text>
+      <text class="sec-en">Notes</text>
     </view>
+    <view wx:for="{{trip.notes}}" wx:key="*this" class="note serif">{{item}}</view>
+  </view>
+
+  <view class="foot rise d5">
+    <view class="hair"></view>
+    <view class="foot-txt">Map of Us · 我们的地图</view>
   </view>
 </view>

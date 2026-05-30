@@ -1,25 +1,25 @@
 // tone -> 渐变色，照片没图时作占位，也用于卡片配色
-// 低饱和、克制的高级色（去掉糖果粉），整体偏浅
+// 黑白杂志风：极低饱和的灰墨/暖灰单色系，彼此仅有细微冷暖差，整体安静
 const TONES = {
-  'tone-spring': ['#e3e9da', '#bcc8aa'],
-  'tone-sea': ['#d4e0e6', '#a6bcc7'],
-  'tone-water': ['#d6e2e3', '#a8c2c4'],
-  'tone-lake': ['#d7e4da', '#abc4b1'],
-  'tone-island': ['#dae8e2', '#aecbc2'],
-  'tone-city': ['#e0ddE6', '#b6afc4'],
-  'tone-sunset': ['#eedcca', '#d6ad8b'],
-  'tone-warm': ['#eedfc6', '#d7b98c'],
-  'tone-brick': ['#e4cdbf', '#c39c87'],
-  'tone-night': ['#d2d5de', '#9aa0b1'],
-  'tone-rain': ['#d9dde2', '#aab2bc'],
-  'tone-osmanthus': ['#f0e6c8', '#d9c38c'],
-  'tone-paper': ['#ece7db', '#cbc1ab'],
-  'tone-tea': ['#e0e4d2', '#b9c39e'],
+  'tone-spring': ['#dfdcd2', '#b7b2a4'],
+  'tone-sea': ['#d6d8d6', '#aab0b0'],
+  'tone-water': ['#d8d9d6', '#acb0ac'],
+  'tone-lake': ['#dad9d2', '#b1aea2'],
+  'tone-island': ['#d9dad6', '#aeb2ac'],
+  'tone-city': ['#d8d6d8', '#aeacb0'],
+  'tone-sunset': ['#e0d8cd', '#bdb09e'],
+  'tone-warm': ['#e1dacd', '#bdb39c'],
+  'tone-brick': ['#ded4cc', '#b6a99c'],
+  'tone-night': ['#d2d2d6', '#a4a4ab'],
+  'tone-rain': ['#d6d7da', '#a9abae'],
+  'tone-osmanthus': ['#e2dccb', '#bfb597'],
+  'tone-paper': ['#e1dccf', '#bcb39f'],
+  'tone-tea': ['#dcdbcf', '#b4b29c'],
 }
 
 function toneGradient(tone) {
-  const c = TONES[tone] || ['#e6e3dd', '#c4bdb1']
-  return `linear-gradient(135deg, ${c[0]} 0%, ${c[1]} 100%)`
+  const c = TONES[tone] || ['#ddd9cf', '#b4ac9c']
+  return `linear-gradient(150deg, ${c[0]} 0%, ${c[1]} 100%)`
 }
 
 // 把后端 "2024.04.05" 转成 "2024年4月5日"

@@ -98,6 +98,6 @@ function makePin(w, h, fillHex, dotHex) {
 
 const outDir = path.join(__dirname, '..', 'miniprogram', 'assets')
 fs.mkdirSync(outDir, { recursive: true })
-fs.writeFileSync(path.join(outDir, 'pin.png'), makePin(78, 98, '#b65b3c', '#ffffff'))
-fs.writeFileSync(path.join(outDir, 'pin-active.png'), makePin(78, 98, '#9a4a2f', '#ffffff'))
+fs.writeFileSync(path.join(outDir, 'pin.png'), makePin(78, 98, '#1b1712', '#f4f1ea'))
+fs.writeFileSync(path.join(outDir, 'pin-active.png'), makePin(78, 98, '#000000', '#f4f1ea'))
 console.log('pins generated at', outDir)

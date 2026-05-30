@@ -27,6 +27,7 @@ Page({
       const trip = {
         ...j,
         dateText: prettyDate(j.date),
+        dateShort: String(j.date),
         coverGrad: toneGradient(j.coverTone),
         cover: (photos.find((p) => p.imageUrl) || {}).imageUrl || '',
         photos,

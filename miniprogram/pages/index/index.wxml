@@ -1,39 +1,43 @@
 <view class="page">
-  <view class="head rise d1">
-    <view class="kicker">OUR MAP</view>
-    <view class="h1 display">{{title}}</view>
-    <view class="sub">{{subtitle}}</view>
-    <view wx:if="{{days > 0}}" class="together">
-      在一起 <text class="num">{{days}}</text> 天
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">VOL.01</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们走过的中国</view>
+    <view class="h1 display">我们的<view class="br"></view>地图</view>
+    <view class="lede">
+      两个人，一座座点亮的城。<text wx:if="{{days > 0}}">在一起的第 <text class="em serif">{{days}}</text> 天。</text>
     </view>
   </view>
 
-  <view class="stats card rise d2">
+  <view class="stats rise d2">
     <view class="stat">
-      <view class="stat-num display">{{stats.provinceCount}}</view>
-      <view class="stat-label">省份</view>
+      <view class="n display">{{stats.provinceCount}}</view>
+      <view class="l">省份</view>
     </view>
-    <view class="vline"></view>
     <view class="stat">
-      <view class="stat-num display">{{stats.cityCount}}</view>
-      <view class="stat-label">城市</view>
+      <view class="vr"></view>
+      <view class="n display">{{stats.cityCount}}</view>
+      <view class="l">城市</view>
     </view>
-    <view class="vline"></view>
     <view class="stat">
-      <view class="stat-num display">{{stats.journeyCount}}</view>
-      <view class="stat-label">回忆</view>
+      <view class="vr"></view>
+      <view class="n display">{{stats.journeyCount}}</view>
+      <view class="l">回忆</view>
     </view>
   </view>
 
   <view class="block rise d3">
-    <view class="section-title">
-      <view class="dot"></view>足迹地图
-      <view class="legend">
-        <text class="lg"><text class="sw sw-p"></text>省份</text>
-        <text class="lg"><text class="sw sw-c"></text>城市</text>
-      </view>
+    <view class="sec">
+      <text class="sec-zh">足迹地图</text>
+      <text class="sec-en">The Map</text>
     </view>
-    <view class="map-card card">
+    <view class="map-frame">
       <map
         class="map"
         id="map"
@@ -49,30 +53,33 @@
   </view>
 
   <view wx:if="{{recent.length}}" class="block rise d4">
-    <view class="section-title">
-      <view class="dot"></view>最近的回忆
-      <view class="more" bindtap="goTimeline">时间线 ›</view>
+    <view class="sec">
+      <text class="sec-zh">最近的回忆</text>
+      <text class="sec-en" bindtap="goTimeline">Timeline ›</text>
     </view>
-    <scroll-view scroll-x class="recent" show-scrollbar="{{false}}" enhanced>
+    <view class="index-list">
       <view
         wx:for="{{recent}}"
         wx:key="id"
-        class="rcard pressable"
+        class="idx-row pressable"
         hover-class="pressed"
         hover-stay-time="80"
         bindtap="openDetail"
         data-id="{{item.id}}"
       >
-        <view class="rcover" style="background-image: {{item.grad}};">
-          <image wx:if="{{item.cover}}" class="rimg" src="{{item.cover}}" mode="aspectFill"></image>
-          <view class="rcity">{{item.city}}</view>
+        <text class="idx-no serif">{{item.no}}</text>
+        <view class="idx-mid">
+          <view class="idx-city">{{item.city}}<text class="idx-season">{{item.season}}</text></view>
+          <view class="idx-title">{{item.title}}</view>
         </view>
-        <view class="rmeta">
-          <view class="rtitle">{{item.title}}</view>
-          <view class="rdate">{{item.dateText}}</view>
-        </view>
+        <text class="idx-date">{{item.dateShort}}</text>
       </view>
-    </scroll-view>
+    </view>
+  </view>
+
+  <view class="foot rise d5">
+    <view class="hair"></view>
+    <view class="foot-txt">这张地图，跟着我们之后的每一次出发慢慢长大</view>
   </view>
 
   <view wx:if="{{error}}" class="empty">{{error}}</view>

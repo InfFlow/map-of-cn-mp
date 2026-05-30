@@ -5,15 +5,15 @@
     "pages/detail/detail"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#f4f1ec",
+    "navigationBarBackgroundColor": "#f4f1ea",
     "navigationBarTitleText": "Map of Us",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f4f1ec"
+    "backgroundColor": "#f4f1ea"
   },
   "tabBar": {
-    "color": "#948d84",
-    "selectedColor": "#b65b3c",
-    "backgroundColor": "#faf8f4",
+    "color": "#8c8475",
+    "selectedColor": "#1b1712",
+    "backgroundColor": "#faf8f3",
     "borderStyle": "white",
     "list": [
       {

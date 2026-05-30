@@ -3,50 +3,67 @@
   <view wx:elif="{{error}}" class="empty">{{error}}</view>
 
   <block wx:else>
-    <view class="head rise d1">
-      <view class="kicker">TIMELINE</view>
-      <view class="h1 display">我们走过的日子</view>
-      <view class="sub">{{trips.length}} 段旅程 · 按时间回看</view>
+    <view class="mast rise d1">
+      <view class="mast-row">
+        <text class="mast-name">TIMELINE</text>
+        <text class="mast-vol">{{trips.length}} TRIPS</text>
+      </view>
+      <view class="rule"></view>
     </view>
 
-    <view wx:if="{{anniversaries.length}}" class="anni-block rise d2">
-      <view class="section-title"><view class="dot"></view>纪念日</view>
+    <view class="hero rise d1">
+      <view class="kicker">按时间回看</view>
+      <view class="h1 display">我们走过<view class="br"></view>的日子</view>
+    </view>
+
+    <view wx:if="{{anniversaries.length}}" class="block rise d2">
+      <view class="sec">
+        <text class="sec-zh">纪念日</text>
+        <text class="sec-en">Milestones</text>
+      </view>
       <scroll-view scroll-x class="anni-scroll" show-scrollbar="{{false}}" enhanced>
-        <view wx:for="{{anniversaries}}" wx:key="id" class="anni-card">
+        <view wx:for="{{anniversaries}}" wx:key="id" class="anni">
+          <view class="anni-date serif">{{item.dateShort}}</view>
+          <view class="anni-hair"></view>
           <view class="anni-label">{{item.label}}</view>
-          <view class="anni-date">{{item.dateText}}</view>
           <view class="anni-city">{{item.city}}</view>
         </view>
       </scroll-view>
     </view>
 
-    <view class="section-title rise d3"><view class="dot"></view>旅程</view>
-    <view class="timeline">
-      <view
-        wx:for="{{trips}}"
-        wx:key="id"
-        class="item rise d3"
-        bindtap="openDetail"
-        data-id="{{item.id}}"
-      >
-        <view class="rail">
-          <view class="node"></view>
-          <view class="line"></view>
-        </view>
-        <view class="body card pressable" hover-class="pressed" hover-stay-time="80">
-          <view class="cover" style="background-image: {{item.coverGrad}};">
-            <image wx:if="{{item.cover}}" class="cover-img" src="{{item.cover}}" mode="aspectFill"></image>
-            <view class="cover-shade"></view>
-            <view class="cover-top">
-              <text class="season">{{item.season}}</text>
-              <text class="date">{{item.dateText}}</text>
-            </view>
-            <view class="cover-city display">{{item.city}}</view>
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">旅程</text>
+        <text class="sec-en">The Journeys</text>
+      </view>
+
+      <view class="tl">
+        <view
+          wx:for="{{trips}}"
+          wx:key="id"
+          class="tl-item pressable"
+          hover-class="pressed"
+          hover-stay-time="80"
+          bindtap="openDetail"
+          data-id="{{item.id}}"
+        >
+          <view class="tl-rail">
+            <text class="tl-no serif">{{item.no}}</text>
+            <view class="tl-line"></view>
           </view>
-          <view class="content">
-            <view class="title">{{item.title}}</view>
-            <view class="intro">{{item.intro}}</view>
-            <view class="tags">
+          <view class="tl-body">
+            <view class="tl-cover" style="background-image: {{item.coverGrad}};">
+              <image wx:if="{{item.cover}}" class="tl-img" src="{{item.cover}}" mode="aspectFill"></image>
+            </view>
+            <view class="tl-meta">
+              <text class="tl-season">{{item.season}}</text>
+              <text class="tl-dot">·</text>
+              <text class="tl-date">{{item.dateShort}}</text>
+            </view>
+            <view class="tl-city display">{{item.city}}</view>
+            <view class="tl-title">{{item.title}}</view>
+            <view class="tl-intro">{{item.intro}}</view>
+            <view class="tl-tags">
               <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="chip">{{tag}}</text>
             </view>
           </view>
@@ -54,9 +71,9 @@
       </view>
     </view>
 
-    <view class="footer rise d4">
-      <view>这张地图会跟着我们之后的</view>
-      <view>每一次出发，一点一点长大</view>
+    <view class="foot rise d4">
+      <view class="hair"></view>
+      <view class="foot-txt">每一次出发，都会被这张地图记住</view>
     </view>
   </block>
 </view>

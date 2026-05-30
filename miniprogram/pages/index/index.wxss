@@ -1,159 +1,167 @@
 .page {
-  padding: 24rpx 0 70rpx;
+  padding: 24rpx 44rpx 60rpx;
 }
 
-/* 大标题区 */
-.head {
-  padding: 36rpx 40rpx 8rpx;
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
-.kicker {
-  font-size: 21rpx;
+.mast-name {
+  font-size: 22rpx;
+  font-weight: 700;
   letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
   color: var(--muted);
-  margin-bottom: 14rpx;
 }
-.h1 {
-  font-size: 76rpx;
-  line-height: 1.02;
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+/* 英雄区 */
+.hero {
+  padding: 48rpx 0 6rpx;
+}
+.hero .h1 {
+  font-size: 116rpx;
+  line-height: 0.96;
+  margin-top: 20rpx;
+}
+.hero .br {
+  height: 0;
+}
+.lede {
+  font-size: 29rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 30rpx;
+  max-width: 520rpx;
+}
+.lede .em {
+  font-style: italic;
+  font-weight: 700;
   color: var(--ink);
-}
-.sub {
-  font-size: 27rpx;
-  color: var(--ink-2);
-  margin-top: 16rpx;
-}
-.together {
-  margin-top: 22rpx;
-  font-size: 26rpx;
-  color: var(--ink-2);
-}
-.together .num {
-  font-size: 34rpx;
-  font-weight: 800;
-  letter-spacing: -0.5rpx;
-  color: var(--accent);
-  margin: 0 4rpx;
+  font-size: 33rpx;
 }
 
 /* 数据条 */
 .stats {
   display: flex;
-  align-items: center;
-  margin: 30rpx 32rpx 0;
-  padding: 32rpx 16rpx;
+  border-top: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  margin-top: 40rpx;
 }
 .stat {
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 34rpx 0 30rpx;
+  position: relative;
 }
-.stat-num {
-  font-size: 52rpx;
-  color: var(--ink);
+.stat .vr {
+  position: absolute;
+  left: 0;
+  top: 34rpx;
+  bottom: 30rpx;
+  width: 1rpx;
+  background: var(--line);
+}
+.stat .n {
+  font-size: 70rpx;
   line-height: 1;
 }
-.stat-label {
-  font-size: 23rpx;
+.stat .l {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
   color: var(--muted);
   margin-top: 12rpx;
-}
-.vline {
-  width: 1rpx;
-  height: 52rpx;
-  background: var(--hairline);
 }
 
 /* 区块 */
 .block {
-  margin: 48rpx 32rpx 0;
+  margin-top: 60rpx;
 }
-.legend {
-  margin-left: auto;
-  display: flex;
-  gap: 10rpx;
-}
-.lg {
-  display: inline-flex;
-  align-items: center;
-  gap: 8rpx;
-  font-size: 21rpx;
-  font-weight: 500;
-  color: var(--muted);
-}
-.sw {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 4rpx;
-  display: inline-block;
-}
-.sw-p {
-  background: rgba(182, 91, 60, 0.18);
-  border: 1rpx solid var(--accent);
-}
-.sw-c {
-  border-radius: 50%;
-  background: var(--accent);
+.sec-en {
+  /* 可点时给一点点击区域 */
+  padding: 6rpx 0 6rpx 16rpx;
 }
 
-/* 地图 */
-.map-card {
-  padding: 14rpx;
-  overflow: hidden;
+/* 地图：单色描边相框 */
+.map-frame {
+  border: 1rpx solid var(--line);
+  padding: 12rpx;
+  background: var(--paper);
 }
 .map {
   width: 100%;
-  height: 700rpx;
-  border-radius: 18rpx;
+  height: 460rpx;
+  display: block;
 }
 
-/* 最近的回忆横滑 */
-.recent {
-  white-space: nowrap;
-  margin: 0 -8rpx;
+/* 编号式回忆列表 */
+.idx-row {
+  display: flex;
+  align-items: center;
+  gap: 26rpx;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid var(--line);
 }
-.rcard {
-  display: inline-block;
-  width: 280rpx;
-  vertical-align: top;
-  white-space: normal;
-  margin: 0 8rpx;
-  background: var(--surface);
-  border: 1rpx solid var(--hairline);
-  border-radius: 22rpx;
-  overflow: hidden;
-  box-shadow: 0 14rpx 30rpx rgba(31, 29, 27, 0.05);
+.idx-row:last-child {
+  border-bottom: 0;
 }
-.rcover {
-  position: relative;
-  height: 200rpx;
-  background-size: cover;
-  background-position: center;
-}
-.rimg {
-  width: 100%;
-  height: 100%;
-}
-.rcity {
-  position: absolute;
-  left: 22rpx;
-  bottom: 18rpx;
-  color: #fff;
-  font-size: 36rpx;
+.idx-no {
+  font-size: 30rpx;
   font-weight: 700;
-  text-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.35);
+  color: var(--faint);
+  width: 48rpx;
+  flex: 0 0 48rpx;
 }
-.rmeta {
-  padding: 18rpx 22rpx 22rpx;
+.idx-mid {
+  flex: 1;
+  min-width: 0;
 }
-.rtitle {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--ink);
+.idx-city {
+  font-size: 31rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 14rpx;
+}
+.idx-season {
+  font-size: 21rpx;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 2rpx;
+}
+.idx-title {
+  font-size: 25rpx;
+  color: var(--ink-2);
+  margin-top: 6rpx;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
-.rdate {
+.idx-date {
   font-size: 22rpx;
   color: var(--muted);
-  margin-top: 8rpx;
+  letter-spacing: 1rpx;
+  flex: 0 0 auto;
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 64rpx;
+}
+.foot-txt {
+  margin-top: 30rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
 }

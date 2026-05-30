@@ -1,5 +1,4 @@
 const api = require('../../utils/api')
-const { prettyDate, toneGradient } = require('../../utils/util')
 
 const app = getApp()
 
@@ -70,8 +69,8 @@ Page({
       const polygons = polys.map((p) => ({
         points: p.points,
         strokeWidth: 1,
-        strokeColor: '#b65b3cCC',
-        fillColor: '#b65b3c2E',
+        strokeColor: '#1b1712B3',
+        fillColor: '#1b171214',
       }))
 
       const includePoints = markers.map((m) => ({
@@ -82,13 +81,13 @@ Page({
       const recent = [...journeys]
         .sort((a, b) => String(b.date).localeCompare(String(a.date)))
         .slice(0, 6)
-        .map((j) => ({
+        .map((j, i) => ({
           id: j.id,
+          no: String(i + 1).padStart(2, '0'),
           city: j.city,
           title: j.title,
-          dateText: prettyDate(j.date),
-          grad: toneGradient(j.coverTone),
-          cover: (j.photos || []).map((p) => p.imageUrl).find(Boolean) || '',
+          season: j.season,
+          dateShort: String(j.date),
         }))
 
       this._markers = markers
