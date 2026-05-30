@@ -15,6 +15,22 @@
     </view>
   </view>
 
+  <!-- 今日天气 -->
+  <view wx:if="{{weather}}" class="wx-strip rise d1">
+    <view class="wx-l">
+      <text class="wx-temp serif">{{weather.temperature}}°</text>
+      <view class="wx-mid">
+        <text class="wx-cond">{{weather.city}} · {{weather.weather}}</text>
+        <text wx:if="{{weather.dayTemp}}" class="wx-range">{{weather.nightTemp}}° ~ {{weather.dayTemp}}° · 湿度 {{weather.humidity}}%</text>
+        <text wx:else class="wx-range">湿度 {{weather.humidity}}% · {{weather.winddirection}}风 {{weather.windpower}}级</text>
+      </view>
+    </view>
+    <text class="wx-tip">{{weather.tip}}</text>
+  </view>
+  <view wx:elif="{{weatherDenied}}" class="wx-strip wx-off pressable" hover-class="pressed" bindtap="enableWeather">
+    <text class="wx-off-txt">开启定位，看看今天和你在一起的天气 ›</text>
+  </view>
+
   <!-- 骨架屏 -->
   <block wx:if="{{loading}}">
     <view class="stats">
@@ -81,6 +97,60 @@
           <text class="led-no serif">{{item.no}}</text>{{item.city}}
         </view>
       </view>
+    </view>
+
+    <!-- 今天的回忆 -->
+    <view wx:if="{{onThisDay.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">今天的回忆</text>
+        <text class="sec-en">On This Day</text>
+      </view>
+      <view class="otd-list">
+        <view
+          wx:for="{{onThisDay}}"
+          wx:key="dateShort"
+          class="otd {{item.type === 'journey' ? 'pressable' : ''}}"
+          hover-class="{{item.type === 'journey' ? 'pressed' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="{{item.type === 'journey' ? 'openDetail' : ''}}"
+        >
+          <view class="otd-badge serif">{{item.yearsAgo > 0 ? item.yearsAgo + ' 年前' : '今天'}}</view>
+          <view class="otd-mid">
+            <view class="otd-title">{{item.type === 'journey' ? item.city : item.label}}</view>
+            <view class="otd-sub">{{item.type === 'journey' ? item.title : '纪念日'}} · {{item.dateShort}}</view>
+          </view>
+          <text wx:if="{{item.type === 'journey'}}" class="otd-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 纪念日轮播 -->
+    <view wx:if="{{anniv.length}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">纪念日</text>
+        <text class="sec-en">Anniversaries · {{anniv.length}}</text>
+      </view>
+      <swiper
+        class="anniv-swiper"
+        autoplay="{{true}}"
+        interval="4200"
+        circular="{{anniv.length > 1}}"
+        display-multiple-items="1"
+        previous-margin="0rpx"
+        next-margin="120rpx"
+      >
+        <swiper-item wx:for="{{anniv}}" wx:key="dateShort" class="anniv-item">
+          <view class="anniv-card {{item.countKind === 'today' ? 'today' : ''}}">
+            <view class="anniv-top">
+              <text class="anniv-kicker">{{item.countKind === 'countup' ? 'SINCE' : item.countKind === 'today' ? 'TODAY' : 'COUNTDOWN'}}</text>
+              <text wx:if="{{item.countSub}}" class="anniv-sub">{{item.countSub}}</text>
+            </view>
+            <view class="anniv-count serif">{{item.countText}}</view>
+            <view class="anniv-label">{{item.label}}</view>
+            <view class="anniv-date">{{item.dateShort}}</view>
+          </view>
+        </swiper-item>
+      </swiper>
     </view>
 
     <view wx:if="{{badges.length}}" class="block rise d4">
