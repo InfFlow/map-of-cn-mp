@@ -229,3 +229,21 @@
   color: var(--muted);
   letter-spacing: 3rpx;
 }
+
+/* 问问 AI 入口 */
+.ask-ai {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 30rpx 0 6rpx;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid var(--ink);
+  background: var(--surface);
+}
+.ask-ai .aa-zh {
+  font-size: 26rpx;
+  letter-spacing: 0.5rpx;
+}
+.ask-ai .aa-arrow {
+  font-size: 34rpx;
+}

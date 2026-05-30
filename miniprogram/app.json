@@ -7,7 +7,9 @@
     "pages/menu/menu",
     "pages/order/order",
     "pages/mine/mine",
-    "pages/admin/admin"
+    "pages/admin/admin",
+    "pages/wish/wish",
+    "pages/ai/ai"
   ],
   "window": {
     "navigationBarBackgroundColor": "#f4f1ea",

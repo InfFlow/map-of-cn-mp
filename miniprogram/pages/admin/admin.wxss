@@ -503,3 +503,49 @@
   justify-content: space-between;
   margin-top: 8rpx;
 }
+
+/* 打卡照片墙编辑 */
+.photo-hint {
+  font-size: 24rpx;
+  color: var(--faint);
+  padding: 8rpx 0 4rpx;
+}
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  padding: 6rpx 0 4rpx;
+}
+.photo-cell {
+  position: relative;
+  width: 150rpx;
+  height: 150rpx;
+}
+.photo-img {
+  width: 150rpx;
+  height: 150rpx;
+  display: block;
+}
+.photo-rm {
+  position: absolute;
+  top: -12rpx;
+  right: -12rpx;
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 36rpx;
+  text-align: center;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 50%;
+  font-size: 28rpx;
+}
+.photo-add {
+  width: 150rpx;
+  height: 150rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx dashed var(--line);
+  font-size: 24rpx;
+  color: var(--ink-2);
+}

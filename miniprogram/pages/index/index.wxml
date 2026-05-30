@@ -81,6 +81,17 @@
       </view>
     </view>
 
+    <view wx:if="{{badges.length}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">足迹成就</text>
+        <text class="sec-en">Badges · {{unlocked}}/{{badges.length}}</text>
+      </view>
+      <view class="ach-line">已点亮 {{stats.provinceCount}} 省 · {{stats.cityCount}} 城 · 走过 {{stats.journeyCount}} 段路</view>
+      <view class="badges">
+        <text wx:for="{{badges}}" wx:key="name" class="badge {{item.on ? 'on' : ''}}">{{item.on ? '★' : '☆'}} {{item.name}}</text>
+      </view>
+    </view>
+
     <view wx:if="{{recent.length}}" class="block rise d4">
       <view class="sec">
         <text class="sec-zh">最近的回忆</text>

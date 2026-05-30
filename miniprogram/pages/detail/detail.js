@@ -60,4 +60,10 @@ Page({
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     wx.previewImage({ current: url, urls })
   },
+
+  askAi() {
+    const city = (this.data.trip && this.data.trip.city) || ''
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: `/pages/ai/ai?mode=scene&city=${encodeURIComponent(city)}` })
+  },
 })

@@ -38,7 +38,7 @@
           <text class="ptab-meta">{{item.stops.length}} 站{{item.planDateText ? ' · ' + item.planDateText : ''}}</text>
           <text wx:if="{{!item.visible}}" class="ptab-hidden">隐藏</text>
         </view>
-        <view wx:if="{{isAdmin}}" class="ptab add" bindtap="openPlanAdd">＋ 新建计划</view>
+        <view wx:if="{{canEdit}}" class="ptab add" bindtap="openPlanAdd">＋ 新建计划</view>
       </scroll-view>
     </view>
 
@@ -46,7 +46,7 @@
     <view wx:if="{{!active}}" class="empty">
       <view class="empty-zh">还没有旅行计划</view>
       <view class="empty-en">No itineraries yet</view>
-      <view wx:if="{{isAdmin}}" class="btn-line" bindtap="openPlanAdd">＋ 新建一个计划</view>
+      <view wx:if="{{canEdit}}" class="btn-line" bindtap="openPlanAdd">＋ 新建一个计划</view>
     </view>
 
     <block wx:else>
@@ -61,10 +61,15 @@
         </view>
         <view wx:if="{{active.note}}" class="plan-note">{{active.note}}</view>
 
-        <view wx:if="{{isAdmin}}" class="plan-acts">
+        <view wx:if="{{canEdit}}" class="plan-acts">
           <view class="chip-btn" hover-class="pressed" bindtap="openPlanEdit">编辑</view>
           <view class="chip-btn" hover-class="pressed" bindtap="togglePlan">{{active.visible ? '设为隐藏' : '取消隐藏'}}</view>
           <view class="chip-btn danger" hover-class="pressed" bindtap="delPlan">删除</view>
+        </view>
+
+        <view wx:if="{{active}}" class="plan-share">
+          <button class="chip-btn share-btn" open-type="share" hover-class="pressed">分享给 TA</button>
+          <view class="chip-btn" hover-class="pressed" bindtap="copyPlan">复制行程</view>
         </view>
       </view>
 
@@ -74,11 +79,11 @@
           <text class="sec-zh">目的地</text>
           <text class="sec-en">Destinations</text>
         </view>
-        <view wx:if="{{isAdmin}}" class="drag-tip">长按右侧手柄拖动排序</view>
+        <view wx:if="{{canEdit}}" class="drag-tip">长按右侧手柄拖动排序</view>
 
         <view wx:if="{{!active.stops.length}}" class="empty sm">
           <view class="empty-zh">还没有目的地</view>
-          <view wx:if="{{isAdmin}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
+          <view wx:if="{{canEdit}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
         </view>
 
         <movable-area wx:else class="drag-area" style="height: {{areaH}}px;">
@@ -91,7 +96,7 @@
             inertia="{{false}}"
             damping="50"
             out-of-bounds="{{false}}"
-            disabled="{{!isAdmin}}"
+            disabled="{{!canEdit}}"
             data-id="{{item.id}}"
             bindtouchstart="onStopTouchStart"
             bindchange="onStopChange"
@@ -111,7 +116,7 @@
                 <text wx:if="{{item.address}}" class="stop-addr">{{item.address}}</text>
                 <text wx:if="{{item.note}}" class="stop-note">{{item.note}}</text>
               </view>
-              <view wx:if="{{isAdmin}}" class="stop-ops">
+              <view wx:if="{{canEdit}}" class="stop-ops">
                 <view class="stop-del" catchtap="delStop" data-id="{{item.id}}">删</view>
                 <view class="stop-handle">≡</view>
               </view>
@@ -119,7 +124,7 @@
           </movable-view>
         </movable-area>
 
-        <view wx:if="{{isAdmin && active.stops.length}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
+        <view wx:if="{{canEdit && active.stops.length}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
       </view>
 
       <!-- 交通 · 高德路线推荐 -->
@@ -168,12 +173,66 @@
         </view>
       </view>
 
+      <!-- 记账 · 预算花费 -->
+      <view wx:if="{{openid}}" class="block rise d4">
+        <view class="sec">
+          <text class="sec-zh">花费记账</text>
+          <text class="sec-en">Budget · ¥{{expenseTotal}}</text>
+        </view>
+        <view wx:if="{{!expenses.length}}" class="empty sm">
+          <view class="empty-zh">还没有记账</view>
+        </view>
+        <view wx:else class="exp-list">
+          <view wx:for="{{expenses}}" wx:key="id" class="exp-row">
+            <text class="exp-cat">{{item.catName}}</text>
+            <view class="exp-mid">
+              <text class="exp-memo">{{item.memo || item.catName}}</text>
+              <text wx:if="{{item.date}}" class="exp-date">{{item.date}}</text>
+            </view>
+            <text class="exp-amt serif">¥{{item.amount}}</text>
+            <text class="exp-del" catchtap="delExpense" data-id="{{item.id}}">删</text>
+          </view>
+        </view>
+        <view class="btn-line" bindtap="openExpenseAdd">＋ 记一笔</view>
+      </view>
+
       <view class="foot rise d4">
         <view class="hair"></view>
         <view class="foot-txt">把想去的地方，排进我们的日子里</view>
       </view>
     </block>
   </block>
+</view>
+
+<!-- 记账编辑器 -->
+<view wx:if="{{expenseEditor.show}}" class="mask" catchtap="closeExpenseEditor"></view>
+<view class="sheet {{expenseEditor.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-title">记一笔</view>
+  <view class="field">
+    <text class="field-label">类型</text>
+    <view class="exp-cats">
+      <view
+        wx:for="{{expCats}}"
+        wx:key="key"
+        class="exp-cat-chip {{expenseEditor.catIndex === index ? 'on' : ''}}"
+        data-index="{{index}}"
+        bindtap="pickExpCat"
+      >{{item.name}}</view>
+    </view>
+  </view>
+  <view class="field">
+    <text class="field-label">金额（元）</text>
+    <input class="field-input" type="digit" value="{{expenseEditor.amount}}" placeholder="0.00" bindinput="onExpAmount" />
+  </view>
+  <view class="field">
+    <text class="field-label">备注</text>
+    <input class="field-input" value="{{expenseEditor.memo}}" placeholder="如 午饭 / 门票" bindinput="onExpMemo" />
+  </view>
+  <view class="sheet-actions">
+    <view class="btn ghost" hover-class="pressed" catchtap="closeExpenseEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveExpense">保存</view>
+  </view>
 </view>
 
 <!-- 计划编辑器 -->

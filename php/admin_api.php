@@ -42,6 +42,17 @@ function is_admin_openid(PDO $pdo, string $openid): bool
     return (int) ($st->fetchColumn() ?: 0) === 1;
 }
 
+/** 是否为已登录用户（openid 已通过微信登录写入 app_users） */
+function is_known_user(PDO $pdo, string $openid): bool
+{
+    if ($openid === '') {
+        return false;
+    }
+    $st = $pdo->prepare('SELECT 1 FROM app_users WHERE openid = ?');
+    $st->execute([$openid]);
+    return (bool) $st->fetchColumn();
+}
+
 function gen_id(string $prefix): string
 {
     return $prefix . date('YmdHis') . '_' . bin2hex(random_bytes(3));
@@ -64,6 +75,38 @@ function amap_get(string $endpoint, array $params, string $key): ?array
     }
     $data = json_decode($raw, true);
     return is_array($data) ? $data : null;
+}
+
+/** 调用 DeepSeek chat 接口，返回助手文本（失败返回 null） */
+function deepseek_chat(string $key, string $system, string $user, float $temperature = 0.8): ?string
+{
+    if ($key === '') {
+        return null;
+    }
+    $payload = json_encode([
+        'model' => 'deepseek-chat',
+        'messages' => [
+            ['role' => 'system', 'content' => $system],
+            ['role' => 'user', 'content' => $user],
+        ],
+        'temperature' => $temperature,
+        'max_tokens' => 900,
+        'stream' => false,
+    ], JSON_UNESCAPED_UNICODE);
+    $ctx = stream_context_create(['http' => [
+        'method' => 'POST',
+        'header' => "Content-Type: application/json\r\nAuthorization: Bearer {$key}\r\n",
+        'content' => $payload,
+        'timeout' => 30,
+        'ignore_errors' => true,
+    ]]);
+    $raw = @file_get_contents('https://api.deepseek.com/chat/completions', false, $ctx);
+    if ($raw === false) {
+        return null;
+    }
+    $data = json_decode($raw, true);
+    $text = $data['choices'][0]['message']['content'] ?? null;
+    return is_string($text) ? trim($text) : null;
 }
 
 try {
@@ -111,8 +154,24 @@ try {
         out(['isAdmin' => is_admin_openid($pdo, $openid)]);
     }
 
-    /* 其余动作都需要管理员 */
-    if (!is_admin_openid($pdo, $openid)) {
+    /* 情侣共编：足迹/纪念日/行程 + 心愿单 + 记账 + geo，任意已登录用户可增删改 */
+    $coupleEditable = [
+        'admin_journeys', 'add_journey', 'update_journey', 'del_journey', 'toggle_journey', 'reorder_journeys',
+        'admin_anniversaries', 'add_anniversary', 'update_anniversary', 'del_anniversary', 'reorder_anniversaries',
+        'admin_plans', 'add_plan', 'update_plan', 'del_plan', 'toggle_plan', 'reorder_plans',
+        'add_stop', 'update_stop', 'del_stop', 'reorder_stops',
+        'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
+        'expenses', 'add_expense', 'del_expense',
+        'add_journey_photo', 'del_journey_photo',
+        'geo', 'ai_recommend',
+    ];
+
+    if (in_array($action, $coupleEditable, true)) {
+        if (!is_known_user($pdo, $openid)) {
+            fail('请先登录', 403);
+        }
+    } elseif (!is_admin_openid($pdo, $openid)) {
+        /* 菜品 / 分类 / 订单 等‘餐厅后台’仍仅管理员 */
         fail('需要管理员权限', 403);
     }
 
@@ -329,6 +388,7 @@ try {
             $ids = array_column($rows, 'id');
             $tagsBy = [];
             $notesBy = [];
+            $photosBy = [];
             if ($ids) {
                 $ph = implode(',', array_fill(0, count($ids), '?'));
                 $ts = $pdo->prepare("SELECT journey_id, name FROM journey_tags WHERE journey_id IN ($ph) ORDER BY sort_order ASC, id ASC");
@@ -340,6 +400,17 @@ try {
                 $nt->execute($ids);
                 foreach ($nt->fetchAll() as $n) {
                     $notesBy[$n['journey_id']][] = $n['content'];
+                }
+                $pt = $pdo->prepare("SELECT id, journey_id, title, subtitle, tone, image_url FROM journey_photos WHERE journey_id IN ($ph) ORDER BY sort_order ASC, id ASC");
+                $pt->execute($ids);
+                foreach ($pt->fetchAll() as $p) {
+                    $photosBy[$p['journey_id']][] = [
+                        'id' => $p['id'],
+                        'title' => $p['title'],
+                        'subtitle' => $p['subtitle'],
+                        'tone' => $p['tone'],
+                        'imageUrl' => $p['image_url'],
+                    ];
                 }
             }
             $list = array_map(static fn ($r) => [
@@ -359,6 +430,7 @@ try {
                 'visible' => (int) $r['is_visible'] === 1,
                 'tags' => $tagsBy[$r['id']] ?? [],
                 'notes' => $notesBy[$r['id']] ?? [],
+                'photos' => $photosBy[$r['id']] ?? [],
             ], $rows);
             out(['journeys' => $list]);
         }
@@ -717,6 +789,209 @@ try {
                 fail('保存失败', 500);
             }
             out(['ok' => true, 'imageUrl' => rtrim($uploadBase, '/') . '/dishes/' . $fn]);
+        }
+
+        /* ============ 心愿清单（想去的地方）：情侣共编 ============ */
+        case 'wishes': {
+            $rows = $pdo->query(
+                'SELECT id, place_name, province, city, latitude, longitude, memo, done, sort_order
+                 FROM desire_list ORDER BY done ASC, sort_order ASC, created_at DESC'
+            )->fetchAll();
+            $list = array_map(static fn ($r) => [
+                'id' => $r['id'],
+                'placeName' => $r['place_name'],
+                'province' => $r['province'],
+                'city' => $r['city'],
+                'latitude' => $r['latitude'] !== null ? (float) $r['latitude'] : null,
+                'longitude' => $r['longitude'] !== null ? (float) $r['longitude'] : null,
+                'memo' => $r['memo'],
+                'done' => (int) $r['done'] === 1,
+                'sortOrder' => (int) $r['sort_order'],
+            ], $rows);
+            out(['wishes' => $list]);
+        }
+
+        case 'add_wish':
+        case 'update_wish': {
+            $placeName = trim((string) ($body['placeName'] ?? ''));
+            if ($placeName === '') {
+                fail('缺少地点名称');
+            }
+            $province = trim((string) ($body['province'] ?? ''));
+            $city = trim((string) ($body['city'] ?? ''));
+            $memo = trim((string) ($body['memo'] ?? ''));
+            $lat = isset($body['latitude']) && $body['latitude'] !== '' ? (float) $body['latitude'] : null;
+            $lng = isset($body['longitude']) && $body['longitude'] !== '' ? (float) $body['longitude'] : null;
+            if ($action === 'add_wish') {
+                $id = gen_id('wish_');
+                $maxOrder = (int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) FROM desire_list')->fetchColumn();
+                $pdo->prepare(
+                    'INSERT INTO desire_list (id, openid, place_name, province, city, latitude, longitude, memo, sort_order)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                )->execute([$id, $openid, $placeName, $province, $city, $lat, $lng, $memo, $maxOrder + 1]);
+                out(['ok' => true, 'id' => $id]);
+            }
+            $id = (string) ($body['id'] ?? '');
+            if ($id === '') {
+                fail('缺少 id');
+            }
+            $pdo->prepare(
+                'UPDATE desire_list SET place_name=?, province=?, city=?, latitude=?, longitude=?, memo=? WHERE id=?'
+            )->execute([$placeName, $province, $city, $lat, $lng, $memo, $id]);
+            out(['ok' => true]);
+        }
+
+        case 'toggle_wish': {
+            $id = (string) ($body['id'] ?? '');
+            if ($id === '') {
+                fail('缺少 id');
+            }
+            $pdo->prepare('UPDATE desire_list SET done = 1 - done WHERE id = ?')->execute([$id]);
+            out(['ok' => true]);
+        }
+
+        case 'del_wish': {
+            $id = (string) ($body['id'] ?? '');
+            $pdo->prepare('DELETE FROM desire_list WHERE id = ?')->execute([$id]);
+            out(['ok' => true]);
+        }
+
+        /* ============ 预算花费记账：按行程 / 城市 ============ */
+        case 'expenses': {
+            $planId = (string) ($body['planId'] ?? '');
+            $city = trim((string) ($body['city'] ?? ''));
+            $where = [];
+            $args = [];
+            if ($planId !== '') {
+                $where[] = 'plan_id = ?';
+                $args[] = $planId;
+            }
+            if ($city !== '') {
+                $where[] = 'city = ?';
+                $args[] = $city;
+            }
+            $sql = 'SELECT id, plan_id, journey_id, city, category, amount, spend_date, memo
+                    FROM trip_expenses';
+            if ($where) {
+                $sql .= ' WHERE ' . implode(' AND ', $where);
+            }
+            $sql .= ' ORDER BY spend_date DESC, created_at DESC';
+            $st = $pdo->prepare($sql);
+            $st->execute($args);
+            $rows = $st->fetchAll();
+            $total = 0.0;
+            $byCategory = [];
+            $list = array_map(static function ($r) use (&$total, &$byCategory) {
+                $amt = (float) $r['amount'];
+                $total += $amt;
+                $cat = $r['category'] ?: 'other';
+                $byCategory[$cat] = ($byCategory[$cat] ?? 0) + $amt;
+                return [
+                    'id' => $r['id'],
+                    'planId' => $r['plan_id'],
+                    'journeyId' => $r['journey_id'],
+                    'city' => $r['city'],
+                    'category' => $cat,
+                    'amount' => $amt,
+                    'date' => $r['spend_date'],
+                    'memo' => $r['memo'],
+                ];
+            }, $rows);
+            out(['expenses' => $list, 'total' => round($total, 2), 'byCategory' => $byCategory]);
+        }
+
+        case 'add_expense': {
+            $amount = (float) ($body['amount'] ?? 0);
+            if ($amount <= 0) {
+                fail('金额需大于 0');
+            }
+            $id = gen_id('exp_');
+            $date = trim((string) ($body['date'] ?? ''));
+            if (!is_date($date)) {
+                $date = date('Y-m-d');
+            }
+            $pdo->prepare(
+                'INSERT INTO trip_expenses (id, openid, plan_id, journey_id, city, category, amount, spend_date, memo)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            )->execute([
+                $id,
+                $openid,
+                (string) ($body['planId'] ?? ''),
+                (string) ($body['journeyId'] ?? ''),
+                trim((string) ($body['city'] ?? '')),
+                trim((string) ($body['category'] ?? 'other')),
+                $amount,
+                $date,
+                trim((string) ($body['memo'] ?? '')),
+            ]);
+            out(['ok' => true, 'id' => $id]);
+        }
+
+        case 'del_expense': {
+            $id = (string) ($body['id'] ?? '');
+            $pdo->prepare('DELETE FROM trip_expenses WHERE id = ?')->execute([$id]);
+            out(['ok' => true]);
+        }
+
+        /* ============ 打卡照片墙：给某段足迹追加 / 删除照片 ============ */
+        case 'add_journey_photo': {
+            $journeyId = (string) ($body['journeyId'] ?? '');
+            $imageUrl = trim((string) ($body['imageUrl'] ?? ''));
+            if ($journeyId === '' || $imageUrl === '') {
+                fail('缺少 journeyId 或 imageUrl');
+            }
+            $id = gen_id('ph_');
+            $maxOrder = (int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) FROM journey_photos')->fetchColumn();
+            $pdo->prepare(
+                'INSERT INTO journey_photos (id, journey_id, title, subtitle, tone, image_url, sort_order)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)'
+            )->execute([
+                $id,
+                $journeyId,
+                trim((string) ($body['title'] ?? '')),
+                trim((string) ($body['subtitle'] ?? '')),
+                trim((string) ($body['tone'] ?? 'tone-ink')),
+                $imageUrl,
+                $maxOrder + 1,
+            ]);
+            out(['ok' => true, 'id' => $id]);
+        }
+
+        case 'del_journey_photo': {
+            $id = (string) ($body['id'] ?? '');
+            $pdo->prepare('DELETE FROM journey_photos WHERE id = ?')->execute([$id]);
+            out(['ok' => true]);
+        }
+
+        /* ============ DeepSeek AI 推荐：景区问答 / 按口味菜系点菜 ============ */
+        case 'ai_recommend': {
+            $key = (string) ($config['deepseek_key'] ?? '');
+            if ($key === '') {
+                fail('未配置 DeepSeek key', 503);
+            }
+            $mode = (string) ($body['mode'] ?? 'scene');
+            $query = trim((string) ($body['query'] ?? ''));
+            if ($query === '') {
+                fail('请输入内容');
+            }
+            if ($mode === 'dish') {
+                $system = '你是一位懂中国各大菜系的点菜顾问。用户会给出想吃的口味、菜系、食材或场景，'
+                    . '你推荐 3-5 道具体菜品。每道菜用一行，格式：「菜名 — 一句话理由（口味/做法/适合谁）」。'
+                    . '只输出菜品列表，不要寒暄、不要多余解释。';
+                $user = '需求：' . $query;
+                $temp = 0.9;
+            } else {
+                $city = trim((string) ($body['city'] ?? ''));
+                $system = '你是一位本地向导，熟悉中国各地景点、人文与美食。回答要具体、实用、温暖，'
+                    . '适合情侣出游参考。控制在 200 字以内，可用短小分点。';
+                $user = ($city !== '' ? "城市/地点：{$city}。" : '') . '问题：' . $query;
+                $temp = 0.7;
+            }
+            $text = deepseek_chat($key, $system, $user, $temp);
+            if ($text === null || $text === '') {
+                fail('AI 暂时不可用，请稍后再试', 502);
+            }
+            out(['ok' => true, 'mode' => $mode, 'answer' => $text]);
         }
 
         default:
