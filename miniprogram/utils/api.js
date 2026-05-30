@@ -36,8 +36,8 @@ module.exports = {
   getMyOrders: (openid) => request(`/order.php?openid=${encodeURIComponent(openid)}`),
   // 小程序内管理接口：{ action, openid, ... } -> 结果。action 见 admin_api.php
   admin: (data) => request('/admin_api.php', { method: 'POST', data }),
-  // 上传菜品图片（multipart）：(filePath, openid) -> { imageUrl }
-  uploadDishImage: (filePath, openid) =>
+  // 上传图片（multipart）：(filePath, openid) -> { imageUrl }。菜品 / 计划封面通用
+  uploadImage: (filePath, openid) =>
     new Promise((resolve, reject) => {
       wx.uploadFile({
         url: `${getApp().globalData.apiBase}/admin_api.php`,
@@ -57,3 +57,5 @@ module.exports = {
       })
     }),
 }
+// 向后兼容旧调用名
+module.exports.uploadDishImage = module.exports.uploadImage

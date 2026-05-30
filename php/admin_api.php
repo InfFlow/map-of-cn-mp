@@ -583,7 +583,7 @@ try {
         /* ============ 旅行计划 / 行程（trip_plans + plan_stops） ============ */
         case 'admin_plans': {
             $plans = $pdo->query(
-                'SELECT id, title, cover_tone, plan_date, note, sort_order, is_visible
+                'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, sort_order, is_visible
                  FROM trip_plans ORDER BY sort_order ASC, created_at DESC, id ASC'
             )->fetchAll();
             $ids = array_column($plans, 'id');
@@ -614,6 +614,8 @@ try {
                 'title' => $p['title'],
                 'coverTone' => $p['cover_tone'],
                 'planDate' => $p['plan_date'],
+                'planDateEnd' => $p['plan_date_end'],
+                'coverImageUrl' => $p['cover_image_url'],
                 'note' => $p['note'],
                 'sortOrder' => (int) $p['sort_order'],
                 'visible' => (int) $p['is_visible'] === 1,
@@ -631,20 +633,27 @@ try {
             $tone = mb_substr(trim((string) ($body['coverTone'] ?? '')), 0, 64) ?: 'tone-slate';
             $planDate = trim((string) ($body['planDate'] ?? ''));
             $planDate = is_date($planDate) ? $planDate : null;
+            $planDateEnd = trim((string) ($body['planDateEnd'] ?? ''));
+            $planDateEnd = is_date($planDateEnd) ? $planDateEnd : null;
+            // 结束日期不得早于开始日期，否则忽略
+            if ($planDate && $planDateEnd && $planDateEnd < $planDate) {
+                $planDateEnd = null;
+            }
+            $coverImage = mb_substr(trim((string) ($body['coverImageUrl'] ?? '')), 0, 512);
             $note = trim((string) ($body['note'] ?? ''));
             if ($action === 'add_plan') {
                 $id = gen_id('p_');
                 $next = (int) $pdo->query('SELECT COALESCE(MAX(sort_order),0)+1 FROM trip_plans')->fetchColumn();
-                $pdo->prepare('INSERT INTO trip_plans (id, title, cover_tone, plan_date, note, sort_order) VALUES (?,?,?,?,?,?)')
-                    ->execute([$id, $title, $tone, $planDate, $note, $next]);
+                $pdo->prepare('INSERT INTO trip_plans (id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, sort_order) VALUES (?,?,?,?,?,?,?,?)')
+                    ->execute([$id, $title, $tone, $planDate, $planDateEnd, $coverImage, $note, $next]);
                 out(['ok' => true, 'id' => $id]);
             }
             $id = (string) ($body['id'] ?? '');
             if ($id === '') {
                 fail('缺少 id');
             }
-            $pdo->prepare('UPDATE trip_plans SET title=?, cover_tone=?, plan_date=?, note=? WHERE id=?')
-                ->execute([$title, $tone, $planDate, $note, $id]);
+            $pdo->prepare('UPDATE trip_plans SET title=?, cover_tone=?, plan_date=?, plan_date_end=?, cover_image_url=?, note=? WHERE id=?')
+                ->execute([$title, $tone, $planDate, $planDateEnd, $coverImage, $note, $id]);
             out(['ok' => true]);
         }
 
