@@ -47,6 +47,13 @@
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openAlbum">
+        <view class="ae-mid">
+          <text class="ae-zh serif">照片相册</text>
+          <text class="ae-sub">我们拍过的每一帧</text>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
     </view>
 
     <view class="block rise d2">

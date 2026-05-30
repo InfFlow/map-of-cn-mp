@@ -1,0 +1,166 @@
+.page {
+  padding: 24rpx 44rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+/* 英雄区 */
+.hero {
+  padding: 48rpx 0 6rpx;
+}
+.hero .h1 {
+  font-size: 116rpx;
+  line-height: 0.96;
+  margin-top: 20rpx;
+}
+.hero .br {
+  height: 0;
+}
+.lede {
+  font-size: 29rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 30rpx;
+  max-width: 520rpx;
+}
+
+/* 工具条：城市筛选 + 黑白滤镜 */
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 44rpx;
+  border-top: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  padding: 18rpx 0;
+}
+.chips {
+  flex: 1;
+  white-space: nowrap;
+  min-width: 0;
+}
+.chip {
+  display: inline-block;
+  font-size: 24rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink-2);
+  padding: 8rpx 22rpx;
+  margin-right: 12rpx;
+  border: 1rpx solid var(--line);
+}
+.chip.on {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.mono-btn {
+  flex: none;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink);
+  padding: 8rpx 20rpx;
+  border: 1rpx solid var(--ink);
+}
+.mono-btn.on {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.cap {
+  margin-top: 18rpx;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* 九宫格 */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 22rpx;
+}
+.cell {
+  width: calc((100% - 28rpx) / 3);
+}
+.ph {
+  position: relative;
+  width: 100%;
+  height: 210rpx;
+  overflow: hidden;
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+}
+.ph-img {
+  width: 100%;
+  height: 100%;
+  transition: filter 0.3s ease;
+}
+.grid.mono .ph-img {
+  filter: grayscale(1) contrast(1.05);
+}
+.ph-no {
+  position: absolute;
+  left: 8rpx;
+  bottom: 6rpx;
+  color: var(--ink);
+  opacity: 0.55;
+  background: rgba(244, 241, 234, 0.72);
+  padding: 1rpx 6rpx;
+}
+.ph-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
+}
+.ph-city {
+  font-size: 21rpx;
+  color: var(--ink-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ph-arrow {
+  font-size: 22rpx;
+  color: var(--faint);
+  flex: none;
+  margin-left: 6rpx;
+}
+
+/* 骨架 */
+.grid .ph.sk-block {
+  height: 210rpx;
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 64rpx;
+}
+.foot-txt {
+  margin-top: 30rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+}
