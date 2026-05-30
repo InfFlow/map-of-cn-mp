@@ -19,6 +19,8 @@
   <block wx:elif="{{ready}}">
     <!-- Tab 切换 -->
     <view class="tabs rise d1">
+      <view class="tab {{tab === 'journeys' ? 'on' : ''}}" data-tab="journeys" bindtap="switchTab">足迹</view>
+      <view class="tab {{tab === 'anniversaries' ? 'on' : ''}}" data-tab="anniversaries" bindtap="switchTab">纪念日</view>
       <view class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
       <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
       <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
@@ -107,6 +109,63 @@
         </view>
       </view>
     </block>
+
+    <!-- ============ 足迹 / 城市 ============ -->
+    <block wx:elif="{{tab === 'journeys'}}">
+      <view wx:if="{{journeysLoaded && !journeys.length}}" class="empty">还没有足迹，点下方新增</view>
+      <view wx:elif="{{!journeysLoaded}}" class="empty">正在读取…</view>
+      <view class="cat-list">
+        <view wx:for="{{journeys}}" wx:key="id" class="c-row {{item.visible ? '' : 'off'}}">
+          <view class="c-mid col">
+            <text class="c-name serif">{{item.city}}<text class="j-prov"> · {{item.province}}</text></text>
+            <view class="j-meta">
+              <text wx:if="{{item.dateText}}">{{item.dateText}}</text>
+              <text wx:if="{{item.landmark}}"> · {{item.landmark}}</text>
+              <text wx:if="{{!item.hasGeo}}" class="bdg muted">无坐标</text>
+              <text wx:if="{{!item.visible}}" class="bdg muted">已隐藏</text>
+            </view>
+          </view>
+          <view class="c-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveJourney">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveJourney">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggleJourney">{{item.visible ? '隐藏' : '显示'}}</text>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openJourneyEditor">编辑</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delJourney">删除</text>
+          </view>
+        </view>
+      </view>
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openJourneyEditor">＋ 新增足迹城市</view>
+    </block>
+
+    <!-- ============ 纪念日 ============ -->
+    <block wx:elif="{{tab === 'anniversaries'}}">
+      <view wx:if="{{anniLoaded && !anniversaries.length}}" class="empty">还没有纪念日，点下方新增</view>
+      <view wx:elif="{{!anniLoaded}}" class="empty">正在读取…</view>
+      <view class="cat-list">
+        <view wx:for="{{anniversaries}}" wx:key="id" class="c-row">
+          <view class="c-mid col">
+            <text class="c-name serif">{{item.label}}</text>
+            <view class="j-meta">
+              <text>{{item.dateText}}</text>
+              <text wx:if="{{item.city}}"> · {{item.city}}</text>
+              <text wx:if="{{item.repeatYearly}}" class="bdg">每年</text>
+            </view>
+            <view class="a-count count-{{item.countKind}}">{{item.countText}}</view>
+          </view>
+          <view class="c-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveAnni">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveAnni">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openAnniEditor">编辑</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delAnni">删除</text>
+          </view>
+        </view>
+      </view>
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openAnniEditor">＋ 新增纪念日</view>
+    </block>
   </block>
 
   <view wx:else class="empty">正在读取…</view>
@@ -178,6 +237,96 @@
       <view class="sheet-ops">
         <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeDishEditor">取消</text>
         <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveDish">保存</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 足迹编辑器 -->
+  <view wx:if="{{journeyEditor.show}}" class="mask" bindtap="closeJourneyEditor">
+    <view class="sheet tall" catchtap>
+      <view class="sheet-title serif">{{journeyEditor.id ? '编辑足迹' : '新增足迹城市'}}</view>
+      <scroll-view scroll-y class="sheet-scroll">
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">城市</view>
+            <input class="fld" value="{{journeyEditor.city}}" placeholder="如 杭州" placeholder-class="ph" data-f="city" bindinput="onJourneyField" maxlength="24" />
+          </view>
+          <view class="fl-col">
+            <view class="fl">省份</view>
+            <input class="fld" value="{{journeyEditor.province}}" placeholder="如 浙江省" placeholder-class="ph" data-f="province" bindinput="onJourneyField" maxlength="24" />
+          </view>
+        </view>
+
+        <view class="fl">日期</view>
+        <picker mode="date" value="{{journeyEditor.date}}" bindchange="onJourneyDate">
+          <view class="fld picker">{{journeyEditor.date || '选择日期'}}</view>
+        </picker>
+
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">季节</view>
+            <input class="fld" value="{{journeyEditor.season}}" placeholder="如 春" placeholder-class="ph" data-f="season" bindinput="onJourneyField" maxlength="8" />
+          </view>
+          <view class="fl-col">
+            <view class="fl">天气</view>
+            <input class="fld" value="{{journeyEditor.weather}}" placeholder="如 晴" placeholder-class="ph" data-f="weather" bindinput="onJourneyField" maxlength="8" />
+          </view>
+        </view>
+
+        <view class="fl">地标</view>
+        <input class="fld" value="{{journeyEditor.landmark}}" placeholder="如 西湖" placeholder-class="ph" data-f="landmark" bindinput="onJourneyField" maxlength="40" />
+
+        <view class="fl">标题</view>
+        <input class="fld" value="{{journeyEditor.title}}" placeholder="这段回忆的标题（可空）" placeholder-class="ph" data-f="title" bindinput="onJourneyField" maxlength="40" />
+
+        <view class="fl">简介</view>
+        <textarea class="fld area" value="{{journeyEditor.intro}}" placeholder="一句话简介（可空）" placeholder-class="ph" data-f="intro" bindinput="onJourneyField" maxlength="120" auto-height />
+
+        <view class="fl">封面色调</view>
+        <scroll-view scroll-x class="tone-row">
+          <view wx:for="{{toneList}}" wx:key="*this" class="tone-chip {{journeyEditor.toneIndex === index ? 'on' : ''}}" data-index="{{index}}" bindtap="pickJourneyTone">{{item}}</view>
+        </scroll-view>
+
+        <view class="fl">坐标（用于地图点亮）</view>
+        <view class="fl-row geo-row">
+          <input class="fld geo-in" value="{{journeyEditor.longitude}}" placeholder="经度" placeholder-class="ph" data-f="longitude" bindinput="onJourneyField" />
+          <input class="fld geo-in" value="{{journeyEditor.latitude}}" placeholder="纬度" placeholder-class="ph" data-f="latitude" bindinput="onJourneyField" />
+          <text class="geo-btn pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '高德定位'}}</text>
+        </view>
+
+        <view class="fl">标签（逗号分隔）</view>
+        <input class="fld" value="{{journeyEditor.tagsText}}" placeholder="如 西湖，断桥，龙井" placeholder-class="ph" data-f="tagsText" bindinput="onJourneyField" />
+
+        <view class="fl">手记（每行一条）</view>
+        <textarea class="fld area" value="{{journeyEditor.notesText}}" placeholder="每行一条手记" placeholder-class="ph" data-f="notesText" bindinput="onJourneyField" auto-height />
+      </scroll-view>
+
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeJourneyEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveJourney">保存</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 纪念日编辑器 -->
+  <view wx:if="{{anniEditor.show}}" class="mask" bindtap="closeAnniEditor">
+    <view class="sheet" catchtap>
+      <view class="sheet-title serif">{{anniEditor.id ? '编辑纪念日' : '新增纪念日'}}</view>
+      <view class="fl">名称</view>
+      <input class="fld" value="{{anniEditor.label}}" placeholder="如 在一起 / 第一次旅行" placeholder-class="ph" data-f="label" bindinput="onAnniField" maxlength="40" />
+      <view class="fl">日期</view>
+      <picker mode="date" value="{{anniEditor.date}}" bindchange="onAnniDate">
+        <view class="fld picker">{{anniEditor.date || '选择日期'}}</view>
+      </picker>
+      <view class="fl">城市（可空）</view>
+      <input class="fld" value="{{anniEditor.city}}" placeholder="如 济南" placeholder-class="ph" data-f="city" bindinput="onAnniField" maxlength="24" />
+      <view class="fl-row rec-line">
+        <view class="fl">每年重复（生日/周年）</view>
+        <switch checked="{{anniEditor.repeatYearly}}" color="#1b1712" bindchange="onAnniRepeat" />
+      </view>
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeAnniEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveAnni">保存</text>
       </view>
     </view>
   </view>

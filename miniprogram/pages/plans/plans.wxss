@@ -1,0 +1,517 @@
+.wrap {
+  padding: 24rpx 44rpx 60rpx;
+}
+
+/* 报头 + 英雄区（与其它页一致） */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+.hero {
+  padding: 44rpx 0 6rpx;
+}
+.hero .h1 {
+  font-size: 92rpx;
+  line-height: 1;
+  margin-top: 16rpx;
+}
+.hero .br {
+  height: 0;
+}
+
+.block {
+  margin-top: 52rpx;
+}
+
+/* 计划选择条 */
+.tab-scroll {
+  white-space: nowrap;
+}
+.ptab {
+  display: inline-block;
+  vertical-align: top;
+  min-width: 220rpx;
+  padding: 20rpx 26rpx;
+  margin-right: 18rpx;
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+  white-space: normal;
+}
+.ptab.on {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.ptab-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.ptab-meta {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 21rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+.ptab-hidden {
+  display: inline-block;
+  margin-top: 8rpx;
+  font-size: 19rpx;
+  color: var(--bg);
+  background: var(--ink-2);
+  padding: 2rpx 12rpx;
+  letter-spacing: 1rpx;
+}
+.ptab.add {
+  min-width: auto;
+  color: var(--ink-2);
+  font-size: 25rpx;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  border-style: dashed;
+  background: transparent;
+}
+
+/* 计划封面卡 */
+.plan-cover {
+  position: relative;
+  height: 300rpx;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+}
+.plan-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(27, 23, 18, 0) 40%, rgba(27, 23, 18, 0.42) 100%);
+}
+.plan-figno {
+  position: absolute;
+  top: 20rpx;
+  left: 22rpx;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.92);
+}
+.plan-cover-foot {
+  position: relative;
+  z-index: 2;
+  padding: 26rpx;
+  width: 100%;
+}
+.plan-cover-city {
+  display: block;
+  font-size: 52rpx;
+  line-height: 1.05;
+  color: #fff;
+}
+.plan-cover-date {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  color: rgba(255, 255, 255, 0.86);
+  letter-spacing: 2rpx;
+}
+.plan-note {
+  margin-top: 22rpx;
+  font-size: 27rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+}
+.plan-acts {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+.chip-btn {
+  padding: 14rpx 28rpx;
+  font-size: 24rpx;
+  border: 1rpx solid var(--line);
+  color: var(--ink-2);
+}
+.chip-btn.danger {
+  color: #a23b2d;
+  border-color: rgba(162, 59, 45, 0.4);
+}
+
+/* 目的地拖动列表 */
+.drag-tip {
+  font-size: 21rpx;
+  color: var(--faint);
+  letter-spacing: 1rpx;
+  margin: -6rpx 0 18rpx;
+}
+.drag-area {
+  position: relative;
+  width: 100%;
+}
+.mv-stop {
+  width: 100%;
+}
+.mv-stop.drag {
+  z-index: 20;
+}
+.mv-stop.drag .stop-card {
+  box-shadow: 0 16rpx 40rpx rgba(27, 23, 18, 0.18);
+  transform: scale(1.02);
+}
+.stop-card {
+  display: flex;
+  align-items: stretch;
+  height: calc(100% - 16rpx);
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+.stop-rail {
+  width: 74rpx;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1rpx solid var(--line-soft);
+}
+.stop-no {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.stop-main {
+  flex: 1;
+  min-width: 0;
+  padding: 18rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.stop-top {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+.stop-time {
+  font-size: 21rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+  flex: none;
+}
+.stop-name {
+  font-size: 29rpx;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stop-nogeo {
+  flex: none;
+  font-size: 18rpx;
+  color: #a23b2d;
+  border: 1rpx solid rgba(162, 59, 45, 0.4);
+  padding: 0 8rpx;
+}
+.stop-addr {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stop-note {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stop-ops {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14rpx 0;
+  width: 70rpx;
+  border-left: 1rpx solid var(--line-soft);
+}
+.stop-del {
+  font-size: 22rpx;
+  color: var(--muted);
+}
+.stop-handle {
+  font-size: 40rpx;
+  line-height: 1;
+  color: var(--ink-2);
+}
+
+/* 通用线性按钮 */
+.btn-line {
+  margin-top: 22rpx;
+  text-align: center;
+  padding: 22rpx 0;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--ink);
+  border: 1rpx dashed var(--line);
+}
+
+/* 路线（高德） */
+.leg {
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+  margin-bottom: 16rpx;
+}
+.leg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 24rpx;
+}
+.leg-route {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.leg-a,
+.leg-b {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 40%;
+}
+.leg-arrow {
+  flex: none;
+  color: var(--muted);
+}
+.leg-toggle {
+  flex: none;
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  letter-spacing: 1rpx;
+}
+.leg-body {
+  padding: 4rpx 24rpx 24rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.leg-loading,
+.leg-err {
+  padding: 18rpx 0;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+.leg-reco {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 18rpx 0 12rpx;
+}
+.leg-mode {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.leg-stat {
+  font-size: 22rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+.leg-step {
+  display: flex;
+  gap: 10rpx;
+  padding: 6rpx 0;
+}
+.leg-dot {
+  color: var(--faint);
+}
+.leg-step-txt {
+  flex: 1;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 40rpx;
+}
+.foot-txt {
+  margin-top: 30rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+
+/* 空状态补充 */
+.empty.sm {
+  padding: 40rpx 0;
+}
+.empty-zh {
+  font-size: 28rpx;
+  color: var(--ink-2);
+}
+.empty-en {
+  margin-top: 8rpx;
+  font-size: 21rpx;
+  color: var(--faint);
+  letter-spacing: 2rpx;
+}
+
+/* 底部编辑器（与管理页一致的语言） */
+.mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 23, 18, 0.42);
+  z-index: 100;
+}
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+  background: var(--bg);
+  padding: 34rpx 44rpx 48rpx;
+  border-top-left-radius: 18rpx;
+  border-top-right-radius: 18rpx;
+  transform: translateY(110%);
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.sheet.show {
+  transform: translateY(0);
+}
+.sheet-grab {
+  width: 64rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: var(--line);
+  margin: 0 auto 20rpx;
+}
+.sheet-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  padding-bottom: 22rpx;
+  margin-bottom: 12rpx;
+  border-bottom: 2rpx solid var(--ink);
+}
+.field {
+  margin-top: 22rpx;
+}
+.field-label {
+  display: block;
+  font-size: 21rpx;
+  letter-spacing: 2rpx;
+  color: var(--muted);
+  margin-bottom: 10rpx;
+}
+.field-input,
+.field-area,
+.field-picker {
+  width: 100%;
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  padding: 18rpx 20rpx;
+  font-size: 27rpx;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.field-area {
+  min-height: 120rpx;
+}
+.field-picker {
+  color: var(--ink-2);
+}
+.field-row {
+  display: flex;
+  gap: 16rpx;
+  align-items: stretch;
+}
+.field-input.grow {
+  flex: 1;
+}
+.geo-btn {
+  flex: none;
+  padding: 0 30rpx;
+  display: flex;
+  align-items: center;
+  font-size: 25rpx;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--ink);
+  border: 1rpx solid var(--ink);
+}
+.geo-btn.busy {
+  opacity: 0.6;
+}
+.geo-hint {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 21rpx;
+  color: var(--ink-2);
+  letter-spacing: 1rpx;
+}
+.geo-hint.dim {
+  color: var(--faint);
+}
+.tone-scroll {
+  white-space: nowrap;
+}
+.tone-dot {
+  display: inline-block;
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 16rpx;
+  border-radius: 50%;
+  border: 2rpx solid transparent;
+  box-shadow: inset 0 0 0 1rpx rgba(27, 23, 18, 0.08);
+}
+.tone-dot.on {
+  border-color: var(--ink);
+}
+.sheet-acts {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 34rpx;
+}
+.btn {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+.btn.ghost {
+  border: 1rpx solid var(--line);
+  color: var(--ink-2);
+}
+.btn.solid {
+  background: var(--ink);
+  color: var(--bg);
+}

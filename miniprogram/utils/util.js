@@ -15,7 +15,13 @@ const TONES = {
   'tone-osmanthus': ['#e2dccb', '#bfb597'],
   'tone-paper': ['#e1dccf', '#bcb39f'],
   'tone-tea': ['#dcdbcf', '#b4b29c'],
+  'tone-slate': ['#d7d8da', '#a8aab0'],
+  'tone-sage': ['#d8dbd2', '#aab09f'],
+  'tone-ink': ['#cfcdc9', '#9b958c'],
 }
+
+// 编辑器封面色可选列表
+const TONE_LIST = Object.keys(TONES)
 
 function toneGradient(tone) {
   const c = TONES[tone] || ['#ddd9cf', '#b4ac9c']
@@ -30,4 +36,32 @@ function prettyDate(dotted) {
   return `${y}年${Number(m)}月${Number(d)}日`
 }
 
-module.exports = { toneGradient, prettyDate, TONES }
+// 纪念日倒计时 / 正计时
+// dotted: "2024.05.01"；repeatYearly: 是否每年循环（生日/周年）
+// 返回 { text, days, kind }，kind: 'today' | 'countdown' | 'countup'
+function anniversaryCount(dotted, repeatYearly) {
+  if (!dotted) return { text: '', days: 0, kind: 'countup' }
+  const [y, m, d] = String(dotted).split('.').map(Number)
+  if (!y || !m || !d) return { text: '', days: 0, kind: 'countup' }
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  if (repeatYearly) {
+    let next = new Date(today.getFullYear(), m - 1, d)
+    if (next.getTime() < today.getTime()) {
+      next = new Date(today.getFullYear() + 1, m - 1, d)
+    }
+    const days = Math.round((next.getTime() - today.getTime()) / 86400000)
+    const years = next.getFullYear() - y
+    if (days === 0) return { text: '就是今天', days: 0, kind: 'today' }
+    return { text: `还有 ${days} 天`, days, kind: 'countdown', sub: years > 0 ? `第 ${years} 年` : '' }
+  }
+
+  const target = new Date(y, m - 1, d)
+  const diff = Math.round((target.getTime() - today.getTime()) / 86400000)
+  if (diff === 0) return { text: '就是今天', days: 0, kind: 'today' }
+  if (diff > 0) return { text: `还有 ${diff} 天`, days: diff, kind: 'countdown' }
+  return { text: `已 ${-diff} 天`, days: -diff, kind: 'countup' }
+}
+
+module.exports = { toneGradient, prettyDate, anniversaryCount, TONES, TONE_LIST }

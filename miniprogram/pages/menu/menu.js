@@ -17,6 +17,9 @@ Page({
   },
 
   onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 3 })
+    }
     // 从下单页返回后，购物车可能被清空，刷新数量显示
     if (this.data.categories.length) this.applyCart()
   },

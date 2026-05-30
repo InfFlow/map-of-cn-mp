@@ -1,5 +1,6 @@
 const app = getApp()
 const api = require('../../utils/api')
+const { TONE_LIST, anniversaryCount, prettyDate } = require('../../utils/util')
 
 const SPICY = ['不辣', '微辣', '中辣', '重辣']
 const STATUS_FLOW = [
@@ -25,8 +26,26 @@ Page({
     orders: [],
     ordersLoaded: false,
 
+    // 足迹 / 城市
+    journeys: [],
+    journeysLoaded: false,
+    // 纪念日
+    anniversaries: [],
+    anniLoaded: false,
+
+    toneList: TONE_LIST,
+
     spicyOptions: SPICY,
     statusFlow: STATUS_FLOW,
+
+    // 足迹编辑器
+    journeyEditor: {
+      show: false, id: '', city: '', province: '', date: '', season: '', weather: '',
+      landmark: '', title: '', intro: '', toneIndex: 0, coverTone: TONE_LIST[0],
+      latitude: '', longitude: '', tagsText: '', notesText: '', geoLoading: false,
+    },
+    // 纪念日编辑器
+    anniEditor: { show: false, id: '', label: '', date: '', city: '', repeatYearly: false },
 
     // 分类编辑器
     catEditor: { show: false, id: 0, name: '' },
@@ -59,7 +78,10 @@ Page({
 
   onPullDownRefresh() {
     const done = () => wx.stopPullDownRefresh()
-    if (this.data.tab === 'orders') this.loadOrders().then(done, done)
+    const t = this.data.tab
+    if (t === 'orders') this.loadOrders().then(done, done)
+    else if (t === 'journeys') this.loadJourneys().then(done, done)
+    else if (t === 'anniversaries') this.loadAnniversaries().then(done, done)
     else this.loadOverview().then(done, done)
   },
 
@@ -69,6 +91,8 @@ Page({
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     this.setData({ tab })
     if (tab === 'orders' && !this.data.ordersLoaded) this.loadOrders()
+    if (tab === 'journeys' && !this.data.journeysLoaded) this.loadJourneys()
+    if (tab === 'anniversaries' && !this.data.anniLoaded) this.loadAnniversaries()
   },
 
   /* ---------------- 读取 ---------------- */
@@ -328,6 +352,217 @@ Page({
         await this.loadOrders()
       },
     })
+  },
+
+  /* ---------------- 足迹 / 城市 ---------------- */
+  async loadJourneys() {
+    try {
+      const data = await api.admin({ action: 'admin_journeys', openid: this.data.openid })
+      const journeys = (data.journeys || []).map((j) => ({
+        ...j,
+        dateText: prettyDate(String(j.date).replace(/-/g, '.')),
+        tagsText: (j.tags || []).join(' · '),
+        hasGeo: !!(j.latitude && j.longitude),
+      }))
+      this.setData({ journeys, journeysLoaded: true })
+    } catch (e) {
+      wx.showToast({ title: '足迹加载失败', icon: 'none' })
+    }
+  },
+  openJourneyEditor(e) {
+    const id = e.currentTarget.dataset.id || ''
+    const src = id ? this.data.journeys.find((x) => x.id === id) : null
+    const tone = src ? src.coverTone : TONE_LIST[0]
+    this.setData({
+      journeyEditor: {
+        show: true,
+        id,
+        city: src ? src.city : '',
+        province: src ? src.province : '',
+        date: src ? String(src.date).slice(0, 10).replace(/\./g, '-') : '',
+        season: src ? src.season : '',
+        weather: src ? src.weather : '',
+        landmark: src ? src.landmark : '',
+        title: src ? src.title : '',
+        intro: src ? src.intro : '',
+        toneIndex: Math.max(0, TONE_LIST.indexOf(tone)),
+        coverTone: tone,
+        latitude: src && src.latitude ? String(src.latitude) : '',
+        longitude: src && src.longitude ? String(src.longitude) : '',
+        tagsText: src ? (src.tags || []).join('，') : '',
+        notesText: src ? (src.notes || []).join('\n') : '',
+        geoLoading: false,
+      },
+    })
+  },
+  closeJourneyEditor() {
+    this.setData({ ['journeyEditor.show']: false })
+  },
+  onJourneyField(e) {
+    const f = e.currentTarget.dataset.f
+    this.setData({ [`journeyEditor.${f}`]: e.detail.value })
+  },
+  onJourneyDate(e) {
+    this.setData({ ['journeyEditor.date']: e.detail.value })
+  },
+  pickJourneyTone(e) {
+    const i = e.currentTarget.dataset.index
+    this.setData({ ['journeyEditor.toneIndex']: i, ['journeyEditor.coverTone']: this.data.toneList[i] })
+  },
+  async geocodeJourney() {
+    const ed = this.data.journeyEditor
+    const addr = [ed.province, ed.city, ed.landmark].filter(Boolean).join('') || ed.city
+    if (!addr) return wx.showToast({ title: '先填城市或地标', icon: 'none' })
+    this.setData({ ['journeyEditor.geoLoading']: true })
+    try {
+      const r = await api.admin({ action: 'geo', openid: this.data.openid, address: addr, city: ed.city })
+      if (r && r.longitude) {
+        this.setData({
+          ['journeyEditor.longitude']: String(r.longitude),
+          ['journeyEditor.latitude']: String(r.latitude),
+          ['journeyEditor.geoLoading']: false,
+        })
+        wx.showToast({ title: '已定位', icon: 'success' })
+      } else {
+        this.setData({ ['journeyEditor.geoLoading']: false })
+        wx.showToast({ title: '未找到该地点', icon: 'none' })
+      }
+    } catch (err) {
+      this.setData({ ['journeyEditor.geoLoading']: false })
+      wx.showToast({ title: '定位失败', icon: 'none' })
+    }
+  },
+  async saveJourney() {
+    const ed = this.data.journeyEditor
+    if (!ed.city.trim() || !ed.province.trim()) return wx.showToast({ title: '城市与省份必填', icon: 'none' })
+    const tags = ed.tagsText.split(/[，,\n]/).map((s) => s.trim()).filter(Boolean)
+    const notes = ed.notesText.split(/\n+/).map((s) => s.trim()).filter(Boolean)
+    const payload = {
+      action: ed.id ? 'update_journey' : 'add_journey',
+      city: ed.city.trim(),
+      province: ed.province.trim(),
+      date: ed.date || '',
+      season: ed.season.trim(),
+      weather: ed.weather.trim(),
+      landmark: ed.landmark.trim(),
+      title: ed.title.trim(),
+      intro: ed.intro.trim(),
+      coverTone: ed.coverTone,
+      latitude: ed.latitude || 0,
+      longitude: ed.longitude || 0,
+      tags,
+      notes,
+    }
+    if (ed.id) payload.id = ed.id
+    await this.act(payload, '已保存')
+    this.setData({ ['journeyEditor.show']: false })
+    await this.loadJourneys()
+  },
+  async toggleJourney(e) {
+    await this.act({ action: 'toggle_journey', id: e.currentTarget.dataset.id })
+    await this.loadJourneys()
+  },
+  delJourney(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '删除足迹', content: '确定删除这座城市及其照片/手记吗？', confirmColor: '#1b1712',
+      success: async (r) => {
+        if (!r.confirm) return
+        await this.act({ action: 'del_journey', id }, '已删除')
+        await this.loadJourneys()
+      },
+    })
+  },
+  async moveJourney(e) {
+    const { id, dir } = e.currentTarget.dataset
+    const list = this.data.journeys.slice()
+    const idx = list.findIndex((x) => x.id === id)
+    const target = idx + Number(dir)
+    if (idx < 0 || target < 0 || target >= list.length) return
+    ;[list[idx], list[target]] = [list[target], list[idx]]
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    await this.act({ action: 'reorder_journeys', ids: list.map((x) => x.id) })
+    await this.loadJourneys()
+  },
+
+  /* ---------------- 纪念日 ---------------- */
+  async loadAnniversaries() {
+    try {
+      const data = await api.admin({ action: 'admin_anniversaries', openid: this.data.openid })
+      const anniversaries = (data.anniversaries || []).map((a) => {
+        const dotted = String(a.date).slice(0, 10).replace(/-/g, '.')
+        const c = anniversaryCount(dotted, a.repeatYearly)
+        return { ...a, dateText: prettyDate(dotted), countText: c.text, countKind: c.kind }
+      })
+      this.setData({ anniversaries, anniLoaded: true })
+    } catch (e) {
+      wx.showToast({ title: '纪念日加载失败', icon: 'none' })
+    }
+  },
+  openAnniEditor(e) {
+    const id = e.currentTarget.dataset.id || ''
+    const src = id ? this.data.anniversaries.find((x) => x.id === id) : null
+    this.setData({
+      anniEditor: {
+        show: true,
+        id,
+        label: src ? src.label : '',
+        date: src ? String(src.date).slice(0, 10).replace(/\./g, '-') : '',
+        city: src ? src.city : '',
+        repeatYearly: src ? !!src.repeatYearly : false,
+      },
+    })
+  },
+  closeAnniEditor() {
+    this.setData({ ['anniEditor.show']: false })
+  },
+  onAnniField(e) {
+    const f = e.currentTarget.dataset.f
+    this.setData({ [`anniEditor.${f}`]: e.detail.value })
+  },
+  onAnniDate(e) {
+    this.setData({ ['anniEditor.date']: e.detail.value })
+  },
+  onAnniRepeat(e) {
+    this.setData({ ['anniEditor.repeatYearly']: e.detail.value })
+  },
+  async saveAnni() {
+    const ed = this.data.anniEditor
+    if (!ed.label.trim()) return wx.showToast({ title: '请填写名称', icon: 'none' })
+    if (!ed.date) return wx.showToast({ title: '请选择日期', icon: 'none' })
+    const payload = {
+      action: ed.id ? 'update_anniversary' : 'add_anniversary',
+      label: ed.label.trim(),
+      date: ed.date,
+      city: ed.city.trim(),
+      repeatYearly: ed.repeatYearly ? 1 : 0,
+    }
+    if (ed.id) payload.id = ed.id
+    await this.act(payload, '已保存')
+    this.setData({ ['anniEditor.show']: false })
+    await this.loadAnniversaries()
+  },
+  delAnni(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '删除纪念日', content: '确定删除这个纪念日吗？', confirmColor: '#1b1712',
+      success: async (r) => {
+        if (!r.confirm) return
+        await this.act({ action: 'del_anniversary', id }, '已删除')
+        await this.loadAnniversaries()
+      },
+    })
+  },
+  async moveAnni(e) {
+    const { id, dir } = e.currentTarget.dataset
+    const list = this.data.anniversaries.slice()
+    const idx = list.findIndex((x) => x.id === id)
+    const target = idx + Number(dir)
+    if (idx < 0 || target < 0 || target >= list.length) return
+    ;[list[idx], list[target]] = [list[target], list[idx]]
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    await this.act({ action: 'reorder_anniversaries', ids: list.map((x) => x.id) })
+    await this.loadAnniversaries()
   },
 
   goLogin() {

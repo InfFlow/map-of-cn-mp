@@ -1,0 +1,13 @@
+<view class="tabbar">
+  <view
+    wx:for="{{list}}"
+    wx:key="key"
+    class="tab {{selected === index ? 'on' : ''}} {{pressed === index ? 'pressed' : ''}}"
+    data-index="{{index}}"
+    bindtap="onTap"
+  >
+    <view class="ico ico-{{item.key}}"></view>
+    <view class="lab">{{item.text}}</view>
+    <view class="dot"></view>
+  </view>
+</view>

@@ -33,11 +33,14 @@
       </view>
       <scroll-view scroll-x class="anni-scroll" show-scrollbar="{{false}}" enhanced>
         <view wx:for="{{anniversaries}}" wx:key="id" class="anni">
-          <view class="anni-tag">ANNIVERSARY</view>
-          <view class="anni-date serif">{{item.dateShort}}</view>
+          <view class="anni-tag">{{item.repeatYearly ? 'ANNUAL' : 'ANNIVERSARY'}}</view>
+          <view class="anni-count serif {{item.countKind}}">{{item.countText}}</view>
           <view class="anni-hair"></view>
           <view class="anni-label">{{item.label}}</view>
-          <view class="anni-city">{{item.city}}</view>
+          <view class="anni-foot">
+            <text class="anni-date">{{item.dateShort}}</text>
+            <text wx:if="{{item.city}}" class="anni-city">· {{item.city}}</text>
+          </view>
         </view>
       </scroll-view>
     </view>

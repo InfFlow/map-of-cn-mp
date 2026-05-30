@@ -45,15 +45,15 @@
 /* Tabs */
 .tabs {
   display: flex;
-  gap: 16rpx;
+  gap: 8rpx;
   margin: 30rpx 0 28rpx;
 }
 .tab {
   flex: 1;
   text-align: center;
-  padding: 18rpx 0;
-  font-size: 27rpx;
-  letter-spacing: 2rpx;
+  padding: 16rpx 0;
+  font-size: 24rpx;
+  letter-spacing: 1rpx;
   border: 1rpx solid var(--line);
   background: var(--surface);
   color: var(--ink-2);
@@ -427,4 +427,79 @@
 .sbtn.solid {
   background: var(--ink);
   color: var(--bg);
+}
+
+/* 足迹 / 纪念日 列表 */
+.c-mid.col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8rpx;
+  flex: 1;
+  min-width: 0;
+}
+.j-prov {
+  font-size: 24rpx;
+  color: var(--muted);
+}
+.j-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 23rpx;
+  color: var(--ink-2);
+}
+.a-count {
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  color: var(--muted);
+}
+.a-count.count-countdown,
+.a-count.count-today {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* 编辑器：色调选择 + 坐标 + 多行 */
+.area {
+  min-height: 120rpx;
+  line-height: 1.5;
+}
+.tone-row {
+  white-space: nowrap;
+}
+.tone-chip {
+  display: inline-block;
+  padding: 12rpx 22rpx;
+  margin-right: 12rpx;
+  font-size: 24rpx;
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+  color: var(--ink-2);
+}
+.tone-chip.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.geo-row {
+  align-items: center;
+  gap: 14rpx;
+}
+.geo-in {
+  flex: 1;
+}
+.geo-btn {
+  flex: none;
+  white-space: nowrap;
+  padding: 18rpx 22rpx;
+  font-size: 24rpx;
+  border: 1rpx solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+.rec-line {
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
 }

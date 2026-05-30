@@ -22,6 +22,10 @@ module.exports = {
   getProvincePolygons: () => request('/provinces.php'),
   // { categories: [{ id, name, dishes: [{ id, name, description, price, imageUrl }] }] }
   getMenu: () => request('/menu.php'),
+  // 旅行计划（行程）：{ plans: [{ id, title, coverTone, planDate, note, stops:[...] }] }
+  getPlans: () => request('/plans.php'),
+  // 高德路线：{ origin:'lng,lat', destination:'lng,lat', city?, cityd? } -> { recommend, options }
+  getRoute: (data) => request('/route.php', { method: 'POST', data }),
   // 微信登录：{ code, nickname?, avatarUrl? } -> { openid, nickname, avatarUrl }
   wxAuth: (data) => request('/auth.php', { method: 'POST', data }),
   // 下单：{ openid, nickname, remark, items:[{ id, qty, remark }] } -> { id, itemCount, totalAmount, status }
