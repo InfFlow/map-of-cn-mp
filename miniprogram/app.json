@@ -9,6 +9,7 @@
     "pages/mine/mine",
     "pages/admin/admin",
     "pages/wish/wish",
+    "pages/album/album",
     "pages/ai/ai"
   ],
   "window": {

@@ -1,0 +1,76 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">ALBUM</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们一起拍下的</view>
+    <view class="h1 display">照片<view class="br"></view>相册</view>
+    <view class="lede">把走过的城、吃过的饭、看过的风景，都收进这一格格里。</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="grid">
+      <view class="cell" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
+        <view class="sk sk-block ph"></view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{!error}}">
+    <!-- 工具条：城市筛选 + 黑白滤镜 -->
+    <view class="tools rise d2">
+      <scroll-view class="chips" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view class="chip {{filterCity === '' ? 'on' : ''}}" data-city="" bindtap="onFilter" hover-class="pressed">全部</view>
+        <view
+          wx:for="{{cities}}"
+          wx:key="*this"
+          class="chip {{filterCity === item ? 'on' : ''}}"
+          data-city="{{item}}"
+          bindtap="onFilter"
+          hover-class="pressed"
+        >{{item}}</view>
+      </scroll-view>
+      <view class="mono-btn {{mono ? 'on' : ''}}" bindtap="toggleMono" hover-class="pressed">
+        {{mono ? '原色' : '黑白'}}
+      </view>
+    </view>
+
+    <view class="cap rise d2">{{photos.length}} / {{total}} 帧{{filterCity ? ' · ' + filterCity : ''}}</view>
+
+    <view wx:if="{{photos.length}}" class="grid rise d3 {{mono ? 'mono' : ''}}">
+      <view
+        wx:for="{{photos}}"
+        wx:key="imageUrl"
+        class="cell"
+      >
+        <view class="ph pressable" hover-class="pressed" hover-stay-time="60" data-url="{{item.imageUrl}}" bindtap="preview">
+          <image class="ph-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="true"></image>
+          <text class="ph-no figno">{{item.no}}</text>
+        </view>
+        <view class="ph-meta pressable" hover-class="pressed" data-id="{{item.journeyId}}" bindtap="openDetail">
+          <text class="ph-city">{{item.city}}</text>
+          <text class="ph-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty">
+      还没有照片。去「编辑我们的回忆 › 足迹」给某座城上传几张吧。
+    </view>
+
+    <view class="foot rise d4">
+      <view class="hair"></view>
+      <view class="foot-txt">每一帧，都是我们一起按下的快门</view>
+    </view>
+  </block>
+
+  <view wx:if="{{error}}" class="empty">{{error}}</view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+</view>
