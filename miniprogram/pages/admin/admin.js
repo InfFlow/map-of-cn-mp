@@ -79,8 +79,8 @@ Page({
       const r = await api.admin({ action: 'check_admin', openid: user.openid })
       isAdmin = !!r.isAdmin
     } catch (e) {}
-    this.setData({ isAdmin, tab: isAdmin ? 'dishes' : 'journeys', ready: true })
-    if (isAdmin) this.loadOverview()
+    // 情侣双方（已登录用户）均可编辑菜品/订单，默认进「足迹」标签
+    this.setData({ isAdmin, canEdit: true, tab: 'journeys', ready: true })
     this.loadJourneys()
   },
 
@@ -101,6 +101,7 @@ Page({
     if (tab === 'orders' && !this.data.ordersLoaded) this.loadOrders()
     if (tab === 'journeys' && !this.data.journeysLoaded) this.loadJourneys()
     if (tab === 'anniversaries' && !this.data.anniLoaded) this.loadAnniversaries()
+    if ((tab === 'dishes' || tab === 'categories') && !this.data.overviewLoaded) this.loadOverview()
   },
 
   /* ---------------- 读取 ---------------- */
@@ -112,7 +113,7 @@ Page({
       const catName = {}
       categories.forEach((c) => (catName[c.id] = c.name))
       const activeCat = this.data.activeCat || (categories[0] && categories[0].id) || 0
-      this.setData({ categories, dishes, catName, ready: true, activeCat }, () => this.applyFilter())
+      this.setData({ categories, dishes, catName, ready: true, overviewLoaded: true, activeCat }, () => this.applyFilter())
     } catch (e) {
       this.setData({ ready: true })
       if (e && e.statusCode === 403) this.setData({ notAdmin: true })

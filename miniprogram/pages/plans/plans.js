@@ -96,7 +96,7 @@ Page({
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 2 })
+      this.getTabBar().setData({ selected: 2, hidden: false })
     }
     // 登录可能发生在「我的」页，回到本页时同步编辑权限
     const user = app.getUser()
@@ -257,11 +257,18 @@ Page({
     }
   },
 
+  // 隐藏/恢复自定义 tabBar：打开底部编辑面板时隐藏，避免它盖住面板底部的「取消/保存」
+  setTabBarHidden(hidden) {
+    const tb = typeof this.getTabBar === 'function' ? this.getTabBar() : null
+    if (tb) tb.setData({ hidden })
+  },
   openExpenseAdd() {
     this.setData({ expenseEditor: { show: true, catIndex: 0, amount: '', memo: '' } })
+    this.setTabBarHidden(true)
   },
   closeExpenseEditor() {
     this.setData({ 'expenseEditor.show': false })
+    this.setTabBarHidden(false)
   },
   pickExpCat(e) {
     this.setData({ 'expenseEditor.catIndex': e.currentTarget.dataset.index })
@@ -293,6 +300,7 @@ Page({
       })
       wx.hideLoading()
       this.setData({ 'expenseEditor.show': false })
+      this.setTabBarHidden(false)
       this.loadExpenses()
     } catch (e) {
       wx.hideLoading()
@@ -329,6 +337,7 @@ Page({
     this.setData({
       planEditor: { show: true, mode: 'add', id: '', title: '', toneIndex: 0, coverTone: this.data.toneList[0], planDate: '', planDateEnd: '', dayCountText: '', coverImageUrl: '', uploadingCover: false, note: '' },
     })
+    this.setTabBarHidden(true)
   },
   openPlanEdit() {
     const p = this.data.active
@@ -342,9 +351,11 @@ Page({
         coverImageUrl: p.coverImageUrl || '', uploadingCover: false, note: p.note || '',
       },
     })
+    this.setTabBarHidden(true)
   },
   closePlanEditor() {
     this.setData({ 'planEditor.show': false })
+    this.setTabBarHidden(false)
   },
   // 输入框聚焦高亮（focusField 与 wxml 里 data-k 对应）
   onFieldFocus(e) {
@@ -435,6 +446,7 @@ Page({
     try {
       const r = await api.admin(payload)
       this.setData({ 'planEditor.show': false })
+      this.setTabBarHidden(false)
       wx.showToast({ title: '已保存', icon: 'success' })
       if (ed.mode === 'add' && r && r.id) {
         // 新建后选中它
@@ -487,6 +499,7 @@ Page({
     this.setData({
       stopEditor: { show: true, mode: 'add', id: 0, planId: p.id, name: '', address: '', plannedTime: '', note: '', day: 1, latitude: '', longitude: '', geoLoading: false },
     })
+    this.setTabBarHidden(true)
   },
   openStopEdit(e) {
     const id = e.currentTarget.dataset.id
@@ -500,9 +513,11 @@ Page({
         geoLoading: false,
       },
     })
+    this.setTabBarHidden(true)
   },
   closeStopEditor() {
     this.setData({ 'stopEditor.show': false })
+    this.setTabBarHidden(false)
   },
   onStopField(e) {
     const k = e.currentTarget.dataset.field
@@ -562,6 +577,7 @@ Page({
     try {
       await api.admin(payload)
       this.setData({ 'stopEditor.show': false })
+      this.setTabBarHidden(false)
       await this.load()
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (e) {

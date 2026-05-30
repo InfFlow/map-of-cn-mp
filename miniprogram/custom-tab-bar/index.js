@@ -2,6 +2,7 @@ Component({
   data: {
     selected: 0,
     pressed: -1,
+    hidden: false,
     list: [
       { page: '/pages/index/index', text: '地图', key: 'index' },
       { page: '/pages/timeline/timeline', text: '时间线', key: 'timeline' },

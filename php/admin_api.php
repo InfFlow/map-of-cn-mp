@@ -154,7 +154,7 @@ try {
         out(['isAdmin' => is_admin_openid($pdo, $openid)]);
     }
 
-    /* 情侣共编：足迹/纪念日/行程 + 心愿单 + 记账 + geo，任意已登录用户可增删改 */
+    /* 情侣共编：足迹/纪念日/行程 + 心愿单 + 记账 + 菜品/分类/订单 + 图片上传，任意已登录用户可增删改 */
     $coupleEditable = [
         'admin_journeys', 'add_journey', 'update_journey', 'del_journey', 'toggle_journey', 'reorder_journeys',
         'admin_anniversaries', 'add_anniversary', 'update_anniversary', 'del_anniversary', 'reorder_anniversaries',
@@ -163,7 +163,11 @@ try {
         'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
         'expenses', 'add_expense', 'del_expense',
         'add_journey_photo', 'del_journey_photo',
-        'geo', 'ai_recommend',
+        'geo', 'ai_recommend', 'upload_image',
+        /* 菜单后台：菜品 / 分类 / 订单 —— 情侣双方都可编辑 */
+        'overview', 'orders', 'set_order_status',
+        'add_category', 'update_category', 'toggle_category', 'del_category', 'reorder_categories',
+        'add_dish', 'update_dish', 'toggle_dish', 'del_dish', 'reorder_dishes',
     ];
 
     if (in_array($action, $coupleEditable, true)) {
@@ -171,7 +175,6 @@ try {
             fail('请先登录', 403);
         }
     } elseif (!is_admin_openid($pdo, $openid)) {
-        /* 菜品 / 分类 / 订单 等‘餐厅后台’仍仅管理员 */
         fail('需要管理员权限', 403);
     }
 
