@@ -247,3 +247,32 @@
 .ask-ai .aa-arrow {
   font-size: 34rpx;
 }
+
+/* 生成分享长图 */
+.poster-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 14rpx 0 6rpx;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid var(--ink);
+  background: var(--ink);
+}
+.poster-btn .pb-zh {
+  font-size: 26rpx;
+  letter-spacing: 1rpx;
+  color: var(--bg, #faf8f3);
+}
+.poster-btn .pb-en {
+  font-family: Georgia, serif;
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: rgba(250, 248, 243, 0.7);
+}
+
+/* 离屏画布：移出视口，不参与布局视觉 */
+.poster-canvas {
+  position: fixed;
+  left: -2000px;
+  top: 0;
+}

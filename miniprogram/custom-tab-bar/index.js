@@ -3,6 +3,7 @@ Component({
     selected: 0,
     pressed: -1,
     hidden: false,
+    cartCount: 0,
     list: [
       { page: '/pages/index/index', text: '地图', key: 'index' },
       { page: '/pages/timeline/timeline', text: '时间线', key: 'timeline' },
@@ -11,7 +12,21 @@ Component({
       { page: '/pages/mine/mine', text: '我的', key: 'mine' },
     ],
   },
+  lifetimes: {
+    attached() {
+      this.updateCart()
+    },
+  },
   methods: {
+    // 从全局购物车计算角标数量
+    updateCart() {
+      const cart = (getApp() && getApp().globalData && getApp().globalData.cart) || {}
+      let n = 0
+      Object.keys(cart).forEach((k) => {
+        n += (cart[k] && cart[k].qty) || 0
+      })
+      if (n !== this.data.cartCount) this.setData({ cartCount: n })
+    },
     onTap(e) {
       const index = e.currentTarget.dataset.index
       const target = this.data.list[index]

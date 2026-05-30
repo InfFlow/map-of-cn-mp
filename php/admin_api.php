@@ -879,7 +879,7 @@ try {
         /* ============ 心愿清单（想去的地方）：情侣共编 ============ */
         case 'wishes': {
             $rows = $pdo->query(
-                'SELECT id, place_name, province, city, latitude, longitude, memo, done, sort_order
+                'SELECT id, place_name, province, city, latitude, longitude, memo, done, completed_date, sort_order
                  FROM desire_list ORDER BY done ASC, sort_order ASC, created_at DESC'
             )->fetchAll();
             $list = array_map(static fn ($r) => [
@@ -891,6 +891,7 @@ try {
                 'longitude' => $r['longitude'] !== null ? (float) $r['longitude'] : null,
                 'memo' => $r['memo'],
                 'done' => (int) $r['done'] === 1,
+                'completedDate' => $r['completed_date'] ?? null,
                 'sortOrder' => (int) $r['sort_order'],
             ], $rows);
             out(['wishes' => $list]);
@@ -931,7 +932,14 @@ try {
             if ($id === '') {
                 fail('缺少 id');
             }
-            $pdo->prepare('UPDATE desire_list SET done = 1 - done WHERE id = ?')->execute([$id]);
+            // 完成时记录打卡日期；取消完成则清空
+            // 注意：MySQL 同一 SET 子句按从左到右用「更新后」的值，故先据原 done 算日期再翻转
+            $pdo->prepare(
+                'UPDATE desire_list
+                 SET completed_date = CASE WHEN done = 0 THEN CURDATE() ELSE NULL END,
+                     done = 1 - done
+                 WHERE id = ?'
+            )->execute([$id]);
             out(['ok' => true]);
         }
 

@@ -42,12 +42,13 @@ try {
         if ($ids) {
             $ph = implode(',', array_fill(0, count($ids), '?'));
             $is = $pdo->prepare(
-                "SELECT order_id, dish_name, price, qty, remark
+                "SELECT order_id, dish_id, dish_name, price, qty, remark
                  FROM order_items WHERE order_id IN ($ph) ORDER BY id ASC"
             );
             $is->execute($ids);
             foreach ($is->fetchAll() as $it) {
                 $itemsByOrder[$it['order_id']][] = [
+                    'dishId' => (int) $it['dish_id'],
                     'name' => $it['dish_name'],
                     'price' => (float) $it['price'],
                     'qty' => (int) $it['qty'],

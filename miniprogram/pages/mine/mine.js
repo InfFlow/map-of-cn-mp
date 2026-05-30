@@ -173,6 +173,7 @@ Page({
         summary: o.items.map((it) => `${it.name}×${it.qty}`).join('、'),
       }))
       this.setData({ orders, loading: false })
+      this._ordersRaw = data.orders || []
     } catch (e) {
       this.setData({ loading: false })
     }
@@ -186,5 +187,39 @@ Page({
 
   goMenu() {
     wx.switchTab({ url: '/pages/menu/menu' })
+  },
+
+  // 再来一单：把历史订单的菜品写回购物车，跳到下单页
+  reorder(e) {
+    const id = e.currentTarget.dataset.id
+    const order = (this._ordersRaw || []).find((o) => String(o.id) === String(id))
+    if (!order || !order.items || !order.items.length) {
+      wx.showToast({ title: '订单为空', icon: 'none' })
+      return
+    }
+    const cart = {}
+    let skipped = 0
+    order.items.forEach((it) => {
+      const did = it.dishId
+      if (!did) {
+        skipped++
+        return
+      }
+      if (cart[did]) {
+        cart[did].qty = Math.min(99, cart[did].qty + it.qty)
+      } else {
+        cart[did] = { id: did, name: it.name, price: it.price, qty: Math.min(99, it.qty), remark: it.remark || '' }
+      }
+    })
+    if (!Object.keys(cart).length) {
+      wx.showToast({ title: '菜品已下架，无法再来一单', icon: 'none' })
+      return
+    }
+    app.globalData.cart = cart
+    wx.vibrateShort && wx.vibrateShort({ type: 'medium' })
+    if (skipped > 0) {
+      wx.showToast({ title: `有 ${skipped} 道已下架，已跳过`, icon: 'none' })
+    }
+    setTimeout(() => wx.navigateTo({ url: '/pages/order/order' }), skipped > 0 ? 700 : 0)
   },
 })

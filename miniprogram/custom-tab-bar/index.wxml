@@ -6,7 +6,9 @@
     data-index="{{index}}"
     bindtap="onTap"
   >
-    <view class="ico ico-{{item.key}}"></view>
+    <view class="ico ico-{{item.key}}">
+      <text wx:if="{{item.key === 'menu' && cartCount > 0}}" class="badge">{{cartCount > 99 ? '99+' : cartCount}}</text>
+    </view>
     <view class="lab">{{item.text}}</view>
     <view class="dot"></view>
   </view>

@@ -62,6 +62,11 @@
     <text class="aa-arrow serif">›</text>
   </view>
 
+  <view class="poster-btn pressable rise d3" hover-class="pressed" bindtap="makePoster">
+    <text class="pb-zh">一键生成分享长图</text>
+    <text class="pb-en">SHARE POSTER ›</text>
+  </view>
+
   <view wx:if="{{trip.photos.length}}" class="block rise d3">
     <view class="sec">
       <text class="sec-zh">那天的画面</text>
@@ -100,3 +105,8 @@
 
   <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
 </view>
+
+<photo-viewer show="{{viewerShow}}" urls="{{viewerUrls}}" current="{{viewerCurrent}}" bindclose="closeViewer"></photo-viewer>
+
+<!-- 离屏画布：用于绘制分享长图 -->
+<canvas type="2d" id="poster" class="poster-canvas" style="width:{{posterW}}px;height:{{posterH}}px;"></canvas>

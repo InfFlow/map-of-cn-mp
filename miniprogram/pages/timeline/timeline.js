@@ -1,5 +1,5 @@
 const api = require('../../utils/api')
-const { prettyDate, toneGradient, anniversaryCount } = require('../../utils/util')
+const { prettyDate, toneGradient, anniversaryCount, weatherGlyph, seasonGlyph } = require('../../utils/util')
 
 Page({
   data: {
@@ -48,6 +48,9 @@ Page({
           dateShort: String(j.date),
           coverGrad: toneGradient(j.coverTone),
           cover: j.photos && j.photos[0] && j.photos[0].imageUrl,
+          seasonIcon: seasonGlyph(j.season),
+          weatherIcon: weatherGlyph(j.weather),
+          weather: j.weather || '',
         }
       })
       const anniversaries = (data.anniversaries || []).map((a) => {

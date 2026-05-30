@@ -15,6 +15,19 @@
     </view>
   </view>
 
+  <!-- 纪念日倒数贴边小组件 -->
+  <view wx:if="{{days > 0 || nextAnniv}}" class="anv-mini rise d1">
+    <view wx:if="{{days > 0}}" class="anv-cell">
+      <text class="anv-k">在一起</text>
+      <text class="anv-v serif">{{days}}<text class="anv-u">天</text></text>
+    </view>
+    <view wx:if="{{days > 0 && nextAnniv}}" class="anv-sep"></view>
+    <view wx:if="{{nextAnniv}}" class="anv-cell anv-grow">
+      <text class="anv-k">{{nextAnniv.today ? '今天' : '距 ' + nextAnniv.label}}</text>
+      <text class="anv-v2">{{nextAnniv.today ? nextAnniv.label : nextAnniv.text}}</text>
+    </view>
+  </view>
+
   <!-- 今日天气 -->
   <view wx:if="{{weather}}" class="wx-strip rise d1">
     <view class="wx-l">
@@ -98,6 +111,17 @@
         </map>
       </view>
       <view class="map-cap">{{mapCaption}}</view>
+      <view wx:if="{{heatCaption}}" class="heat-cap">
+        <view class="heat-scale">
+          <text class="heat-lab">少</text>
+          <view class="heat-sw" style="background:#1b171236"></view>
+          <view class="heat-sw" style="background:#1b171252"></view>
+          <view class="heat-sw" style="background:#1b17126e"></view>
+          <view class="heat-sw" style="background:#1b17128c"></view>
+          <text class="heat-lab">多</text>
+        </view>
+        <text class="heat-txt">{{heatCaption}}</text>
+      </view>
       <view wx:if="{{ledger.length}}" class="ledger">
         <view wx:for="{{ledger}}" wx:key="no" class="led">
           <text class="led-no serif">{{item.no}}</text>{{item.city}}

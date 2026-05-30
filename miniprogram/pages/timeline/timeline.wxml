@@ -75,7 +75,13 @@
               <text class="tl-figno figno">PLATE {{item.no}}</text>
             </view>
             <view class="tl-meta">
+              <text wx:if="{{item.seasonIcon}}" class="tl-ic">{{item.seasonIcon}}</text>
               <text class="tl-season">{{item.season}}</text>
+              <block wx:if="{{item.weather}}">
+                <text class="tl-dot">·</text>
+                <text wx:if="{{item.weatherIcon}}" class="tl-ic">{{item.weatherIcon}}</text>
+                <text class="tl-season">{{item.weather}}</text>
+              </block>
               <text class="tl-dot">·</text>
               <text class="tl-date">{{item.dateShort}}</text>
             </view>

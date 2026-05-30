@@ -25,12 +25,28 @@
 }
 .tab.pressed { transform: scale(0.88); }
 .tab .ico {
+  position: relative;
   width: 46rpx;
   height: 46rpx;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 44rpx 44rpx;
   opacity: 0.95;
+}
+.tab .ico .badge {
+  position: absolute;
+  top: -8rpx;
+  right: -14rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 6rpx;
+  box-sizing: border-box;
+  line-height: 28rpx;
+  text-align: center;
+  font-size: 18rpx;
+  color: #faf8f3;
+  background: #1b1712;
+  border-radius: 999rpx;
 }
 .tab .lab {
   margin-top: 2rpx;

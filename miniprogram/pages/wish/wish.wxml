@@ -21,6 +21,7 @@
       <view class="kicker">想一起去的地方</view>
       <view class="h1 display">心愿清单</view>
       <view class="lede">把还没去的地方先记下来 · 已实现 {{doneCount}} / {{wishes.length}}</view>
+      <view wx:if="{{yearDone > 0}}" class="year-recap">{{yearLabel}} 年已一起打卡 {{yearDone}} 个心愿</view>
     </view>
 
     <view class="add-row rise d2">
@@ -45,6 +46,7 @@
           <view class="wish-name serif">{{item.placeName}}</view>
           <view wx:if="{{item.province || item.city}}" class="wish-loc">{{item.province}}{{item.city ? ' · ' + item.city : ''}}</view>
           <view wx:if="{{item.memo}}" class="wish-memo">{{item.memo}}</view>
+          <view wx:if="{{item.done && item.doneDate}}" class="wish-done-date">✓ {{item.doneDate}} 完成打卡</view>
         </view>
         <view class="wish-del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="del">删除</view>
       </view>

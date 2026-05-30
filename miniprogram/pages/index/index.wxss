@@ -183,6 +183,81 @@
   text-align: center;
 }
 
+/* 热力图例 + 统计 */
+.heat-cap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 12rpx;
+}
+.heat-scale {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+.heat-sw {
+  width: 34rpx;
+  height: 14rpx;
+  border: 1rpx solid var(--line);
+}
+.heat-lab {
+  font-size: 18rpx;
+  letter-spacing: 1rpx;
+  color: var(--faint);
+  margin: 0 4rpx;
+}
+.heat-txt {
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink-2);
+}
+
+/* 纪念日倒数贴边小组件 */
+.anv-mini {
+  display: flex;
+  align-items: stretch;
+  margin-top: 30rpx;
+  border: 1rpx solid var(--ink);
+  background: var(--paper);
+}
+.anv-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 20rpx 26rpx;
+}
+.anv-grow {
+  flex: 1;
+}
+.anv-sep {
+  width: 1rpx;
+  background: var(--line);
+}
+.anv-k {
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.anv-v {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.anv-u {
+  font-size: 22rpx;
+  font-weight: 400;
+  margin-left: 4rpx;
+  color: var(--ink-2);
+}
+.anv-v2 {
+  font-size: 30rpx;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
 /* 点亮城市清单 */
 .ledger {
   display: flex;

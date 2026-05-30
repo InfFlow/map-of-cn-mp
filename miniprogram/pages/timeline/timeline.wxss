@@ -188,6 +188,12 @@
 .tl-dot {
   color: var(--faint);
 }
+.tl-ic {
+  font-size: 24rpx;
+  line-height: 1;
+  color: var(--ink);
+  margin-right: -6rpx;
+}
 .tl-city {
   font-size: 50rpx;
   line-height: 1.1;

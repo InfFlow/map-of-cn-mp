@@ -51,6 +51,9 @@
   "permission": {
     "scope.userLocation": {
       "desc": "用于在地图上显示你们去过的位置、显示当地天气"
+    },
+    "scope.writePhotosAlbum": {
+      "desc": "用于把你们的照片保存到手机相册"
     }
   },
   "requiredPrivateInfos": ["getLocation"],

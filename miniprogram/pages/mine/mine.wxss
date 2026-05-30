@@ -216,7 +216,7 @@
 }
 .ocard-foot {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   margin-top: 20rpx;
   padding-top: 18rpx;
@@ -227,9 +227,21 @@
   color: var(--muted);
   letter-spacing: 1rpx;
 }
+.ocard-right {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
 .ocard-total {
   font-size: 32rpx;
   font-weight: 700;
+}
+.ocard-redo {
+  font-size: 22rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink);
+  padding: 10rpx 20rpx;
+  border: 1rpx solid var(--ink);
 }
 
 /* 后台管理入口 */
