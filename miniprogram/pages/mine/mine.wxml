@@ -113,7 +113,10 @@
           <view wx:if="{{item.remark}}" class="ocard-note">「{{item.remark}}」</view>
           <view class="ocard-foot">
             <text class="ocard-count">{{item.itemCount}} 份</text>
-            <text wx:if="{{item.totalAmount > 0}}" class="ocard-total serif">¥{{item.totalAmount}}</text>
+            <view class="ocard-right">
+              <text wx:if="{{item.totalAmount > 0}}" class="ocard-total serif">¥{{item.totalAmount}}</text>
+              <view class="ocard-redo pressable" hover-class="pressed" data-id="{{item.id}}" catchtap="reorder">再来一单</view>
+            </view>
           </view>
         </view>
       </view>
