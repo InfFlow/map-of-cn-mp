@@ -25,10 +25,14 @@
   <!-- 已登录 -->
   <block wx:else>
     <view class="profile rise d1">
-      <view class="avatar serif">{{monogram}}</view>
+      <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image wx:if="{{user.avatarUrl}}" class="avatar-img" src="{{user.avatarUrl}}" mode="aspectFill"></image>
+        <view wx:else class="avatar serif">{{monogram}}</view>
+        <view class="avatar-edit">换</view>
+      </button>
       <view class="profile-mid">
         <view class="profile-name serif">{{user.nickname || '亲爱的'}}</view>
-        <view class="profile-id">已用微信登录</view>
+        <view class="profile-id">点头像可换成微信头像</view>
       </view>
     </view>
 
@@ -81,7 +85,7 @@
         <text class="sec-en">NAME</text>
       </view>
       <view class="name-row">
-        <input class="name-input" value="{{nickInput}}" placeholder="给自己起个名字" placeholder-class="ph" bindinput="onNickInput" maxlength="20" />
+        <input class="name-input" type="nickname" value="{{nickInput}}" placeholder="点这里可填微信昵称" placeholder-class="ph" bindinput="onNickInput" bindblur="onNickInput" maxlength="20" />
         <view class="name-save pressable {{savingName ? 'disabled' : ''}}" hover-class="pressed" bindtap="saveName">保存</view>
       </view>
     </view>

@@ -514,6 +514,10 @@
   background: var(--ink);
   color: var(--bg);
 }
+.geo-btn-wide.alt {
+  background: transparent;
+  color: var(--ink);
+}
 .rec-line {
   align-items: center;
   justify-content: space-between;

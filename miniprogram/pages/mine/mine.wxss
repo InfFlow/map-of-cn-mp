@@ -70,10 +70,22 @@
   align-items: center;
   padding: 56rpx 0 10rpx;
 }
-.avatar {
+.avatar-btn {
   width: 124rpx;
   height: 124rpx;
   flex: 0 0 auto;
+  margin-right: 30rpx;
+  padding: 0;
+  position: relative;
+  background: transparent;
+  line-height: normal;
+}
+.avatar-btn::after {
+  border: none;
+}
+.avatar {
+  width: 124rpx;
+  height: 124rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,7 +93,23 @@
   color: var(--bg);
   font-size: 60rpx;
   font-weight: 700;
-  margin-right: 30rpx;
+}
+.avatar-img {
+  width: 124rpx;
+  height: 124rpx;
+  display: block;
+  background: var(--paper);
+}
+.avatar-edit {
+  position: absolute;
+  right: -6rpx;
+  bottom: -6rpx;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 18rpx;
+  letter-spacing: 1rpx;
+  padding: 2rpx 12rpx;
+  border: 2rpx solid var(--bg);
 }
 .profile-name {
   font-size: 46rpx;
