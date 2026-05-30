@@ -190,9 +190,47 @@
   letter-spacing: 1rpx;
   margin: -6rpx 0 18rpx;
 }
+.drag-wrap {
+  position: relative;
+  width: 100%;
+}
 .drag-area {
   position: relative;
   width: 100%;
+}
+/* 换天分割线（覆盖在拖动列表之上，落在卡片之间的间隙处） */
+.day-sep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 5;
+}
+.day-sep::before {
+  content: '';
+  flex: 1;
+  height: 0;
+  border-top: 1rpx dashed var(--line);
+}
+.day-sep::after {
+  content: '';
+  flex: 1;
+  height: 0;
+  border-top: 1rpx dashed var(--line);
+}
+.day-sep-txt {
+  flex: none;
+  margin: 0 16rpx;
+  padding: 4rpx 16rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: var(--bg);
+  background: var(--ink);
+  border-radius: 999rpx;
 }
 .mv-stop {
   width: 100%;
@@ -274,6 +312,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.stop-ai {
+  align-self: flex-start;
+  margin-top: 12rpx;
+  font-size: 21rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink);
+  padding: 6rpx 14rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
 }
 .stop-ops {
   flex: none;

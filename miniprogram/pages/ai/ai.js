@@ -36,8 +36,12 @@ Page({
     const valid = ['dish', 'scene', 'place', 'trip']
     const mode = valid.includes(options.mode) ? options.mode : 'dish'
     const city = options.city ? decodeURIComponent(options.city) : ''
+    const place = options.place ? decodeURIComponent(options.place) : city
     wx.setNavigationBarTitle({ title: TITLES[mode] })
-    this.setData({ mode, city, place: city, presets: PRESETS[mode] })
+    this.setData({ mode, city, place, presets: PRESETS[mode] }, () => {
+      // 从「景点」跳进来时自动发起一次地点介绍查询
+      if (options.auto === '1' && mode === 'place' && place) this.ask()
+    })
   },
 
   switchMode(e) {

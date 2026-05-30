@@ -2,7 +2,7 @@ const app = getApp()
 const api = require('../../utils/api')
 const { toneGradient, TONE_LIST, TONE_NAMES } = require('../../utils/util')
 
-const ROW_RPX = 176 // 拖动列表每行槽位高度（含间距）
+const ROW_RPX = 208 // 拖动列表每行槽位高度（含间距，含 AI 入口行）
 const RECO_LABEL = { walking: '步行', transit: '公交 / 地铁', driving: '驾车' }
 const EXP_CATS = [
   { key: 'food', name: '吃' },
@@ -67,6 +67,7 @@ Page({
     // 按天分组
     multiDay: false,
     dayGroups: [],
+    daySeps: [], // 目的地列表里「换天」的分割线（overlay）
     // 预算汇总（按分类）
     budgetBars: [],
 
@@ -167,7 +168,7 @@ Page({
       this.setData({
         active: null, areaH: 0,
         mapMarkers: [], mapPolyline: [], mapInclude: [], geoStopCount: 0,
-        multiDay: false, dayGroups: [], budgetBars: [],
+        multiDay: false, dayGroups: [], daySeps: [], budgetBars: [],
       })
       return
     }
@@ -224,7 +225,7 @@ Page({
     this.setData({
       active, areaH: stops.length * this.data.rowH,
       mapMarkers, mapPolyline, mapInclude, mapCenter, geoStopCount: geo.length,
-      multiDay, dayGroups,
+      multiDay, dayGroups, daySeps: this.computeDaySeps(stops, multiDay),
     })
     this.loadExpenses()
   },
@@ -602,6 +603,27 @@ Page({
     })
   },
 
+  // 计算目的地列表里换天的分割线位置（按当前顺序，相邻 day 不同处插一条）
+  computeDaySeps(stops, multiDay) {
+    if (!multiDay) return []
+    const seps = []
+    let prev = null
+    stops.forEach((s, i) => {
+      if (i > 0 && s.day !== prev) {
+        seps.push({ day: s.day, label: '第 ' + s.day + ' 天', y: i * this.data.rowH })
+      }
+      prev = s.day
+    })
+    return seps
+  },
+
+  // 点景点 → AI 地点介绍（怎么玩/怎么逛/附近美食）
+  aiPlace(e) {
+    const name = (e.currentTarget.dataset.name || '').trim()
+    if (!name) return
+    wx.navigateTo({ url: '/pages/ai/ai?mode=place&place=' + encodeURIComponent(name) + '&auto=1' })
+  },
+
   /* ---------------- 拖动排序（movable-view 竖向） ---------------- */
   onStopTouchStart(e) {
     if (!this.data.isAdmin) return
@@ -635,7 +657,7 @@ Page({
     stops.forEach((s, i) => {
       s._y = i * this.data.rowH
     })
-    this.setData({ 'active.stops': stops, dragId: 0 })
+    this.setData({ 'active.stops': stops, dragId: 0, daySeps: this.computeDaySeps(stops, this.data.multiDay) })
     // 同步本地 plans 缓存并持久化排序
     const plans = this.data.plans.slice()
     plans[this.data.activeIndex] = { ...plans[this.data.activeIndex], stops: stops.map((s) => ({ ...s })) }
