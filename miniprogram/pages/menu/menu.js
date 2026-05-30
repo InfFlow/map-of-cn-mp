@@ -62,7 +62,7 @@ Page({
         const qty = cart[d.id] ? cart[d.id].qty : 0
         count += qty
         total += qty * d.price
-        return { ...d, qty }
+        return { ...d, qty, badges: this.buildBadges(d) }
       }),
     }))
     this.setData({ categories, cartCount: count, cartTotal: this.fmt(total) })
@@ -70,6 +70,16 @@ Page({
 
   fmt(n) {
     return Number.isInteger(n) ? String(n) : n.toFixed(2)
+  },
+
+  buildBadges(d) {
+    const spicyLabel = ['', '微辣', '中辣', '重辣']
+    const badges = []
+    if (d.recommended) badges.push({ text: '推荐', rec: true })
+    const sp = Number(d.spicy) || 0
+    if (sp > 0) badges.push({ text: spicyLabel[sp] || '辣', rec: false })
+    if (d.portion) badges.push({ text: d.portion, rec: false })
+    return badges
   },
 
   changeQty(e) {

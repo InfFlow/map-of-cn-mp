@@ -22,43 +22,67 @@ function daysTogether(anns) {
   return 0
 }
 
-// ---- SVG 单色地图 ----
-const allPts = []
-polys.forEach((p) => p.points.forEach((pt) => allPts.push(pt)))
-journeys.forEach((j) => allPts.push({ latitude: j.latitude, longitude: j.longitude }))
-const lats = allPts.map((p) => p.latitude)
-const lngs = allPts.map((p) => p.longitude)
-const minLat = Math.min(...lats)
-const maxLat = Math.max(...lats)
-const minLng = Math.min(...lngs)
-const maxLng = Math.max(...lngs)
-const W = 600
-const H = 600
-const pad = 46
-const px = (lng) => pad + ((lng - minLng) / (maxLng - minLng)) * (W - 2 * pad)
-const py = (lat) => pad + ((maxLat - lat) / (maxLat - minLat)) * (H - 2 * pad)
-const polyPaths = polys
-  .map((p) => {
-    const d =
-      p.points
-        .map((pt, i) => `${i ? 'L' : 'M'}${px(pt.longitude).toFixed(1)},${py(pt.latitude).toFixed(1)}`)
-        .join(' ') + ' Z'
-    return `<path d="${d}" fill="#1b17120D" stroke="#1b1712" stroke-width="1" stroke-opacity="1"/>`
-  })
-  .join('\n')
-function pinSvg(x, y) {
-  const r = 9
-  const tipY = y + 25
-  return `<g><path d="M ${x - r} ${y} A ${r} ${r} 0 1 1 ${x + r} ${y} L ${x} ${tipY} Z" fill="#1b1712"/><circle cx="${x}" cy="${y}" r="3.6" fill="#f4f1ea"/></g>`
+// ---- SVG 单色中国地图：全图淡描底，点亮省份加深，城市逐座「点亮」（光晕 + 序号）----
+const china = require('../php/china-provinces.json')
+const litNames = new Set(journeys.map((j) => j.province))
+const isLit = (name) => {
+  for (const n of litNames) if (name && name.indexOf(n) === 0) return true
+  return false
 }
-const markerEls = journeys
+const featurePolys = (f) =>
+  f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates
+const allLng = []
+const allLat = []
+china.features.forEach((f) =>
+  featurePolys(f).forEach((poly) =>
+    poly.forEach((ring) => ring.forEach((pt) => { allLng.push(pt[0]); allLat.push(pt[1]) })),
+  ),
+)
+const minLng = Math.min(...allLng)
+const maxLng = Math.max(...allLng)
+const minLat = Math.min(...allLat)
+const maxLat = Math.max(...allLat)
+const W = 620
+const H = 540
+const pad = 28
+const sc = Math.min((W - 2 * pad) / (maxLng - minLng), (H - 2 * pad) / (maxLat - minLat))
+const offX = (W - (maxLng - minLng) * sc) / 2
+const offY = (H - (maxLat - minLat) * sc) / 2
+const px = (lng) => offX + (lng - minLng) * sc
+const py = (lat) => offY + (maxLat - lat) * sc
+const featurePath = (f) =>
+  featurePolys(f)
+    .map(
+      (poly) =>
+        poly
+          .map((ring) =>
+            ring.map((pt, i) => `${i ? 'L' : 'M'}${px(pt[0]).toFixed(1)},${py(pt[1]).toFixed(1)}`).join(' ') + ' Z',
+          )
+          .join(' '),
+    )
+    .join(' ')
+const basePaths = china.features
+  .filter((f) => !isLit(f.properties.name))
+  .map((f) => `<path d="${featurePath(f)}" fill="#1b171206" stroke="#1b171221" stroke-width="0.5" stroke-linejoin="round"/>`)
+  .join('\n')
+const litPaths = china.features
+  .filter((f) => isLit(f.properties.name))
+  .map((f) => `<path d="${featurePath(f)}" fill="#1b17121a" stroke="#1b1712" stroke-width="1.1" stroke-linejoin="round"/>`)
+  .join('\n')
+const litCities = journeys.map((j, i) => ({ ...j, no: i + 1 }))
+const cityGlow = (x, y) =>
+  `<g><circle cx="${x}" cy="${y}" r="13" fill="#1b1712" opacity="0.05"/><circle cx="${x}" cy="${y}" r="8" fill="#1b1712" opacity="0.1"/><circle cx="${x}" cy="${y}" r="4.2" fill="#1b1712"/><circle cx="${x}" cy="${y}" r="1.5" fill="#f4f1ea"/></g>`
+const markerEls = litCities
   .map((j) => {
     const x = px(j.longitude)
-    const y = py(j.latitude) - 14
-    return `${pinSvg(x, y)}<text x="${x.toFixed(1)}" y="${(y + 40).toFixed(1)}" font-size="13" fill="#1b1712" text-anchor="middle" font-weight="700">${j.city}</text>`
+    const y = py(j.latitude)
+    return `${cityGlow(x, y)}<text x="${x.toFixed(1)}" y="${(y - 16).toFixed(1)}" font-size="12.5" fill="#1b1712" text-anchor="middle" font-weight="700" font-family="Georgia,serif">${String(j.no).padStart(2, '0')}</text><text x="${x.toFixed(1)}" y="${(y + 21).toFixed(1)}" font-size="11" fill="#1b1712" text-anchor="middle" font-weight="700">${j.city}</text>`
   })
   .join('\n')
-const mapSvg = `<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#faf8f3">${polyPaths}${markerEls}</svg>`
+const mapSvg = `<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#faf8f3">${basePaths}${litPaths}${markerEls}</svg>`
+const ledgerHtml = litCities
+  .map((c) => `<span class="led"><span class="led-no serif">${String(c.no).padStart(2, '0')}</span>${c.city}</span>`)
+  .join('')
 
 const stats = {
   province: new Set(journeys.map((j) => j.province)).size,
@@ -96,7 +120,8 @@ const indexScreen = `
     </div>
     <div class="sec"><span class="sec-zh">足迹地图</span><span class="legend"><span class="lg"><span class="sw sw-area"></span>省份</span><span class="lg"><span class="sw sw-pin"></span>城市</span></span></div>
     <div class="map-frame"><span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>${mapSvg}</div>
-    <div class="map-cap">FIG.01 — 已点亮 ${stats.province} 省 · ${stats.city} 城</div>
+    <div class="map-cap">FIG.01 — 已点亮 ${stats.province} / 34 省 · ${stats.city} 城</div>
+    <div class="ledger">${ledgerHtml}</div>
     <div class="sec mt"><span class="sec-zh">最近的回忆</span><span class="sec-en">Timeline ›</span></div>
     <div class="index-list">${idxRows}</div>
     <div class="hair mt2"></div>
@@ -116,9 +141,16 @@ const anniCards = data.anniversaries
     </div>`,
   )
   .join('')
+let tlLastYear = null
 const tlItems = journeys
-  .map(
-    (j, i) => `<div class="tl-item">
+  .map((j, i) => {
+    const year = String(j.date).split('.')[0]
+    let sep = ''
+    if (year !== tlLastYear) {
+      tlLastYear = year
+      sep = `<div class="tl-year"><span class="tl-year-n display">${year}</span><span class="tl-year-line"></span><span class="tl-year-en">ANNO</span></div>`
+    }
+    return `${sep}<div class="tl-item">
     <div class="tl-rail"><span class="tl-no serif">${String(i + 1).padStart(2, '0')}</span><div class="tl-line"></div></div>
     <div class="tl-body">
       <div class="tl-cover" style="background:${toneGradient(j.coverTone)}"><span class="figno tl-figno">PLATE ${String(i + 1).padStart(2, '0')}</span></div>
@@ -129,8 +161,8 @@ const tlItems = journeys
       <div class="tl-tags">${j.tags.map((t) => `<span class="chip">${t}</span>`).join('')}</div>
       <div class="tl-more">阅读这段回忆 <span class="tl-more-arrow">\u203a</span></div>
     </div>
-  </div>`,
-  )
+  </div>`
+  })
   .join('')
 const timelineScreen = `
   <div class="pad">
@@ -146,16 +178,28 @@ const timelineScreen = `
     <div class="totop">\u2191</div>
   </div>`
 
-// ---- 详情（最新一段） ----
+// ---- 详情（最新一段）：杂志式大图叠标题 + 引文分隔 + 双栏信息 ----
 const d0 = journeys[0]
+const pullquote = (d0.notes && d0.notes[0]) || d0.intro
+const restNotes = (d0.notes && d0.notes.length > 1 ? d0.notes.slice(1) : d0.notes) || []
 const detailScreen = `
   <div class="pad">
     <div class="mast-row"><span class="mast-name">${d0.province}</span><span class="mast-vol">${d0.date}</span></div>
     <div class="rule"></div>
-    <div class="d-head"><div class="kicker">${d0.season}</div><div class="d-city display">${d0.city}</div><div class="d-title serif">${d0.title}</div></div>
-    <div class="d-cover" style="background:${toneGradient(d0.coverTone)}"><span class="figno d-cover-fig">COVER · ${d0.city}</span></div>
+    <div class="d-cover mag" style="background:${toneGradient(d0.coverTone)}">
+      <span class="figno d-cover-fig">COVER · ${d0.city}</span>
+      <div class="d-cover-scrim"></div>
+      <div class="d-cover-cap">
+        <div class="kicker light">${d0.season} · ${d0.date}</div>
+        <div class="d-city display">${d0.city}</div>
+        <div class="d-title serif">${d0.title}</div>
+      </div>
+    </div>
     <div class="d-lede dropcap">${d0.intro}</div>
-    <div class="d-facts">
+    <div class="pullquote serif">${pullquote}</div>
+    <div class="d-facts grid2">
+      <div class="fact"><span class="fk">季节 / SEASON</span><span class="fv">${d0.season}</span></div>
+      <div class="fact"><span class="fk">省份 / PROVINCE</span><span class="fv">${d0.province}</span></div>
       <div class="fact"><span class="fk">天气 / WEATHER</span><span class="fv">${d0.weather}</span></div>
       <div class="fact"><span class="fk">地标 / LANDMARK</span><span class="fv">${d0.landmark}</span></div>
     </div>
@@ -167,7 +211,7 @@ const detailScreen = `
       )
       .join('')}</div>
     <div class="sec mt"><span class="sec-zh">手记</span><span class="sec-en">Notes</span></div>
-    ${d0.notes.map((n) => `<div class="note serif">${n}</div>`).join('')}
+    ${restNotes.map((n) => `<div class="note serif">${n}</div>`).join('')}
     <div class="hair mt2"></div>
     <div class="foot-txt sp">Map of Us · 我们的地图</div>
     <div class="totop">\u2191</div>
@@ -228,6 +272,9 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .tick.bl{left:-1px;bottom:-1px;border-right:0;border-top:0;}
   .tick.br{right:-1px;bottom:-1px;border-left:0;border-top:0;}
   .map-cap{margin-top:7px;font-family:Georgia,"Songti SC",serif;font-size:10px;letter-spacing:.5px;color:var(--muted);text-align:center;}
+  .ledger{display:flex;flex-wrap:wrap;gap:7px 14px;margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
+  .led{display:inline-flex;align-items:baseline;gap:5px;font-size:11.5px;color:var(--ink);letter-spacing:.5px;}
+  .led-no{font-size:10px;font-weight:700;color:var(--faint);}
   .index-list{}
   .idx-row{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line);}
   .idx-row:last-child{border-bottom:0;}
@@ -248,6 +295,10 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .anni-hair{height:1px;background:var(--ink);width:24px;margin:8px 0;}
   .anni-label{font-size:13px;font-weight:700;}
   .anni-city{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px;}
+  .tl-year{display:flex;align-items:center;gap:11px;margin:6px 0 18px;}
+  .tl-year-n{font-size:30px;line-height:1;color:var(--ink);letter-spacing:1px;}
+  .tl-year-line{flex:1;height:1px;background:var(--line);}
+  .tl-year-en{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--faint);}
   .tl-item{display:flex;gap:12px;padding-bottom:22px;}
   .tl-rail{flex:0 0 28px;display:flex;flex-direction:column;align-items:center;}
   .tl-no{font-size:15px;font-weight:700;color:var(--faint);}
@@ -264,17 +315,24 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .tl-tags{margin-top:9px;}
   .tl-more{margin-top:9px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink);display:flex;align-items:center;gap:4px;}
   .tl-more-arrow{font-size:14px;color:var(--faint);}
-  /* 详情 */
-  .d-head{padding:18px 0 2px;}
-  .d-city{font-size:46px;line-height:1;margin-top:7px;}
-  .d-title{font-size:16px;font-weight:700;color:var(--ink2);margin-top:9px;}
-  .d-cover{position:relative;width:100%;height:240px;margin-top:15px;}
-  .d-cover-fig{position:absolute;left:9px;bottom:9px;background:rgba(244,241,234,.7);padding:2px 6px;color:var(--ink);opacity:.6;}
-  .d-lede{font-size:14px;line-height:1.9;margin-top:17px;}
-  .d-facts{margin-top:16px;border-top:1px solid var(--line);}
+  /* 详情：杂志式大图叠标题 */
+  .d-cover{position:relative;width:100%;height:330px;margin-top:16px;overflow:hidden;}
+  .d-cover.mag{display:flex;align-items:flex-end;}
+  .d-cover-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(27,23,18,0) 32%,rgba(27,23,18,.18) 60%,rgba(27,23,18,.62) 100%);}
+  .d-cover-cap{position:relative;z-index:2;padding:0 16px 18px;color:#faf8f3;}
+  .kicker.light{color:rgba(250,248,243,.82);}
+  .d-cover-cap .d-city{font-size:50px;line-height:1;margin-top:6px;color:#faf8f3;}
+  .d-cover-cap .d-title{font-size:16px;font-weight:700;margin-top:8px;color:rgba(250,248,243,.92);}
+  .d-cover-fig{position:absolute;left:9px;top:9px;bottom:auto;background:rgba(244,241,234,.7);padding:2px 6px;color:var(--ink);opacity:.85;z-index:2;}
+  .d-lede{font-size:14px;line-height:1.9;margin-top:20px;}
+  .pullquote{font-size:19px;line-height:1.6;font-style:italic;color:var(--ink);text-align:center;padding:20px 8px;margin-top:18px;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);}
+  .d-facts{margin-top:20px;border-top:1px solid var(--line);}
+  .d-facts.grid2{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;border-top:0;}
+  .d-facts.grid2 .fact:nth-child(-n+2){border-top:1px solid var(--line);}
+  .d-facts.grid2 .fact{flex-direction:column;align-items:flex-start;gap:4px;}
   .fact{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);}
   .fk{font-size:10px;letter-spacing:1px;color:var(--muted);}
-  .fv{font-size:13px;font-weight:700;}
+  .fv{font-size:14px;font-weight:700;}
   .d-tags{margin-top:14px;}
   .photos{display:flex;flex-wrap:wrap;gap:11px;}
   .photo-cell{width:calc((100% - 11px)/2);}

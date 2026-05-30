@@ -23,7 +23,8 @@ try {
     )->fetchAll();
 
     $dishRows = $pdo->query(
-        'SELECT id, category_id, name, description, price, image_url
+        'SELECT id, category_id, name, description, price, image_url,
+                is_recommended, spicy_level, portion
          FROM dishes
          WHERE is_available = 1
          ORDER BY sort_order ASC, id ASC'
@@ -37,6 +38,9 @@ try {
             'description' => $d['description'],
             'price' => (float) $d['price'],
             'imageUrl' => $d['image_url'],
+            'recommended' => (int) ($d['is_recommended'] ?? 0) === 1,
+            'spicy' => (int) ($d['spicy_level'] ?? 0),
+            'portion' => $d['portion'] ?? '',
         ];
     }
 

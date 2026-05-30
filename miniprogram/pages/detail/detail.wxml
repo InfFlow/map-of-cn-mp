@@ -19,20 +19,30 @@
     <view class="rule"></view>
   </view>
 
-  <view class="d-head rise d1">
-    <view class="kicker">{{trip.season}}</view>
-    <view class="d-city display">{{trip.city}}</view>
-    <view class="d-title serif">{{trip.title}}</view>
-  </view>
-
-  <view class="d-cover rise d2" style="background-image: {{trip.coverGrad}};">
+  <view class="d-cover mag rise d2" style="background-image: {{trip.coverGrad}};">
     <image wx:if="{{trip.cover}}" class="d-cover-img" src="{{trip.cover}}" mode="aspectFill"></image>
     <text class="d-cover-fig figno">COVER · {{trip.city}}</text>
+    <view class="d-cover-scrim"></view>
+    <view class="d-cover-cap">
+      <view class="kicker light">{{trip.season}} · {{trip.dateShort}}</view>
+      <view class="d-city display">{{trip.city}}</view>
+      <view class="d-title serif">{{trip.title}}</view>
+    </view>
   </view>
 
   <view wx:if="{{trip.intro}}" class="d-lede dropcap rise d2">{{trip.intro}}</view>
 
-  <view class="d-facts rise d2">
+  <view wx:if="{{trip.pullquote}}" class="pullquote serif rise d2">{{trip.pullquote}}</view>
+
+  <view class="d-facts grid2 rise d2">
+    <view wx:if="{{trip.season}}" class="fact">
+      <text class="fk">季节 / SEASON</text>
+      <text class="fv">{{trip.season}}</text>
+    </view>
+    <view wx:if="{{trip.province}}" class="fact">
+      <text class="fk">省份 / PROVINCE</text>
+      <text class="fv">{{trip.province}}</text>
+    </view>
     <view wx:if="{{trip.weather}}" class="fact">
       <text class="fk">天气 / WEATHER</text>
       <text class="fv">{{trip.weather}}</text>
@@ -70,12 +80,12 @@
     </view>
   </view>
 
-  <view wx:if="{{trip.notes.length}}" class="block rise d4">
+  <view wx:if="{{trip.restNotes.length}}" class="block rise d4">
     <view class="sec">
       <text class="sec-zh">手记</text>
       <text class="sec-en">Notes</text>
     </view>
-    <view wx:for="{{trip.notes}}" wx:key="*this" class="note serif">{{item}}</view>
+    <view wx:for="{{trip.restNotes}}" wx:key="*this" class="note serif">{{item}}</view>
   </view>
 
   <view class="foot rise d5">

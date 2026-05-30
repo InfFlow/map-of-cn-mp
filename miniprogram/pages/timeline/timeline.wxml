@@ -49,9 +49,13 @@
       </view>
 
       <view class="tl">
+        <block wx:for="{{trips}}" wx:key="id">
+        <view wx:if="{{item.yearHead}}" class="tl-year">
+          <text class="tl-year-n display">{{item.yearHead}}</text>
+          <view class="tl-year-line"></view>
+          <text class="tl-year-en">ANNO</text>
+        </view>
         <view
-          wx:for="{{trips}}"
-          wx:key="id"
           class="tl-item pressable"
           hover-class="pressed"
           hover-stay-time="60"
@@ -81,6 +85,7 @@
             <view class="tl-more">阅读这段回忆 <text class="tl-more-arrow">›</text></view>
           </view>
         </view>
+        </block>
       </view>
     </view>
 

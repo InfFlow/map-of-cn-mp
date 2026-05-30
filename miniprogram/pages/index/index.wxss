@@ -159,6 +159,29 @@
   text-align: center;
 }
 
+/* 点亮城市清单 */
+.ledger {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx 28rpx;
+  margin-top: 22rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid var(--line);
+}
+.led {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+  font-size: 23rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink);
+}
+.led-no {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: var(--faint);
+}
+
 /* 编号式回忆列表 */
 .idx-row {
   display: flex;

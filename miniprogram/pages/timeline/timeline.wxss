@@ -81,6 +81,31 @@
   letter-spacing: 2rpx;
 }
 
+/* 年份分隔（目录式） */
+.tl-year {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  margin: 8rpx 0 30rpx;
+}
+.tl-year-n {
+  font-size: 60rpx;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: 2rpx;
+}
+.tl-year-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--line);
+}
+.tl-year-en {
+  font-size: 18rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  color: var(--faint);
+}
+
 /* 旅程：编号轨道 + 大图卡（杂志目录式） */
 .tl-item {
   display: flex;

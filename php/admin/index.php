@@ -95,6 +95,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $price = (float) ($_POST['price'] ?? 0);
             $sort = (int) ($_POST['sort_order'] ?? 0);
             $imageUrl = trim((string) ($_POST['image_url'] ?? ''));
+            $isRec = !empty($_POST['is_recommended']) ? 1 : 0;
+            $spicy = (int) ($_POST['spicy_level'] ?? 0);
+            if ($spicy < 0 || $spicy > 3) {
+                $spicy = 0;
+            }
+            $portion = trim((string) ($_POST['portion'] ?? ''));
 
             // 图片上传（可选）
             if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
@@ -116,15 +122,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($name !== '' && $catId > 0) {
                 if ($action === 'add_dish') {
                     $st = $pdo->prepare(
-                        'INSERT INTO dishes (category_id, name, description, price, image_url, sort_order)
-                         VALUES (?, ?, ?, ?, ?, ?)'
+                        'INSERT INTO dishes (category_id, name, description, price, image_url, is_recommended, spicy_level, portion, sort_order)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
                     );
-                    $st->execute([$catId, $name, $desc, $price, $imageUrl, $sort]);
+                    $st->execute([$catId, $name, $desc, $price, $imageUrl, $isRec, $spicy, $portion, $sort]);
                 } else {
                     $st = $pdo->prepare(
-                        'UPDATE dishes SET category_id=?, name=?, description=?, price=?, image_url=?, sort_order=? WHERE id=?'
+                        'UPDATE dishes SET category_id=?, name=?, description=?, price=?, image_url=?, is_recommended=?, spicy_level=?, portion=?, sort_order=? WHERE id=?'
                     );
-                    $st->execute([$catId, $name, $desc, $price, $imageUrl, $sort, $id]);
+                    $st->execute([$catId, $name, $desc, $price, $imageUrl, $isRec, $spicy, $portion, $sort, $id]);
                 }
             }
             redirect('dishes');
@@ -408,6 +414,22 @@ $statusLabels = ['pending' => '待处理', 'accepted' => '已接单', 'done' => 
           <div><label>价格（可留空填 0）</label><input type="number" step="0.01" name="price" value="<?= h((string) ($editDish['price'] ?? '0')) ?>"></div>
           <div><label>排序（小在前）</label><input type="number" name="sort_order" value="<?= h((string) ($editDish['sort_order'] ?? '0')) ?>"></div>
         </div>
+        <div class="row">
+          <div><label>辣度</label>
+            <select name="spicy_level">
+              <?php $spicyOpts = ['不辣', '微辣', '中辣', '重辣']; $curSpicy = (int) ($editDish['spicy_level'] ?? 0); ?>
+              <?php foreach ($spicyOpts as $sv => $sl): ?>
+                <option value="<?= $sv ?>" <?= $curSpicy === $sv ? 'selected' : '' ?>><?= h($sl) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div><label>分量（可选，如「约 2 人份 / 大份」）</label><input type="text" name="portion" value="<?= h($editDish['portion'] ?? '') ?>" placeholder="约 2 人份"></div>
+          <div style="flex:0 0 auto;align-self:flex-end;padding-bottom:8px">
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="checkbox" name="is_recommended" value="1" <?= !empty($editDish['is_recommended']) ? 'checked' : '' ?> style="width:auto">推荐
+            </label>
+          </div>
+        </div>
         <div style="margin-bottom:14px"><label>描述（可选）</label><textarea name="description" placeholder="口味、做法、备注…"><?= h($editDish['description'] ?? '') ?></textarea></div>
         <div style="margin-bottom:16px">
           <label>菜品图片（可选，jpg/png/webp）</label>
@@ -439,6 +461,14 @@ $statusLabels = ['pending' => '待处理', 'accepted' => '已接单', 'done' => 
             </td>
             <td>
               <div class="serif" style="font-size:16px"><?= h($d['name']) ?></div>
+              <?php
+                $tags = [];
+                if (!empty($d['is_recommended'])) { $tags[] = '推荐'; }
+                $sl = (int) ($d['spicy_level'] ?? 0);
+                if ($sl > 0) { $tags[] = ['', '微辣', '中辣', '重辣'][$sl]; }
+                if (trim((string) ($d['portion'] ?? '')) !== '') { $tags[] = $d['portion']; }
+              ?>
+              <?php if ($tags): ?><div class="muted" style="font-size:12px;margin-top:2px"><?= h(implode(' · ', $tags)) ?></div><?php endif; ?>
               <?php if ($d['description'] !== ''): ?><div class="muted" style="font-size:12px"><?= h(mb_strimwidth($d['description'], 0, 40, '…')) ?></div><?php endif; ?>
             </td>
             <td class="muted"><?= h($catName[(int) $d['category_id']] ?? '—') ?></td>

@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS `dishes` (
   `price`        DECIMAL(8,2) NOT NULL DEFAULT 0.00,
   `image_url`    VARCHAR(512) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `is_available` TINYINT(1) NOT NULL DEFAULT 1,
+  `is_recommended` TINYINT(1) NOT NULL DEFAULT 0,
+  `spicy_level`  TINYINT NOT NULL DEFAULT 0,
+  `portion`      VARCHAR(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `sort_order`   INT NOT NULL DEFAULT 0,
   `created_at`   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at`   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -67,3 +70,10 @@ CREATE TABLE IF NOT EXISTS `order_items` (
   PRIMARY KEY (`id`),
   KEY `idx_item_order` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 老库升级：为已存在的 dishes 表补充菜品标签列（推荐 / 辣度 / 分量）。
+-- 若列已存在，重复执行会报错，可忽略；或先 SHOW COLUMNS 判断后再执行。
+ALTER TABLE `dishes`
+  ADD COLUMN `is_recommended` TINYINT(1) NOT NULL DEFAULT 0 AFTER `is_available`,
+  ADD COLUMN `spicy_level` TINYINT NOT NULL DEFAULT 0 AFTER `is_recommended`,
+  ADD COLUMN `portion` VARCHAR(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' AFTER `spicy_level`;

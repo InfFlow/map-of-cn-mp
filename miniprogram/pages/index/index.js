@@ -28,6 +28,7 @@ Page({
     markers: [],
     polygons: [],
     includePoints: [],
+    ledger: [],
     recent: [],
     mapCaption: '',
     loading: true,
@@ -69,8 +70,20 @@ Page({
         width: 26,
         height: 32,
         anchor: { x: 0.5, y: 1 },
+        label: {
+          content: String(i + 1).padStart(2, '0'),
+          color: '#1b1712',
+          fontSize: 10,
+          anchorX: -8,
+          anchorY: -34,
+          bgColor: '#faf8f3',
+          borderColor: '#1b1712',
+          borderWidth: 1,
+          borderRadius: 8,
+          padding: 3,
+        },
         callout: {
-          content: `${j.city} · ${j.title}`,
+          content: `${String(i + 1).padStart(2, '0')} · ${j.city} · ${j.title}`,
           color: '#1f1d1b',
           fontSize: 12,
           borderRadius: 10,
@@ -86,7 +99,12 @@ Page({
         points: p.points,
         strokeWidth: 1,
         strokeColor: '#1b1712',
-        fillColor: '#1b17120D',
+        fillColor: '#1b17121A',
+      }))
+
+      const ledger = journeys.map((j, i) => ({
+        no: String(i + 1).padStart(2, '0'),
+        city: j.city,
       }))
 
       const includePoints = markers.map((m) => ({
@@ -117,10 +135,11 @@ Page({
         markers,
         polygons,
         includePoints,
+        ledger,
         recent,
         days: daysTogether(data.anniversaries),
         stats,
-        mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} 省 · ${stats.cityCount} 城`,
+        mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} / 34 省 · ${stats.cityCount} 城`,
         loading: false,
         error: '',
       })

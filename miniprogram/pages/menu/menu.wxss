@@ -118,11 +118,32 @@
   font-weight: 700;
   letter-spacing: -0.5rpx;
 }
+/* 菜品角标：推荐 / 辣度 / 分量 */
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 10rpx;
+}
+.badge {
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink-2);
+  border: 1rpx solid var(--line);
+  padding: 2rpx 14rpx;
+  line-height: 1.6;
+}
+.badge.rec {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+  font-weight: 700;
+}
 .dish-desc {
   font-size: 24rpx;
   color: var(--muted);
   line-height: 1.5;
-  margin-top: 6rpx;
+  margin-top: 10rpx;
 }
 .dish-price {
   font-size: 27rpx;

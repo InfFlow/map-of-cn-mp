@@ -74,6 +74,11 @@
         ></map>
       </view>
       <view class="map-cap">{{mapCaption}}</view>
+      <view wx:if="{{ledger.length}}" class="ledger">
+        <view wx:for="{{ledger}}" wx:key="no" class="led">
+          <text class="led-no serif">{{item.no}}</text>{{item.city}}
+        </view>
+      </view>
     </view>
 
     <view wx:if="{{recent.length}}" class="block rise d4">

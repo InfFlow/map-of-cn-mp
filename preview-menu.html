@@ -35,7 +35,10 @@
   .dish-thumb-ph{font-size:28px;color:var(--faint);}
   .dish-mid{flex:1;min-width:0;}
   .dish-name{font-size:16px;font-weight:700;letter-spacing:-.3px;}
-  .dish-desc{font-size:12px;color:var(--muted);margin-top:3px;}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
+  .badge{font-size:10px;letter-spacing:.5px;color:var(--ink-2);border:1px solid var(--line);padding:1px 7px;}
+  .badge.rec{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;}
+  .dish-desc{font-size:12px;color:var(--muted);margin-top:5px;}
   .dish-price{font-size:13.5px;color:var(--ink2);margin-top:6px;}
   .stepper{display:flex;align-items:center;flex:0 0 auto;margin-left:9px;}
   .step{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ink);font-size:18px;line-height:1;color:var(--ink);background:var(--surface);}
@@ -93,6 +96,7 @@
           <div class="dish-thumb ph"><span class="dish-thumb-ph serif">番</span></div>
           <div class="dish-mid">
             <div class="dish-name serif">番茄炒蛋</div>
+            <div class="badges"><span class="badge rec">推荐</span><span class="badge">约 2 人份</span></div>
             <div class="dish-desc">酸甜开胃，多放点番茄</div>
             <div class="dish-price serif">¥12</div>
           </div>
@@ -101,6 +105,7 @@
           <div class="dish-thumb ph"><span class="dish-thumb-ph serif">青</span></div>
           <div class="dish-mid">
             <div class="dish-name serif">青椒土豆丝</div>
+            <div class="badges"><span class="badge">微辣</span></div>
             <div class="dish-desc">要脆口的那种</div>
             <div class="dish-price serif">¥10</div>
           </div>
@@ -109,6 +114,7 @@
           <div class="dish-thumb ph"><span class="dish-thumb-ph serif">红</span></div>
           <div class="dish-mid">
             <div class="dish-name serif">红烧排骨</div>
+            <div class="badges"><span class="badge rec">推荐</span><span class="badge">大份</span></div>
             <div class="dish-desc">你最爱的那道</div>
             <div class="dish-price serif">¥38</div>
           </div>
@@ -117,6 +123,7 @@
           <div class="dish-thumb ph"><span class="dish-thumb-ph serif">西</span></div>
           <div class="dish-mid">
             <div class="dish-name serif">西红柿鸡蛋汤</div>
+            <div class="badges"><span class="badge">2 碗</span></div>
             <div class="dish-desc">暖暖的</div>
             <div class="dish-price serif">¥8</div>
           </div>
@@ -125,6 +132,7 @@
           <div class="dish-thumb ph"><span class="dish-thumb-ph serif">米</span></div>
           <div class="dish-mid">
             <div class="dish-name serif">米饭</div>
+            
             <div class="dish-desc">两碗</div>
             <div class="dish-price serif">¥2</div>
           </div>
@@ -133,6 +141,7 @@
           <div class="dish-thumb ph"><span class="dish-thumb-ph serif">多</span></div>
           <div class="dish-mid">
             <div class="dish-name serif">多肉葡萄</div>
+            
             <div class="dish-desc">少冰三分糖</div>
             <div class="dish-price serif">¥18</div>
           </div>

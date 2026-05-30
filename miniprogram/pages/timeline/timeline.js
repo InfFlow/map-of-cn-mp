@@ -29,14 +29,21 @@ Page({
       const sorted = [...(data.journeys || [])].sort((a, b) =>
         String(b.date).localeCompare(String(a.date)),
       )
-      const trips = sorted.map((j, i) => ({
-        ...j,
-        no: String(i + 1).padStart(2, '0'),
-        dateText: prettyDate(j.date),
-        dateShort: String(j.date),
-        coverGrad: toneGradient(j.coverTone),
-        cover: j.photos && j.photos[0] && j.photos[0].imageUrl,
-      }))
+      let lastYear = ''
+      const trips = sorted.map((j, i) => {
+        const year = String(j.date).split('.')[0]
+        const yearHead = year !== lastYear ? year : ''
+        lastYear = year
+        return {
+          ...j,
+          no: String(i + 1).padStart(2, '0'),
+          yearHead,
+          dateText: prettyDate(j.date),
+          dateShort: String(j.date),
+          coverGrad: toneGradient(j.coverTone),
+          cover: j.photos && j.photos[0] && j.photos[0].imageUrl,
+        }
+      })
       const anniversaries = (data.anniversaries || []).map((a) => ({
         ...a,
         dateText: prettyDate(a.date),

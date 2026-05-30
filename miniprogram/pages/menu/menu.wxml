@@ -58,6 +58,14 @@
         </view>
         <view class="dish-mid">
           <view class="dish-name serif">{{d.name}}</view>
+          <view wx:if="{{d.badges.length}}" class="badges">
+            <text
+              wx:for="{{d.badges}}"
+              wx:for-item="b"
+              wx:key="text"
+              class="badge {{b.rec ? 'rec' : ''}}"
+            >{{b.text}}</text>
+          </view>
           <view wx:if="{{d.description}}" class="dish-desc">{{d.description}}</view>
           <view class="dish-price serif">{{d.price > 0 ? '¥' + d.price : '随意'}}</view>
         </view>

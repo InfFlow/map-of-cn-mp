@@ -23,10 +23,6 @@
   margin-top: 12rpx;
 }
 
-/* 标题区 */
-.d-head {
-  padding: 40rpx 0 4rpx;
-}
 .d-city {
   font-size: 96rpx;
   line-height: 1;
@@ -39,28 +35,55 @@
   margin-top: 18rpx;
 }
 
-/* 大封面 */
+/* 杂志式大封面：图上叠标题 */
 .d-cover {
   width: 100%;
-  height: 520rpx;
+  height: 700rpx;
   margin-top: 32rpx;
   background-size: cover;
   background-position: center;
   overflow: hidden;
   position: relative;
 }
+.d-cover.mag {
+  display: flex;
+  align-items: flex-end;
+}
 .d-cover-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+}
+.d-cover-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(27, 23, 18, 0) 30%, rgba(27, 23, 18, 0.2) 58%, rgba(27, 23, 18, 0.66) 100%);
+}
+.d-cover-cap {
+  position: relative;
+  z-index: 2;
+  padding: 0 30rpx 34rpx;
+}
+.kicker.light {
+  color: rgba(250, 248, 243, 0.82);
+}
+.d-cover-cap .d-city {
+  color: #faf8f3;
+  font-size: 100rpx;
+}
+.d-cover-cap .d-title {
+  color: rgba(250, 248, 243, 0.92);
 }
 .d-cover-fig {
   position: absolute;
   left: 18rpx;
-  bottom: 16rpx;
+  top: 16rpx;
   color: var(--ink);
-  opacity: 0.5;
+  opacity: 0.85;
   background: rgba(244, 241, 234, 0.7);
   padding: 4rpx 12rpx;
+  z-index: 2;
 }
 
 /* 引文式简介（首字下沉） */
@@ -71,10 +94,37 @@
   margin-top: 40rpx;
 }
 
-/* 事实表：天气 / 地标 */
+/* 引文分隔 */
+.pullquote {
+  font-size: 40rpx;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--ink);
+  text-align: center;
+  padding: 42rpx 16rpx;
+  margin-top: 36rpx;
+  border-top: 3rpx solid var(--ink);
+  border-bottom: 3rpx solid var(--ink);
+}
+
+/* 事实表：双栏 */
 .d-facts {
-  margin-top: 34rpx;
+  margin-top: 40rpx;
   border-top: 1rpx solid var(--line);
+}
+.d-facts.grid2 {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 0;
+}
+.d-facts.grid2 .fact {
+  width: 50%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8rpx;
+}
+.d-facts.grid2 .fact:nth-child(odd) {
+  padding-right: 18rpx;
 }
 .fact {
   display: flex;
@@ -82,6 +132,7 @@
   align-items: baseline;
   padding: 22rpx 0;
   border-bottom: 1rpx solid var(--line);
+  box-sizing: border-box;
 }
 .fk {
   font-size: 21rpx;
@@ -89,7 +140,7 @@
   color: var(--muted);
 }
 .fv {
-  font-size: 27rpx;
+  font-size: 28rpx;
   font-weight: 700;
 }
 

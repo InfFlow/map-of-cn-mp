@@ -35,6 +35,7 @@ Page({
         grad: toneGradient(p.tone),
         fig: 'FIG.' + String(i + 1).padStart(2, '0'),
       }))
+      const notes = j.notes || []
       const trip = {
         ...j,
         dateText: prettyDate(j.date),
@@ -42,6 +43,8 @@ Page({
         coverGrad: toneGradient(j.coverTone),
         cover: (photos.find((p) => p.imageUrl) || {}).imageUrl || '',
         photos,
+        pullquote: notes[0] || j.intro || '',
+        restNotes: notes.length > 1 ? notes.slice(1) : notes,
       }
       wx.setNavigationBarTitle({ title: j.city })
       this.setData({ trip, loading: false })

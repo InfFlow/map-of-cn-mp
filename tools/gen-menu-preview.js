@@ -17,6 +17,16 @@ const cartTotal = cart.reduce((s, i) => s + i.qty * i.price, 0)
 
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
 
+// 角标由后台「推荐 / 辣度 / 分量」字段驱动（真实数据）
+const spicyLabel = ['', '微辣', '中辣', '重辣']
+const badgesHtml = (d) => {
+  let h = ''
+  if (d.recommended) h += '<span class="badge rec">推荐</span>'
+  if (d.spicy) h += `<span class="badge">${spicyLabel[d.spicy] || '辣'}</span>`
+  if (d.portion) h += `<span class="badge">${esc(d.portion)}</span>`
+  return h ? `<div class="badges">${h}</div>` : ''
+}
+
 // ---- 菜单页 ----
 const catBar = cats
   .map((c, i) => `<span class="catchip ${i === 0 ? 'on' : ''}">${esc(c.name)}</span>`)
@@ -34,6 +44,7 @@ const catSections = cats
           <div class="dish-thumb ph"><span class="dish-thumb-ph serif">${esc(d.name[0])}</span></div>
           <div class="dish-mid">
             <div class="dish-name serif">${esc(d.name)}</div>
+            ${badgesHtml(d)}
             ${d.description ? `<div class="dish-desc">${esc(d.description)}</div>` : ''}
             <div class="dish-price serif">${d.price > 0 ? '¥' + d.price : '随意'}</div>
           </div>
@@ -142,7 +153,10 @@ const css = `
   .dish-thumb-ph{font-size:28px;color:var(--faint);}
   .dish-mid{flex:1;min-width:0;}
   .dish-name{font-size:16px;font-weight:700;letter-spacing:-.3px;}
-  .dish-desc{font-size:12px;color:var(--muted);margin-top:3px;}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
+  .badge{font-size:10px;letter-spacing:.5px;color:var(--ink-2);border:1px solid var(--line);padding:1px 7px;}
+  .badge.rec{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;}
+  .dish-desc{font-size:12px;color:var(--muted);margin-top:5px;}
   .dish-price{font-size:13.5px;color:var(--ink2);margin-top:6px;}
   .stepper{display:flex;align-items:center;flex:0 0 auto;margin-left:9px;}
   .step{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ink);font-size:18px;line-height:1;color:var(--ink);background:var(--surface);}
