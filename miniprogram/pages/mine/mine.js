@@ -51,6 +51,11 @@ Page({
     wx.navigateTo({ url: '/pages/admin/admin' })
   },
 
+  openWish() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/wish/wish' })
+  },
+
   claimAdmin() {
     const user = this.data.user
     if (!user || !user.openid) return

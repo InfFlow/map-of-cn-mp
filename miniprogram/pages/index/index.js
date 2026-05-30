@@ -30,6 +30,8 @@ Page({
     includePoints: [],
     ledger: [],
     recent: [],
+    badges: [],
+    unlocked: 0,
     mapCaption: '',
     loading: true,
     showTop: false,
@@ -130,11 +132,27 @@ Page({
           dateShort: String(j.date),
         }))
 
+      const provinceCount = new Set(journeys.map((j) => j.province).filter(Boolean)).size
+      const cityCount = new Set(journeys.map((j) => j.city).filter(Boolean)).size
       const stats = {
-        provinceCount: new Set(journeys.map((j) => j.province)).size,
-        cityCount: new Set(journeys.map((j) => j.city)).size,
+        provinceCount,
+        cityCount,
         journeyCount: journeys.length,
       }
+
+      const badgeDefs = [
+        { need: 3, type: 'province', name: '三省通行' },
+        { need: 5, type: 'province', name: '五省点亮' },
+        { need: 10, type: 'province', name: '十省纵横' },
+        { need: 5, type: 'city', name: '五城打卡' },
+        { need: 10, type: 'city', name: '十城足迹' },
+        { need: 20, type: 'city', name: '廿城漫游' },
+      ]
+      const badges = badgeDefs.map((b) => ({
+        name: b.name,
+        on: (b.type === 'province' ? provinceCount : cityCount) >= b.need,
+      }))
+      const unlocked = badges.filter((b) => b.on).length
 
       this._markers = markers
       this.setData({
@@ -143,6 +161,8 @@ Page({
         includePoints,
         ledger,
         recent,
+        badges,
+        unlocked,
         days: daysTogether(data.anniversaries),
         stats,
         mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} / 34 省 · ${stats.cityCount} 城`,

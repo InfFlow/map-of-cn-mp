@@ -236,3 +236,22 @@
   border: 1rpx solid var(--bg);
   padding: 12rpx 26rpx;
 }
+
+/* AI 点菜入口 */
+.ai-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 26rpx;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid var(--ink);
+  background: var(--surface);
+}
+.ai-entry .ai-zh {
+  font-size: 26rpx;
+  letter-spacing: 0.5rpx;
+}
+.ai-entry .ai-arrow {
+  font-size: 34rpx;
+  color: var(--ink);
+}

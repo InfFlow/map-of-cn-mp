@@ -4,6 +4,15 @@ const { toneGradient, TONE_LIST } = require('../../utils/util')
 
 const ROW_RPX = 176 // 拖动列表每行槽位高度（含间距）
 const RECO_LABEL = { walking: '步行', transit: '公交 / 地铁', driving: '驾车' }
+const EXP_CATS = [
+  { key: 'food', name: '吃' },
+  { key: 'hotel', name: '住' },
+  { key: 'transport', name: '行' },
+  { key: 'ticket', name: '门票' },
+  { key: 'shopping', name: '购物' },
+  { key: 'other', name: '其他' },
+]
+const EXP_CAT_LABEL = EXP_CATS.reduce((m, c) => ((m[c.key] = c.name), m), {})
 
 function toDotted(d) {
   if (!d) return ''
@@ -20,6 +29,7 @@ Page({
     loading: true,
     error: '',
     isAdmin: false,
+    canEdit: false,
     openid: '',
 
     plans: [],
@@ -34,6 +44,11 @@ Page({
 
     legs: {}, // `${fromId}_${toId}` -> { loading, open, recommend, opt, steps }
 
+    expCats: EXP_CATS,
+    expenses: [],
+    expenseTotal: 0,
+    expenseEditor: { show: false, catIndex: 0, amount: '', memo: '' },
+
     planEditor: { show: false, mode: 'add', id: '', title: '', toneIndex: 0, coverTone: TONE_LIST[0], planDate: '', note: '' },
     stopEditor: {
       show: false, mode: 'add', id: 0, planId: '',
@@ -47,7 +62,7 @@ Page({
     const rowH = Math.round((ROW_RPX * sys.windowWidth) / 750)
     this.setData({ rowH })
     const user = app.getUser()
-    if (user && user.openid) this.setData({ openid: user.openid })
+    if (user && user.openid) this.setData({ openid: user.openid, canEdit: true })
     this.refreshAdminThenLoad()
   },
 
@@ -81,7 +96,7 @@ Page({
     this.setData({ loading: true, error: '' })
     try {
       let plans
-      if (this.data.isAdmin && this.data.openid) {
+      if (this.data.openid) {
         const r = await api.admin({ action: 'admin_plans', openid: this.data.openid })
         plans = (r.plans || []).map((p) => ({ ...p }))
       } else {
@@ -112,6 +127,82 @@ Page({
     const stops = plan.stops.map((s, i) => ({ ...s, no: String(i + 1).padStart(2, '0'), _y: i * this.data.rowH }))
     const active = { ...plan, stops }
     this.setData({ active, areaH: stops.length * this.data.rowH })
+    this.loadExpenses()
+  },
+
+  /* ---------------- 记账 ---------------- */
+  async loadExpenses() {
+    const p = this.data.active
+    if (!p || !this.data.openid) {
+      this.setData({ expenses: [], expenseTotal: 0 })
+      return
+    }
+    try {
+      const r = await api.admin({ action: 'expenses', openid: this.data.openid, planId: p.id })
+      const expenses = (r.expenses || []).map((e) => ({ ...e, catName: EXP_CAT_LABEL[e.category] || '其他' }))
+      this.setData({ expenses, expenseTotal: r.total || 0 })
+    } catch (e) {
+      this.setData({ expenses: [], expenseTotal: 0 })
+    }
+  },
+
+  openExpenseAdd() {
+    this.setData({ expenseEditor: { show: true, catIndex: 0, amount: '', memo: '' } })
+  },
+  closeExpenseEditor() {
+    this.setData({ 'expenseEditor.show': false })
+  },
+  pickExpCat(e) {
+    this.setData({ 'expenseEditor.catIndex': e.currentTarget.dataset.index })
+  },
+  onExpAmount(e) {
+    this.setData({ 'expenseEditor.amount': e.detail.value })
+  },
+  onExpMemo(e) {
+    this.setData({ 'expenseEditor.memo': e.detail.value })
+  },
+  async saveExpense() {
+    const ed = this.data.expenseEditor
+    const amount = parseFloat(ed.amount)
+    if (!(amount > 0)) {
+      wx.showToast({ title: '请输入金额', icon: 'none' })
+      return
+    }
+    const p = this.data.active
+    wx.showLoading({ title: '记账中', mask: true })
+    try {
+      await api.admin({
+        action: 'add_expense',
+        openid: this.data.openid,
+        planId: p.id,
+        city: p.title,
+        category: this.data.expCats[ed.catIndex].key,
+        amount,
+        memo: (ed.memo || '').trim(),
+      })
+      wx.hideLoading()
+      this.setData({ 'expenseEditor.show': false })
+      this.loadExpenses()
+    } catch (e) {
+      wx.hideLoading()
+      wx.showToast({ title: '记账失败', icon: 'none' })
+    }
+  },
+  delExpense(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '删除这笔花费',
+      content: '确定删除吗？',
+      success: async (r) => {
+        if (!r.confirm) return
+        try {
+          await api.admin({ action: 'del_expense', openid: this.data.openid, id })
+          this.loadExpenses()
+        } catch (err) {
+          wx.showToast({ title: '删除失败', icon: 'none' })
+        }
+      },
+    })
   },
 
   selectPlan(e) {
@@ -400,5 +491,43 @@ Page({
     } catch (err) {
       this.setData({ [`legs.${keyk}`]: { loading: false, open: true, error: (err && err.data && err.data.message) || '规划失败' } })
     }
+  },
+
+  /* ---------------- 行程导出 / 分享 ---------------- */
+  planSummary() {
+    const p = this.data.active
+    if (!p) return ''
+    const lines = [`【${p.title}】`]
+    if (p.planDateText) lines.push(p.planDateText)
+    ;(p.stops || []).forEach((s, i) => {
+      let line = `${String(i + 1).padStart(2, '0')}. ${s.name}`
+      if (s.plannedTime) line += `（${s.plannedTime}）`
+      if (s.note) line += ` — ${s.note}`
+      lines.push(line)
+    })
+    return lines.join('\n')
+  },
+
+  copyPlan() {
+    const text = this.planSummary()
+    if (!text) {
+      wx.showToast({ title: '还没有行程', icon: 'none' })
+      return
+    }
+    wx.setClipboardData({
+      data: text,
+      success: () => wx.showToast({ title: '已复制，去粘贴给 TA', icon: 'none' }),
+    })
+  },
+
+  onShareAppMessage() {
+    const p = this.data.active
+    const title = p ? `我们的行程 · ${p.title}` : '我们的旅行计划'
+    return { title, path: '/pages/plans/plans' }
+  },
+
+  onShareTimeline() {
+    const p = this.data.active
+    return { title: p ? `我们的行程 · ${p.title}` : '我们的旅行计划' }
   },
 })

@@ -1,0 +1,76 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">WISHLIST</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <!-- 未登录 -->
+  <block wx:if="{{ready && !openid}}">
+    <view class="gate rise d2">
+      <view class="gate-zh display">需要登录</view>
+      <view class="gate-sub">登录后你和 TA 都能添加、勾选想一起去的地方。</view>
+      <view class="gate-btn pressable" hover-class="pressed" bindtap="goLogin">去「我的」 ›</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{openid}}">
+    <view class="intro rise d1">
+      <view class="kicker">想一起去的地方</view>
+      <view class="h1 display">心愿清单</view>
+      <view class="lede">把还没去的地方先记下来 · 已实现 {{doneCount}} / {{wishes.length}}</view>
+    </view>
+
+    <view class="add-row rise d2">
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openEditor">＋ 添加一个心愿</view>
+    </view>
+
+    <view wx:if="{{!ready}}" class="loading">正在读取…</view>
+
+    <view wx:elif="{{!wishes.length}}" class="empty">还没有心愿，点上面添加一个吧</view>
+
+    <view wx:else class="wish-list rise d3">
+      <view wx:for="{{wishes}}" wx:key="id" class="wish {{item.done ? 'is-done' : ''}}">
+        <view class="wish-check pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggle">
+          <text class="tick">{{item.done ? '✓' : ''}}</text>
+        </view>
+        <view class="wish-mid" data-id="{{item.id}}" bindtap="openEditor">
+          <view class="wish-name serif">{{item.placeName}}</view>
+          <view wx:if="{{item.province || item.city}}" class="wish-loc">{{item.province}}{{item.city ? ' · ' + item.city : ''}}</view>
+          <view wx:if="{{item.memo}}" class="wish-memo">{{item.memo}}</view>
+        </view>
+        <view class="wish-del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="del">删除</view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 编辑器 -->
+  <view wx:if="{{editor.show}}" class="mask" bindtap="closeEditor"></view>
+  <view class="sheet {{editor.show ? 'show' : ''}}">
+    <view class="sheet-head">
+      <text class="sheet-title serif">{{editor.id ? '修改心愿' : '新的心愿'}}</text>
+      <text class="sheet-close" bindtap="closeEditor">✕</text>
+    </view>
+    <view class="field">
+      <text class="flabel">地点</text>
+      <input class="finput" value="{{editor.placeName}}" data-key="placeName" bindinput="onField" placeholder="如 洱海 / 京都 / 北海道" placeholder-class="ph" />
+    </view>
+    <view class="field-row">
+      <view class="field half">
+        <text class="flabel">省 / 国家</text>
+        <input class="finput" value="{{editor.province}}" data-key="province" bindinput="onField" placeholder="云南省" placeholder-class="ph" />
+      </view>
+      <view class="field half">
+        <text class="flabel">城市</text>
+        <input class="finput" value="{{editor.city}}" data-key="city" bindinput="onField" placeholder="大理" placeholder-class="ph" />
+      </view>
+    </view>
+    <view class="field">
+      <text class="flabel">备注</text>
+      <textarea class="ftext" value="{{editor.memo}}" data-key="memo" bindinput="onField" placeholder="想做的事 / 想吃的 / 想看的风景" placeholder-class="ph" />
+    </view>
+    <view class="sheet-save pressable" hover-class="pressed" bindtap="save">保存</view>
+  </view>
+</view>

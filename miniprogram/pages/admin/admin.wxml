@@ -7,11 +7,11 @@
     <view class="rule"></view>
   </view>
 
-  <!-- 无权限 -->
+  <!-- 未登录 -->
   <block wx:if="{{notAdmin}}">
     <view class="gate rise d2">
-      <view class="gate-zh display">需要管理员</view>
-      <view class="gate-sub">请先在「我的」页登录并认领管理员身份。</view>
+      <view class="gate-zh display">需要登录</view>
+      <view class="gate-sub">请先在「我的」页用微信登录，登录后即可编辑足迹与纪念日。</view>
       <view class="gate-btn pressable" hover-class="pressed" bindtap="goLogin">去「我的」 ›</view>
     </view>
   </block>
@@ -21,9 +21,9 @@
     <view class="tabs rise d1">
       <view class="tab {{tab === 'journeys' ? 'on' : ''}}" data-tab="journeys" bindtap="switchTab">足迹</view>
       <view class="tab {{tab === 'anniversaries' ? 'on' : ''}}" data-tab="anniversaries" bindtap="switchTab">纪念日</view>
-      <view class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
-      <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
-      <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
+      <view wx:if="{{isAdmin}}" class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
+      <view wx:if="{{isAdmin}}" class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
+      <view wx:if="{{isAdmin}}" class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
     </view>
 
     <!-- ============ 菜品 ============ -->
@@ -299,6 +299,19 @@
 
         <view class="fl">手记（每行一条）</view>
         <textarea class="fld area" value="{{journeyEditor.notesText}}" placeholder="每行一条手记" placeholder-class="ph" data-f="notesText" bindinput="onJourneyField" auto-height />
+
+        <view class="fl">打卡照片墙</view>
+        <view wx:if="{{!journeyEditor.id}}" class="photo-hint">保存这段足迹后即可添加照片</view>
+        <view wx:else class="photo-grid">
+          <view wx:for="{{journeyEditor.photos}}" wx:key="id" class="photo-cell">
+            <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill" />
+            <view wx:else class="photo-img {{item.tone}}"></view>
+            <text class="photo-rm" catchtap="delJourneyPhoto" data-id="{{item.id}}">×</text>
+          </view>
+          <view class="photo-add pressable" hover-class="pressed" bindtap="chooseJourneyPhoto">
+            <text>{{journeyEditor.uploading ? '上传中…' : '＋ 照片'}}</text>
+          </view>
+        </view>
       </scroll-view>
 
       <view class="sheet-ops">

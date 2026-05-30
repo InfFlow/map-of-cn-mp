@@ -12,10 +12,11 @@ const STATUS_FLOW = [
 
 Page({
   data: {
-    tab: 'dishes',
+    tab: 'journeys',
     openid: '',
     ready: false,
     notAdmin: false,
+    isAdmin: false,
 
     categories: [],
     dishes: [],
@@ -66,14 +67,21 @@ Page({
     },
   },
 
-  onLoad() {
+  async onLoad() {
     const user = app.getUser()
     if (!user || !user.openid) {
       this.setData({ notAdmin: true, ready: true })
       return
     }
     this.setData({ openid: user.openid })
-    this.loadOverview()
+    let isAdmin = !!user.isAdmin
+    try {
+      const r = await api.admin({ action: 'check_admin', openid: user.openid })
+      isAdmin = !!r.isAdmin
+    } catch (e) {}
+    this.setData({ isAdmin, tab: isAdmin ? 'dishes' : 'journeys', ready: true })
+    if (isAdmin) this.loadOverview()
+    this.loadJourneys()
   },
 
   onPullDownRefresh() {
@@ -391,7 +399,66 @@ Page({
         longitude: src && src.longitude ? String(src.longitude) : '',
         tagsText: src ? (src.tags || []).join('，') : '',
         notesText: src ? (src.notes || []).join('\n') : '',
+        photos: src ? (src.photos || []) : [],
         geoLoading: false,
+        uploading: false,
+      },
+    })
+  },
+  async chooseJourneyPhoto() {
+    const ed = this.data.journeyEditor
+    if (!ed.id) {
+      wx.showToast({ title: '请先保存这段足迹', icon: 'none' })
+      return
+    }
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sizeType: ['compressed'],
+      success: async (res) => {
+        const file = res.tempFiles[0]
+        if (!file) return
+        this.setData({ ['journeyEditor.uploading']: true })
+        wx.showLoading({ title: '上传中', mask: true })
+        try {
+          const { imageUrl } = await api.uploadDishImage(file.tempFilePath, this.data.openid)
+          await api.admin({
+            action: 'add_journey_photo',
+            openid: this.data.openid,
+            journeyId: ed.id,
+            imageUrl,
+            title: ed.city || '',
+            subtitle: ed.title || '',
+            tone: ed.coverTone || 'tone-ink',
+          })
+          await this.loadJourneys()
+          const fresh = this.data.journeys.find((x) => x.id === ed.id)
+          this.setData({ ['journeyEditor.photos']: fresh ? fresh.photos || [] : [], ['journeyEditor.uploading']: false })
+          wx.hideLoading()
+        } catch (e) {
+          this.setData({ ['journeyEditor.uploading']: false })
+          wx.hideLoading()
+          wx.showToast({ title: '上传失败', icon: 'none' })
+        }
+      },
+    })
+  },
+  delJourneyPhoto(e) {
+    const id = e.currentTarget.dataset.id
+    const jid = this.data.journeyEditor.id
+    wx.showModal({
+      title: '删除这张照片',
+      content: '确定删除吗？',
+      success: async (r) => {
+        if (!r.confirm) return
+        try {
+          await api.admin({ action: 'del_journey_photo', openid: this.data.openid, id })
+          await this.loadJourneys()
+          const fresh = this.data.journeys.find((x) => x.id === jid)
+          this.setData({ ['journeyEditor.photos']: fresh ? fresh.photos || [] : [] })
+        } catch (err) {
+          wx.showToast({ title: '删除失败', icon: 'none' })
+        }
       },
     })
   },

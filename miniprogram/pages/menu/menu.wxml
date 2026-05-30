@@ -11,6 +11,10 @@
     <view class="kicker">为你下厨</view>
     <view class="h1 display">今天<view class="br"></view>想吃什么</view>
     <view class="lede">挑几道想吃的，写上备注，交给我来做。</view>
+    <view class="ai-entry pressable" hover-class="pressed" bindtap="openAi">
+      <text class="ai-zh">不知道吃什么？让 AI 帮你点菜</text>
+      <text class="ai-arrow serif">›</text>
+    </view>
   </view>
 
   <!-- 骨架屏 -->

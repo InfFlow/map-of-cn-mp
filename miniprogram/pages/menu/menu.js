@@ -109,6 +109,11 @@ Page({
     wx.pageScrollTo({ selector: `#cat-${id}`, duration: 280 })
   },
 
+  openAi() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/ai/ai?mode=dish' })
+  },
+
   goOrder() {
     if (this.data.cartCount === 0) {
       wx.showToast({ title: '先选几道菜吧', icon: 'none' })
