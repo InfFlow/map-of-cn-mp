@@ -44,9 +44,15 @@
 
     <!-- 空状态 -->
     <view wx:if="{{!active}}" class="empty">
+      <view class="empty-art">
+        <view class="ea-ring"></view>
+        <view class="ea-diamond"></view>
+        <view class="ea-dot"></view>
+      </view>
       <view class="empty-zh">还没有旅行计划</view>
       <view class="empty-en">No itineraries yet</view>
       <view wx:if="{{canEdit}}" class="btn-line" bindtap="openPlanAdd">＋ 新建一个计划</view>
+      <view wx:else class="empty-hint">登录后即可创建并编辑计划</view>
     </view>
 
     <block wx:else>
@@ -104,6 +110,7 @@
         <view wx:if="{{!active.stops.length}}" class="empty sm">
           <view class="empty-zh">还没有目的地</view>
           <view wx:if="{{canEdit}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
+          <view wx:else class="empty-hint">登录后即可添加目的地</view>
         </view>
 
         <movable-area wx:else class="drag-area" style="height: {{areaH}}px;">
@@ -291,9 +298,25 @@
   <view class="sheet-grab"></view>
   <view class="sheet-x" hover-class="pressed" catchtap="closePlanEditor">✕</view>
   <view class="sheet-title">{{planEditor.mode === 'add' ? '新建计划' : '编辑计划'}}</view>
+
+  <view wx:if="{{planEditor.mode === 'add'}}" class="tpl-row">
+    <text class="tpl-lead">快速开始</text>
+    <view
+      wx:for="{{planTemplates}}"
+      wx:key="name"
+      class="tpl-chip"
+      hover-class="pressed"
+      data-index="{{index}}"
+      catchtap="applyPlanTemplate"
+    >{{item.name}}</view>
+  </view>
+
   <view class="field">
-    <text class="field-label">计划标题</text>
-    <input class="field-input" value="{{planEditor.title}}" placeholder="如：杭州三日" placeholder-class="field-ph" bindinput="onPlanTitle" />
+    <view class="field-head">
+      <text class="field-label">计划标题</text>
+      <text class="field-count {{planEditor.title.length > 30 ? 'over' : ''}}">{{planEditor.title.length}}/30</text>
+    </view>
+    <input class="field-input {{focusField === 'ptitle' ? 'on' : ''}}" value="{{planEditor.title}}" placeholder="如：杭州三日" placeholder-class="field-ph" maxlength="30" data-k="ptitle" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onPlanTitle" />
   </view>
   <view class="field">
     <text class="field-label">出发日期</text>
@@ -302,8 +325,11 @@
     </picker>
   </view>
   <view class="field">
-    <text class="field-label">备注</text>
-    <textarea class="field-area" value="{{planEditor.note}}" placeholder="这趟行程的主题、预算、注意事项…" placeholder-class="field-ph" bindinput="onPlanNote" auto-height />
+    <view class="field-head">
+      <text class="field-label">备注</text>
+      <text class="field-count {{planEditor.note.length > 200 ? 'over' : ''}}">{{planEditor.note.length}}/200</text>
+    </view>
+    <textarea class="field-area {{focusField === 'pnote' ? 'on' : ''}}" value="{{planEditor.note}}" placeholder="这趟行程的主题、预算、注意事项…" placeholder-class="field-ph" maxlength="200" data-k="pnote" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onPlanNote" auto-height />
   </view>
   <view class="field">
     <text class="field-label">封面色调</text>
@@ -311,16 +337,20 @@
       <view
         wx:for="{{toneSwatches}}"
         wx:key="tone"
-        class="tone-dot {{planEditor.toneIndex === index ? 'on' : ''}}"
+        class="tone-cell {{planEditor.toneIndex === index ? 'on' : ''}}"
         data-index="{{index}}"
         bindtap="pickPlanTone"
-        style="background-image: {{item.grad}};"
-      ></view>
+      >
+        <view class="tone-dot" style="background-image: {{item.grad}};">
+          <text wx:if="{{planEditor.toneIndex === index}}" class="tone-check">✓</text>
+        </view>
+        <text class="tone-name">{{item.name}}</text>
+      </view>
     </scroll-view>
   </view>
   <view class="sheet-acts">
     <view class="btn ghost" hover-class="pressed" catchtap="closePlanEditor">取消</view>
-    <view class="btn solid" hover-class="pressed" catchtap="savePlan">保存</view>
+    <view class="btn solid {{planEditor.title ? '' : 'disabled'}}" hover-class="pressed" catchtap="savePlan">保存</view>
   </view>
 </view>
 
@@ -332,7 +362,7 @@
   <view class="sheet-title">{{stopEditor.mode === 'add' ? '添加目的地' : '编辑目的地'}}</view>
   <view class="field">
     <text class="field-label">地点名称</text>
-    <input class="field-input" value="{{stopEditor.name}}" placeholder="如：西湖 · 断桥" placeholder-class="field-ph" data-field="name" bindinput="onStopField" />
+    <input class="field-input {{focusField === 'sname' ? 'on' : ''}}" value="{{stopEditor.name}}" placeholder="如：西湖 · 断桥" placeholder-class="field-ph" data-field="name" data-k="sname" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
   </view>
   <view class="field">
     <text class="field-label">第几天</text>
@@ -344,12 +374,12 @@
   </view>
   <view class="field">
     <text class="field-label">时间</text>
-    <input class="field-input" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选）" placeholder-class="field-ph" data-field="plannedTime" bindinput="onStopField" />
+    <input class="field-input {{focusField === 'stime' ? 'on' : ''}}" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选）" placeholder-class="field-ph" data-field="plannedTime" data-k="stime" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
   </view>
   <view class="field">
     <text class="field-label">地址</text>
     <view class="field-row">
-      <input class="field-input grow" value="{{stopEditor.address}}" placeholder="详细地址，用于定位" placeholder-class="field-ph" data-field="address" bindinput="onStopField" />
+      <input class="field-input grow {{focusField === 'saddr' ? 'on' : ''}}" value="{{stopEditor.address}}" placeholder="详细地址，用于定位" placeholder-class="field-ph" data-field="address" data-k="saddr" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
       <view class="geo-btn {{stopEditor.geoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeStop">{{stopEditor.geoLoading ? '定位中' : '定位'}}</view>
     </view>
     <text wx:if="{{stopEditor.latitude}}" class="geo-hint">坐标 {{stopEditor.longitude}}, {{stopEditor.latitude}}</text>
@@ -357,7 +387,7 @@
   </view>
   <view class="field">
     <text class="field-label">备注</text>
-    <textarea class="field-area" value="{{stopEditor.note}}" placeholder="想做的事、门票、tips…" placeholder-class="field-ph" data-field="note" bindinput="onStopField" auto-height />
+    <textarea class="field-area {{focusField === 'snote' ? 'on' : ''}}" value="{{stopEditor.note}}" placeholder="想做的事、门票、tips…" placeholder-class="field-ph" data-field="note" data-k="snote" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" auto-height />
   </view>
   <view class="sheet-acts">
     <view class="btn ghost" hover-class="pressed" catchtap="closeStopEditor">取消</view>
