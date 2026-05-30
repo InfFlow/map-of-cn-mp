@@ -88,8 +88,14 @@
           polygons="{{polygons}}"
           polyline="{{polyline}}"
           include-points="{{includePoints}}"
+          show-location
           bindmarkertap="onMarkerTap"
-        ></map>
+        >
+          <cover-view class="map-ctrl">
+            <cover-view class="map-btn" bindtap="locateMe">◎ 我的位置</cover-view>
+            <cover-view wx:if="{{markers.length}}" class="map-btn" bindtap="fitAllFootprints">全部足迹</cover-view>
+          </cover-view>
+        </map>
       </view>
       <view class="map-cap">{{mapCaption}}</view>
       <view wx:if="{{ledger.length}}" class="ledger">

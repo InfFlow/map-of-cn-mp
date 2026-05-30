@@ -155,6 +155,25 @@
   height: 520rpx;
   display: block;
 }
+.map-ctrl {
+  position: absolute;
+  right: 20rpx;
+  bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.map-btn {
+  margin-top: 12rpx;
+  padding: 10rpx 22rpx;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  color: #1b1712;
+  background: rgba(250, 248, 243, 0.94);
+  border: 1rpx solid #1b1712;
+  border-radius: 999rpx;
+  text-align: center;
+}
 .map-cap {
   margin-top: 14rpx;
   font-family: Georgia, "Songti SC", serif;

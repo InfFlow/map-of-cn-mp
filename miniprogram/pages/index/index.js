@@ -39,6 +39,7 @@ Page({
     polygons: [],
     polyline: [],
     includePoints: [],
+    userLocated: false,
     ledger: [],
     recent: [],
     badges: [],
@@ -55,7 +56,7 @@ Page({
 
   onLoad() {
     this.loadAll()
-    this.loadWeather()
+    this.useLocation()
   },
 
   onShow() {
@@ -77,21 +78,52 @@ Page({
     wx.pageScrollTo({ scrollTop: 0, duration: 300 })
   },
 
-  loadWeather() {
+  // 获取当前定位：把地图中心移到当前位置，并拉取当地天气
+  useLocation(opts) {
+    const recenter = !!(opts && opts.recenter)
     wx.getLocation({
       type: 'gcj02',
       success: (r) => {
+        this._myLoc = { latitude: r.latitude, longitude: r.longitude }
+        this.setData({
+          center: { latitude: r.latitude, longitude: r.longitude },
+          scale: 11,
+          userLocated: true,
+          includePoints: [],
+          weatherDenied: false,
+        })
+        if (recenter) {
+          wx.createMapContext('map', this).moveToLocation({
+            latitude: r.latitude,
+            longitude: r.longitude,
+          })
+        }
         api
           .getWeather({ location: `${r.longitude},${r.latitude}` })
           .then((w) => {
-            if (w && w.ok) this.setData({ weather: w, weatherDenied: false })
+            if (w && w.ok) this.setData({ weather: w })
           })
           .catch(() => {})
       },
       fail: () => {
-        this.setData({ weatherDenied: true })
+        // 没有定位权限：回退到「全部足迹」自适应视野
+        if (!this.data.userLocated) {
+          this.setData({ weatherDenied: true, includePoints: this._allPoints || [] })
+        }
       },
     })
+  },
+
+  // 地图上「我的位置」按钮：重新定位并平移到当前位置
+  locateMe() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.useLocation({ recenter: true })
+  },
+
+  // 地图上「全部足迹」按钮：恢复成自适应显示全部去过的城市
+  fitAllFootprints() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.setData({ userLocated: false, includePoints: (this._allPoints || []).slice() })
   },
 
   enableWeather() {
@@ -100,12 +132,12 @@ Page({
     wx.getSetting({
       success: (res) => {
         if (res.authSetting['scope.userLocation'] === false) {
-          wx.openSetting({ success: () => this.loadWeather() })
+          wx.openSetting({ success: () => this.useLocation() })
         } else {
-          this.loadWeather()
+          this.useLocation()
         }
       },
-      fail: () => this.loadWeather(),
+      fail: () => this.useLocation(),
     })
   },
 
@@ -269,11 +301,12 @@ Page({
       })
 
       this._markers = markers
+      this._allPoints = includePoints
       this.setData({
         markers,
         polygons,
         polyline,
-        includePoints,
+        includePoints: this.data.userLocated ? [] : includePoints,
         ledger,
         recent,
         badges,
