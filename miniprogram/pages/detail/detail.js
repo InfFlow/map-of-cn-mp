@@ -7,6 +7,9 @@ Page({
     loading: true,
     showTop: false,
     error: '',
+    viewerShow: false,
+    viewerUrls: [],
+    viewerCurrent: 0,
   },
 
   onLoad(options) {
@@ -57,8 +60,13 @@ Page({
     const url = e.currentTarget.dataset.url
     if (!url) return
     const urls = (this.data.trip.photos || []).map((p) => p.imageUrl).filter(Boolean)
+    const current = Math.max(0, urls.indexOf(url))
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
-    wx.previewImage({ current: url, urls })
+    this.setData({ viewerUrls: urls, viewerCurrent: current, viewerShow: true })
+  },
+
+  closeViewer() {
+    this.setData({ viewerShow: false })
   },
 
   askAi() {

@@ -76,4 +76,6 @@
   <view wx:if="{{error}}" class="empty">{{error}}</view>
 
   <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+
+  <photo-viewer show="{{viewerShow}}" urls="{{viewerUrls}}" current="{{viewerCurrent}}" bindclose="closeViewer"></photo-viewer>
 </view>
