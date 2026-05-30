@@ -118,7 +118,8 @@ Page({
     } catch (e) {
       wx.hideLoading()
       this.setData({ loggingIn: false })
-      wx.showToast({ title: '登录失败，请重试', icon: 'none' })
+      const msg = (e && e.data && e.data.message) || (e && e.errMsg) || '登录失败，请重试'
+      wx.showToast({ title: msg, icon: 'none', duration: 3000 })
     }
   },
 

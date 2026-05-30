@@ -23,6 +23,27 @@ const TONES = {
 // 编辑器封面色可选列表
 const TONE_LIST = Object.keys(TONES)
 
+// 色调中文名（编辑器选色时显示）
+const TONE_NAMES = {
+  'tone-spring': '春',
+  'tone-sea': '海',
+  'tone-water': '水',
+  'tone-lake': '湖',
+  'tone-island': '屿',
+  'tone-city': '城',
+  'tone-sunset': '夕',
+  'tone-warm': '暖',
+  'tone-brick': '砖',
+  'tone-night': '夜',
+  'tone-rain': '雨',
+  'tone-osmanthus': '桂',
+  'tone-paper': '纸',
+  'tone-tea': '茶',
+  'tone-slate': '岩',
+  'tone-sage': '苔',
+  'tone-ink': '墨',
+}
+
 function toneGradient(tone) {
   const c = TONES[tone] || ['#ddd9cf', '#b4ac9c']
   return `linear-gradient(150deg, ${c[0]} 0%, ${c[1]} 100%)`
@@ -64,4 +85,4 @@ function anniversaryCount(dotted, repeatYearly) {
   return { text: `已 ${-diff} 天`, days: -diff, kind: 'countup' }
 }
 
-module.exports = { toneGradient, prettyDate, anniversaryCount, TONES, TONE_LIST }
+module.exports = { toneGradient, prettyDate, anniversaryCount, TONES, TONE_LIST, TONE_NAMES }

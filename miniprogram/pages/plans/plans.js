@@ -1,6 +1,6 @@
 const app = getApp()
 const api = require('../../utils/api')
-const { toneGradient, TONE_LIST } = require('../../utils/util')
+const { toneGradient, TONE_LIST, TONE_NAMES } = require('../../utils/util')
 
 const ROW_RPX = 176 // 拖动列表每行槽位高度（含间距）
 const RECO_LABEL = { walking: '步行', transit: '公交 / 地铁', driving: '驾车' }
@@ -37,7 +37,13 @@ Page({
     active: null,
 
     toneList: TONE_LIST,
-    toneSwatches: TONE_LIST.map((t) => ({ tone: t, grad: toneGradient(t) })),
+    toneSwatches: TONE_LIST.map((t) => ({ tone: t, grad: toneGradient(t), name: TONE_NAMES[t] || '' })),
+    // 新建计划快速模板（仅预填标题/备注，可再改）
+    planTemplates: [
+      { name: '周末两日', title: '周末两日游', note: '两天一夜，城市周边轻松慢玩。' },
+      { name: '长假五日', title: '长假五日深度游', note: '五天四夜，跨城深度，景点 + 美食。' },
+    ],
+    focusField: '', // 当前聚焦的输入框 key，用于描边高亮
     rowH: 88, // px，onLoad 计算
     areaH: 0,
     dragId: 0,
@@ -317,6 +323,19 @@ Page({
   },
   closePlanEditor() {
     this.setData({ 'planEditor.show': false })
+  },
+  // 输入框聚焦高亮（focusField 与 wxml 里 data-k 对应）
+  onFieldFocus(e) {
+    this.setData({ focusField: e.currentTarget.dataset.k || '' })
+  },
+  onFieldBlur() {
+    this.setData({ focusField: '' })
+  },
+  // 快速模板：一键预填标题/备注
+  applyPlanTemplate(e) {
+    const t = this.data.planTemplates[e.currentTarget.dataset.index]
+    if (!t) return
+    this.setData({ 'planEditor.title': t.title, 'planEditor.note': t.note })
   },
   onPlanTitle(e) {
     this.setData({ 'planEditor.title': e.detail.value })
