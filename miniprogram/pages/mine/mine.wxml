@@ -36,7 +36,7 @@
       <view class="admin-entry pressable" hover-class="pressed" bindtap="openAdmin">
         <view class="ae-mid">
           <text class="ae-zh serif">编辑我们的回忆</text>
-          <text class="ae-sub">足迹 · 纪念日{{user.isAdmin ? ' · 菜品 · 订单' : ''}}</text>
+          <text class="ae-sub">足迹 · 纪念日 · 菜品 · 订单</text>
         </view>
         <text class="ae-arrow serif">›</text>
       </view>

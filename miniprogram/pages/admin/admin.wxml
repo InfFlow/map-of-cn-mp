@@ -21,9 +21,9 @@
     <view class="tabs rise d1">
       <view class="tab {{tab === 'journeys' ? 'on' : ''}}" data-tab="journeys" bindtap="switchTab">足迹</view>
       <view class="tab {{tab === 'anniversaries' ? 'on' : ''}}" data-tab="anniversaries" bindtap="switchTab">纪念日</view>
-      <view wx:if="{{isAdmin}}" class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
-      <view wx:if="{{isAdmin}}" class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
-      <view wx:if="{{isAdmin}}" class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
+      <view class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
+      <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
+      <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
     </view>
 
     <!-- ============ 菜品 ============ -->

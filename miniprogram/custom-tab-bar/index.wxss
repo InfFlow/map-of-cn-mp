@@ -10,6 +10,10 @@
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 1000;
 }
+/* 打开底部编辑面板时隐藏，避免遮挡面板底部按钮 */
+.tabbar-hide {
+  display: none;
+}
 .tab {
   flex: 1;
   display: flex;
