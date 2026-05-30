@@ -1,5 +1,6 @@
 const api = require('../../utils/api')
 const { prettyDate, toneGradient } = require('../../utils/util')
+const { buildJourneyPoster } = require('../../utils/poster')
 
 Page({
   data: {
@@ -10,6 +11,9 @@ Page({
     viewerShow: false,
     viewerUrls: [],
     viewerCurrent: 0,
+    posterW: 300,
+    posterH: 100,
+    making: false,
   },
 
   onLoad(options) {
@@ -67,6 +71,36 @@ Page({
 
   closeViewer() {
     this.setData({ viewerShow: false })
+  },
+
+  // 生成分享长图：绘制 -> 预览（可长按转发 / 保存到相册）
+  makePoster() {
+    if (this.data.making || !this.data.trip) return
+    this.setData({ making: true })
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.showLoading({ title: '生成中…', mask: true })
+    wx.createSelectorQuery()
+      .select('#poster')
+      .fields({ node: true, size: true })
+      .exec(async (res) => {
+        const node = res && res[0] && res[0].node
+        if (!node) {
+          wx.hideLoading()
+          this.setData({ making: false })
+          wx.showToast({ title: '生成失败', icon: 'none' })
+          return
+        }
+        try {
+          const tempFilePath = await buildJourneyPoster(node, this.data.trip)
+          wx.hideLoading()
+          this.setData({ making: false })
+          this.setData({ viewerUrls: [tempFilePath], viewerCurrent: 0, viewerShow: true })
+        } catch (e) {
+          wx.hideLoading()
+          this.setData({ making: false })
+          wx.showToast({ title: '生成失败，请重试', icon: 'none' })
+        }
+      })
   },
 
   askAi() {
