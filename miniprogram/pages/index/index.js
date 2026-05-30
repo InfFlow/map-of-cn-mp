@@ -45,6 +45,8 @@ Page({
     badges: [],
     unlocked: 0,
     anniv: [],
+    nextAnniv: null,
+    heatCaption: '',
     onThisDay: [],
     weather: null,
     weatherDenied: false,
@@ -183,12 +185,29 @@ Page({
         },
       }))
 
-      const polygons = polys.map((p) => ({
-        points: p.points,
-        strokeWidth: 1,
-        strokeColor: '#1b1712',
-        fillColor: '#1b17121A',
-      }))
+      // 省份访问次数 -> 热力深浅着色：去得越多颜色越深
+      const provCount = {}
+      journeys.forEach((j) => {
+        const p = (j.province || '').replace(/省|市|自治区|特别行政区|壮族|回族|维吾尔/g, '')
+        if (p) provCount[p] = (provCount[p] || 0) + 1
+      })
+      const heatAlpha = (c) => {
+        if (c >= 4) return '8C'
+        if (c === 3) return '6E'
+        if (c === 2) return '52'
+        if (c === 1) return '36'
+        return '12'
+      }
+      const polygons = polys.map((p) => {
+        const key = (p.province || '').replace(/省|市|自治区|特别行政区|壮族|回族|维吾尔/g, '')
+        const c = provCount[key] || 0
+        return {
+          points: p.points,
+          strokeWidth: c > 0 ? 1.5 : 1,
+          strokeColor: c > 0 ? '#1b1712' : '#1b171266',
+          fillColor: '#1b1712' + heatAlpha(c),
+        }
+      })
 
       const ledger = journeys.map((j, i) => ({
         no: String(i + 1).padStart(2, '0'),
@@ -270,6 +289,12 @@ Page({
         .sort((x, y) => x.sortKey - y.sortKey)
         .slice(0, 8)
 
+      // 顶部小组件：距下一个纪念日（最近的「就是今天 / 倒数」）
+      const upcoming = anniv.find((a) => a.countKind === 'today' || a.countKind === 'countdown')
+      const nextAnniv = upcoming
+        ? { label: upcoming.label, text: upcoming.countText, today: upcoming.countKind === 'today' }
+        : null
+
       // 今天的回忆：历年「今天」走过的城 / 纪念日
       const now = new Date()
       const tm = now.getMonth() + 1
@@ -312,10 +337,12 @@ Page({
         badges,
         unlocked,
         anniv,
+        nextAnniv,
         onThisDay,
         days: daysTogether(data.anniversaries),
         stats,
         mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} / 34 省 · ${stats.cityCount} 城${routePoints.length > 1 ? ' · 足迹连线' : ''}`,
+        heatCaption: `颜色越深 · 去得越多 ｜ 已点亮 ${stats.cityCount} 城 · 共 ${stats.journeyCount} 个足迹`,
         loading: false,
         error: '',
       })

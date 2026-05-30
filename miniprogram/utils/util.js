@@ -49,6 +49,31 @@ function toneGradient(tone) {
   return `linear-gradient(150deg, ${c[0]} 0%, ${c[1]} 100%)`
 }
 
+// 天气 -> 单色字形图标（关键字匹配，缺省返回空，前端可不渲染）
+function weatherGlyph(weather) {
+  const w = String(weather || '')
+  if (!w) return ''
+  if (/雪/.test(w)) return '❄'
+  if (/雷/.test(w)) return '☇'
+  if (/雨/.test(w)) return '☂'
+  if (/雾|霾|沙|尘/.test(w)) return '☁'
+  if (/阴/.test(w)) return '☁'
+  if (/云/.test(w)) return '☁'
+  if (/风/.test(w)) return '≋'
+  if (/晴/.test(w)) return '☀'
+  return ''
+}
+
+// 季节 -> 单色字形图标
+function seasonGlyph(season) {
+  const s = String(season || '')
+  if (/春/.test(s)) return '❀'
+  if (/夏/.test(s)) return '☀'
+  if (/秋/.test(s)) return '❧'
+  if (/冬/.test(s)) return '❄'
+  return ''
+}
+
 // 把后端 "2024.04.05" 转成 "2024年4月5日"
 function prettyDate(dotted) {
   if (!dotted) return ''
@@ -85,4 +110,4 @@ function anniversaryCount(dotted, repeatYearly) {
   return { text: `已 ${-diff} 天`, days: -diff, kind: 'countup' }
 }
 
-module.exports = { toneGradient, prettyDate, anniversaryCount, TONES, TONE_LIST, TONE_NAMES }
+module.exports = { toneGradient, prettyDate, anniversaryCount, weatherGlyph, seasonGlyph, TONES, TONE_LIST, TONE_NAMES }
