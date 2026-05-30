@@ -2,18 +2,21 @@
   "pages": [
     "pages/index/index",
     "pages/timeline/timeline",
-    "pages/detail/detail"
+    "pages/detail/detail",
+    "pages/menu/menu",
+    "pages/order/order",
+    "pages/mine/mine"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#ff5c8a",
+    "navigationBarBackgroundColor": "#f4f1ea",
     "navigationBarTitleText": "Map of Us",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#fff6f9"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f4f1ea"
   },
   "tabBar": {
-    "color": "#8a6f7b",
-    "selectedColor": "#ff2d6f",
-    "backgroundColor": "#ffffff",
+    "color": "#8c8475",
+    "selectedColor": "#1b1712",
+    "backgroundColor": "#faf8f3",
     "borderStyle": "white",
     "list": [
       {
@@ -23,6 +26,14 @@
       {
         "pagePath": "pages/timeline/timeline",
         "text": "时间线"
+      },
+      {
+        "pagePath": "pages/menu/menu",
+        "text": "菜单"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
       }
     ]
   },

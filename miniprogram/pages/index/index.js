@@ -28,11 +28,29 @@ Page({
     markers: [],
     polygons: [],
     includePoints: [],
+    ledger: [],
+    recent: [],
+    mapCaption: '',
+    loading: true,
+    showTop: false,
     error: '',
   },
 
   onLoad() {
     this.loadAll()
+  },
+
+  onPullDownRefresh() {
+    this.loadAll().then(() => wx.stopPullDownRefresh())
+  },
+
+  onPageScroll(e) {
+    const show = e.scrollTop > 480
+    if (show !== this.data.showTop) this.setData({ showTop: show })
+  },
+
+  backToTop() {
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 })
   },
 
   async loadAll() {
@@ -48,15 +66,30 @@ Page({
         journeyId: j.id,
         latitude: j.latitude,
         longitude: j.longitude,
-        iconPath: '/assets/heart.png',
-        width: 30,
-        height: 30,
+        iconPath: '/assets/pin.png',
+        width: 26,
+        height: 32,
+        anchor: { x: 0.5, y: 1 },
+        label: {
+          content: String(i + 1).padStart(2, '0'),
+          color: '#1b1712',
+          fontSize: 10,
+          anchorX: -8,
+          anchorY: -34,
+          bgColor: '#faf8f3',
+          borderColor: '#1b1712',
+          borderWidth: 1,
+          borderRadius: 8,
+          padding: 3,
+        },
         callout: {
-          content: `${j.city} · ${j.title}`,
-          color: '#ff2d6f',
+          content: `${String(i + 1).padStart(2, '0')} · ${j.city} · ${j.title}`,
+          color: '#1f1d1b',
           fontSize: 12,
           borderRadius: 10,
-          padding: 6,
+          borderWidth: 1,
+          borderColor: '#00000014',
+          padding: 8,
           bgColor: '#ffffff',
           display: 'BYCLICK',
         },
@@ -65,8 +98,13 @@ Page({
       const polygons = polys.map((p) => ({
         points: p.points,
         strokeWidth: 1,
-        strokeColor: '#ff2d6fAA',
-        fillColor: '#ff5c8a4D',
+        strokeColor: '#1b1712',
+        fillColor: '#1b17121A',
+      }))
+
+      const ledger = journeys.map((j, i) => ({
+        no: String(i + 1).padStart(2, '0'),
+        city: j.city,
       }))
 
       const includePoints = markers.map((m) => ({
@@ -74,25 +112,57 @@ Page({
         longitude: m.longitude,
       }))
 
+      const recent = [...journeys]
+        .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+        .slice(0, 6)
+        .map((j, i) => ({
+          id: j.id,
+          no: String(i + 1).padStart(2, '0'),
+          city: j.city,
+          title: j.title,
+          season: j.season,
+          dateShort: String(j.date),
+        }))
+
+      const stats = {
+        provinceCount: new Set(journeys.map((j) => j.province)).size,
+        cityCount: new Set(journeys.map((j) => j.city)).size,
+        journeyCount: journeys.length,
+      }
+
       this._markers = markers
       this.setData({
         markers,
         polygons,
         includePoints,
+        ledger,
+        recent,
         days: daysTogether(data.anniversaries),
-        stats: {
-          provinceCount: new Set(journeys.map((j) => j.province)).size,
-          cityCount: new Set(journeys.map((j) => j.city)).size,
-          journeyCount: journeys.length,
-        },
+        stats,
+        mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} / 34 省 · ${stats.cityCount} 城`,
+        loading: false,
+        error: '',
       })
     } catch (e) {
-      this.setData({ error: '加载失败，请检查网络或后端地址' })
+      this.setData({ loading: false, error: '加载失败，请检查网络或后端地址' })
     }
   },
 
   onMarkerTap(e) {
     const marker = (this._markers || []).find((m) => m.id === e.detail.markerId)
-    if (marker) wx.navigateTo({ url: `/pages/detail/detail?id=${marker.journeyId}` })
+    if (marker) {
+      wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+      wx.navigateTo({ url: `/pages/detail/detail?id=${marker.journeyId}` })
+    }
+  },
+
+  openDetail(e) {
+    const id = e.currentTarget.dataset.id
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
+  },
+
+  goTimeline() {
+    wx.switchTab({ url: '/pages/timeline/timeline' })
   },
 })

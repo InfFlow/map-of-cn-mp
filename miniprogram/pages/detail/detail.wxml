@@ -1,46 +1,97 @@
-<view wx:if="{{loading}}" class="loading">加载中…</view>
+<!-- 骨架屏 -->
+<view wx:if="{{loading}}" class="wrap">
+  <view class="sk sk-block" style="height:24rpx;width:40%;"></view>
+  <view class="sk sk-block" style="height:2rpx;margin-top:18rpx;"></view>
+  <view class="sk sk-block" style="height:96rpx;width:55%;margin-top:44rpx;"></view>
+  <view class="sk sk-block" style="height:520rpx;margin-top:36rpx;"></view>
+  <view class="sk sk-block" style="height:24rpx;width:90%;margin-top:36rpx;"></view>
+  <view class="sk sk-block" style="height:24rpx;width:80%;margin-top:14rpx;"></view>
+</view>
+
 <view wx:elif="{{error}}" class="empty">{{error}}</view>
 
 <view wx:else class="wrap">
-  <view class="head">
-    <view class="city">❤ {{trip.city}}</view>
-    <view class="date">{{trip.dateText}}</view>
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">{{trip.province}}</text>
+      <text class="mast-vol">{{trip.dateShort}}</text>
+    </view>
+    <view class="rule"></view>
   </view>
 
-  <view class="title">{{trip.title}}</view>
-
-  <view class="meta">
-    <text wx:if="{{trip.season}}" class="chip">{{trip.season}}</text>
-    <text wx:if="{{trip.weather}}" class="chip">☁ {{trip.weather}}</text>
-    <text wx:if="{{trip.landmark}}" class="chip">📍 {{trip.landmark}}</text>
-    <text class="chip">{{trip.province}}</text>
+  <view class="d-cover mag rise d2" style="background-image: {{trip.coverGrad}};">
+    <image wx:if="{{trip.cover}}" class="d-cover-img" src="{{trip.cover}}" mode="aspectFill"></image>
+    <text class="d-cover-fig figno">COVER · {{trip.city}}</text>
+    <view class="d-cover-scrim"></view>
+    <view class="d-cover-cap">
+      <view class="kicker light">{{trip.season}} · {{trip.dateShort}}</view>
+      <view class="d-city display">{{trip.city}}</view>
+      <view class="d-title serif">{{trip.title}}</view>
+    </view>
   </view>
 
-  <view wx:if="{{trip.intro}}" class="intro">{{trip.intro}}</view>
+  <view wx:if="{{trip.intro}}" class="d-lede dropcap rise d2">{{trip.intro}}</view>
 
-  <view wx:if="{{trip.tags.length}}" class="meta">
-    <text wx:for="{{trip.tags}}" wx:key="*this" class="chip soft">#{{item}}</text>
+  <view wx:if="{{trip.pullquote}}" class="pullquote serif rise d2">{{trip.pullquote}}</view>
+
+  <view class="d-facts grid2 rise d2">
+    <view wx:if="{{trip.season}}" class="fact">
+      <text class="fk">季节 / SEASON</text>
+      <text class="fv">{{trip.season}}</text>
+    </view>
+    <view wx:if="{{trip.province}}" class="fact">
+      <text class="fk">省份 / PROVINCE</text>
+      <text class="fv">{{trip.province}}</text>
+    </view>
+    <view wx:if="{{trip.weather}}" class="fact">
+      <text class="fk">天气 / WEATHER</text>
+      <text class="fv">{{trip.weather}}</text>
+    </view>
+    <view wx:if="{{trip.landmark}}" class="fact">
+      <text class="fk">地标 / LANDMARK</text>
+      <text class="fv">{{trip.landmark}}</text>
+    </view>
   </view>
 
-  <view wx:if="{{trip.photos.length}}" class="photos">
-    <view
-      wx:for="{{trip.photos}}"
-      wx:key="id"
-      class="photo"
-      style="background-image: {{item.grad}};"
-      bindtap="preview"
-      data-url="{{item.imageUrl}}"
-    >
-      <image wx:if="{{item.imageUrl}}" class="img" src="{{item.imageUrl}}" mode="aspectFill"></image>
-      <view class="photo-text">
-        <view class="photo-title">{{item.title}}</view>
+  <view wx:if="{{trip.tags.length}}" class="d-tags rise d3">
+    <text wx:for="{{trip.tags}}" wx:key="*this" class="chip">#{{item}}</text>
+  </view>
+
+  <view wx:if="{{trip.photos.length}}" class="block rise d3">
+    <view class="sec">
+      <text class="sec-zh">那天的画面</text>
+      <text class="sec-en">Frames · {{trip.photos.length}}</text>
+    </view>
+    <view class="photos">
+      <view
+        wx:for="{{trip.photos}}"
+        wx:key="id"
+        class="photo-cell"
+        bindtap="preview"
+        data-url="{{item.imageUrl}}"
+      >
+        <view class="photo pressable" hover-class="pressed" hover-stay-time="60" style="background-image: {{item.grad}};">
+          <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <text class="photo-fig figno">{{item.fig}}</text>
+        </view>
+        <view class="photo-cap">{{item.title}}</view>
         <view wx:if="{{item.subtitle}}" class="photo-sub">{{item.subtitle}}</view>
       </view>
     </view>
   </view>
 
-  <view wx:if="{{trip.notes.length}}" class="notes">
-    <view class="notes-title">手记</view>
-    <view wx:for="{{trip.notes}}" wx:key="*this" class="note">{{item}}</view>
+  <view wx:if="{{trip.restNotes.length}}" class="block rise d4">
+    <view class="sec">
+      <text class="sec-zh">手记</text>
+      <text class="sec-en">Notes</text>
+    </view>
+    <view wx:for="{{trip.restNotes}}" wx:key="*this" class="note serif">{{item}}</view>
   </view>
+
+  <view class="foot rise d5">
+    <view class="hair"></view>
+    <view class="foot-txt">Map of Us · 我们的地图</view>
+  </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
 </view>

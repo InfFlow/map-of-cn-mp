@@ -1,126 +1,219 @@
 .wrap {
-  padding: 24rpx;
+  padding: 24rpx 44rpx 60rpx;
 }
 
-/* 纪念日卡片 */
-.anni {
-  padding: 28rpx 30rpx;
-  margin-bottom: 28rpx;
-}
-.anni-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: var(--rose-deep);
-  margin-bottom: 16rpx;
-}
-.anni-item {
-  position: relative;
-  padding-left: 28rpx;
-  margin-bottom: 16rpx;
-}
-.anni-dot {
-  position: absolute;
-  left: 0;
-  top: 12rpx;
-  width: 14rpx;
-  height: 14rpx;
-  border-radius: 50%;
-  background: var(--rose);
-}
-.anni-label {
-  font-size: 28rpx;
-  font-weight: 600;
-}
-.anni-meta {
-  font-size: 22rpx;
-  color: var(--ink-soft);
-  margin-top: 2rpx;
-}
-
-/* 时间线 */
-.timeline {
-  position: relative;
-  padding-left: 8rpx;
-}
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 26rpx;
-  top: 16rpx;
-  bottom: 16rpx;
-  width: 4rpx;
-  background: var(--rose-soft);
-}
-.item {
-  display: flex;
-  gap: 20rpx;
-  margin-bottom: 28rpx;
-}
-.dot {
-  flex: 0 0 52rpx;
-  height: 52rpx;
-  border-radius: 50%;
-  background: #fff;
-  border: 3rpx solid var(--rose);
-  color: var(--rose-deep);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24rpx;
-  z-index: 1;
-}
-.body {
-  flex: 1;
-  overflow: hidden;
-}
-.cover {
-  position: relative;
-  height: 220rpx;
-  background-size: cover;
-  background-position: center;
-}
-.cover-img {
-  width: 100%;
-  height: 100%;
-}
-.cover-text {
-  position: absolute;
-  left: 24rpx;
-  bottom: 18rpx;
-  right: 24rpx;
+/* 报头 + 英雄区（与首页一致的语言） */
+.mast-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  color: #fff;
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35);
 }
-.city {
-  font-size: 38rpx;
+.mast-name {
+  font-size: 22rpx;
   font-weight: 700;
+  letter-spacing: 6rpx;
 }
-.date {
-  font-size: 24rpx;
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
 }
-.content {
-  padding: 22rpx 26rpx;
+.mast .rule {
+  margin-top: 12rpx;
 }
-.title {
-  font-size: 30rpx;
-  font-weight: 600;
+.hero {
+  padding: 44rpx 0 6rpx;
 }
-.intro {
-  font-size: 26rpx;
-  color: var(--ink-soft);
-  line-height: 1.6;
-  margin-top: 8rpx;
+.hero .h1 {
+  font-size: 92rpx;
+  line-height: 1;
+  margin-top: 16rpx;
 }
-.tags {
-  margin-top: 14rpx;
+.hero .br {
+  height: 0;
 }
 
-.footer {
+.block {
+  margin-top: 56rpx;
+}
+
+/* 纪念日横滑卡 */
+.anni-scroll {
+  white-space: nowrap;
+}
+.anni {
+  display: inline-block;
+  vertical-align: top;
+  width: 300rpx;
+  margin-right: 22rpx;
+  padding: 26rpx 28rpx 30rpx;
+  border: 1rpx solid var(--line);
+  background: var(--paper);
+  white-space: normal;
+}
+.anni-tag {
+  font-size: 17rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--faint);
+  margin-bottom: 14rpx;
+}
+.anni-date {
+  font-size: 34rpx;
+  font-weight: 700;
+  letter-spacing: 0.5rpx;
+}
+.anni-hair {
+  height: 1rpx;
+  background: var(--ink);
+  width: 48rpx;
+  margin: 16rpx 0;
+}
+.anni-label {
+  font-size: 26rpx;
+  font-weight: 700;
+}
+.anni-city {
+  font-size: 22rpx;
+  color: var(--muted);
+  margin-top: 8rpx;
+  letter-spacing: 2rpx;
+}
+
+/* 年份分隔（目录式） */
+.tl-year {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  margin: 8rpx 0 30rpx;
+}
+.tl-year-n {
+  font-size: 60rpx;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: 2rpx;
+}
+.tl-year-line {
+  flex: 1;
+  height: 1rpx;
+  background: var(--line);
+}
+.tl-year-en {
+  font-size: 18rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  color: var(--faint);
+}
+
+/* 旅程：编号轨道 + 大图卡（杂志目录式） */
+.tl-item {
+  display: flex;
+  gap: 24rpx;
+  padding-bottom: 44rpx;
+}
+.tl-rail {
+  flex: 0 0 56rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tl-no {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--faint);
+}
+.tl-line {
+  width: 1rpx;
+  flex: 1;
+  background: var(--line);
+  margin-top: 12rpx;
+}
+.tl-item:last-child .tl-line {
+  background: transparent;
+}
+.tl-body {
+  flex: 1;
+  min-width: 0;
+  border-bottom: 1rpx solid var(--line);
+  padding-bottom: 38rpx;
+}
+.tl-cover {
+  width: 100%;
+  height: 360rpx;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+.tl-img {
+  width: 100%;
+  height: 100%;
+}
+.tl-figno {
+  position: absolute;
+  left: 18rpx;
+  bottom: 16rpx;
+  color: var(--ink);
+  opacity: 0.5;
+  background: rgba(244, 241, 234, 0.7);
+  padding: 4rpx 10rpx;
+}
+.tl-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 22rpx;
+  font-size: 21rpx;
+  letter-spacing: 2rpx;
+  color: var(--muted);
+}
+.tl-dot {
+  color: var(--faint);
+}
+.tl-city {
+  font-size: 50rpx;
+  line-height: 1.1;
+  margin-top: 8rpx;
+}
+.tl-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 12rpx;
+}
+.tl-intro {
+  font-size: 25rpx;
+  color: var(--ink-2);
+  line-height: 1.75;
+  margin-top: 10rpx;
+}
+.tl-tags {
+  margin-top: 18rpx;
+}
+.tl-more {
+  margin-top: 18rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.tl-more-arrow {
+  font-size: 28rpx;
+  color: var(--faint);
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 30rpx;
+}
+.foot-txt {
+  margin-top: 30rpx;
   text-align: center;
-  color: var(--ink-soft);
   font-size: 24rpx;
-  padding: 24rpx 0 40rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
 }

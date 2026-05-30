@@ -37,9 +37,12 @@ miniprogram/
 ├── pages/
 │   ├── index/   地图首页：省份高亮 + 城市爱心标记 + 统计 + 在一起天数
 │   ├── timeline/ 时间线：纪念日 + 旅程卡片
-│   └── detail/   城市详情：照片/手记/标签/天气/地标
+│   ├── detail/   城市详情：照片/手记/标签/天气/地标
+│   ├── menu/    菜单：分类导航 + 菜品 + 数量加减 + 购物车结算条
+│   ├── order/   确认点单：逐项备注 + 给大厨留言 + 提交
+│   └── mine/    我的：微信快捷登录 + 昵称 + 历史订单
 ├── utils/
-│   ├── api.js   接口封装（journeys.php / provinces.php）
+│   ├── api.js   接口封装（journeys/provinces/menu/auth/order）
 │   └── util.js  tone→渐变、日期格式化
 └── assets/      爱心 marker 图标（脚本生成，见 tools/gen-heart.js）
 ```
@@ -51,6 +54,41 @@ miniprogram/
 3. 开发阶段：详情 → 本地设置 → 勾选「不校验合法域名、TLS 版本以及 HTTPS 证书」，即可直接联网调试。
 4. 正式发布前：登录小程序管理后台 → 开发管理 → 开发设置 → 服务器域名，把
    `https://ql.hlat.xyz` 加入 **request 合法域名**（域名需已 ICP 备案）。
+
+## 菜单点单 + 微信快捷登录（本次新增）
+
+为「她」做的点菜功能：后台维护菜品、她在小程序里挑菜填备注下单、订单回到后台查看。
+**完全独立于旅程数据，只新增表，不动你已有的任何表。**
+
+### 新增接口（`php/`，部署到 `/www/wwwroot/ql.hlat.xyz/api/`）
+
+| 方法 | 路径 | 说明 |
+| --- | --- | --- |
+| GET | `/api/menu.php` | 按分类返回可见菜品（`is_visible` / `is_available` 过滤，按 `sort_order`） |
+| POST | `/api/auth.php` | 微信快捷登录：`{ code }` → `code2session` 换 openid → upsert 用户 |
+| POST | `/api/order.php` | 下单：`{ openid, remark, items:[{id,qty,remark}] }`（**价格以服务器为准，防篡改**） |
+| GET | `/api/order.php?openid=` | 该用户的历史订单 + 明细 |
+
+接口沿用已有的 `_private/db.php`，AppSecret/管理员口令等放在 `_private/config.php`（不入库、不进仓库）。
+
+### 新增数据表（见 `php/menu.schema.sql`）
+
+`app_users` / `dish_categories` / `dishes` / `orders` / `order_items`，均为 `utf8mb4`。
+
+### 网页后台 `ql.hlat.xyz/admin`（见 `php/admin/index.php`）
+
+单文件 PHP 管理台，账号口令登录、CSRF 保护，黑白杂志风：
+- 分类：增 / 改排序 / 显隐 / 删
+- 菜品：增改、上传图片（校验 MIME + 大小，存 `/uploads/dishes/`）、显隐、删
+- 订单：列表查看、改状态（待处理 / 已接单 / 已完成 / 已取消）
+
+### 微信快捷登录
+
+`app.js` 的 `login()`：`wx.login()` 取 `code` → `POST /api/auth.php` 换 `openid` → 存本地缓存。
+下单时若未登录会自动触发一次登录，订单即归属到人。
+
+> 发布前在小程序后台「服务器域名」里把 `https://ql.hlat.xyz` 加入 request 合法域名；
+> 并在 mp.weixin.qq.com 把服务器 IP 加入 IP 白名单（`code2session` 需要）。
 
 ## 关于照片
 
