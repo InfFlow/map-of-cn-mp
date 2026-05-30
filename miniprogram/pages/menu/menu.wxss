@@ -193,6 +193,11 @@
   letter-spacing: 1rpx;
 }
 
+/* 回到顶部按钮在菜单页需让位给结算条 */
+.totop {
+  bottom: calc(var(--tabbar-h) + 150rpx);
+}
+
 /* 购物车结算条 */
 .cartbar {
   position: fixed;

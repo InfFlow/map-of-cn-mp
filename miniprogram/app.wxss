@@ -10,12 +10,26 @@ page {
   --line: rgba(27, 23, 18, 0.13);
   --line-soft: rgba(27, 23, 18, 0.07);
 
+  /* 自适应：安全区 + 自定义 tabBar 总高，供底部固定元素避让 */
+  --safe-b: env(safe-area-inset-bottom);
+  --safe-t: env(safe-area-inset-top);
+  --tabbar-h: calc(98rpx + env(safe-area-inset-bottom));
+
   background: var(--bg);
   color: var(--ink);
   font-family: -apple-system, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 28rpx;
   line-height: 1.72;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 大屏（平板/折叠屏）：内容容器最大宽度并居中，手机端不触发 */
+.page,
+.wrap {
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
 }
 
 /* 衬线字体——用于大标题/数字，营造杂志质感 */
@@ -130,7 +144,7 @@ page {
 .totop {
   position: fixed;
   right: 34rpx;
-  bottom: 44rpx;
+  bottom: calc(var(--tabbar-h) + 28rpx);
   width: 76rpx;
   height: 76rpx;
   display: flex;
