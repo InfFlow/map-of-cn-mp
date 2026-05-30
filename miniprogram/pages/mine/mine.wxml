@@ -1,0 +1,75 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">MINE</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <!-- 未登录 -->
+  <block wx:if="{{!user}}">
+    <view class="hero rise d1">
+      <view class="kicker">先认一下你</view>
+      <view class="h1 display">登录<view class="br"></view>开始点菜</view>
+      <view class="lede">用微信一键登录，点过的菜会留在这里。</view>
+    </view>
+    <view class="login-box rise d2">
+      <view class="login-btn pressable {{loggingIn ? 'disabled' : ''}}" hover-class="pressed" bindtap="login">
+        微信快捷登录
+      </view>
+      <view class="login-tip">仅用于识别身份、保存你的点单记录</view>
+    </view>
+  </block>
+
+  <!-- 已登录 -->
+  <block wx:else>
+    <view class="profile rise d1">
+      <view class="avatar serif">{{monogram}}</view>
+      <view class="profile-mid">
+        <view class="profile-name serif">{{user.nickname || '亲爱的'}}</view>
+        <view class="profile-id">已用微信登录</view>
+      </view>
+    </view>
+
+    <view class="block rise d2">
+      <view class="sec">
+        <text class="sec-zh">昵称</text>
+        <text class="sec-en">NAME</text>
+      </view>
+      <view class="name-row">
+        <input class="name-input" value="{{nickInput}}" placeholder="给自己起个名字" placeholder-class="ph" bindinput="onNickInput" maxlength="20" />
+        <view class="name-save pressable {{savingName ? 'disabled' : ''}}" hover-class="pressed" bindtap="saveName">保存</view>
+      </view>
+    </view>
+
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">我的点菜</text>
+        <text class="sec-en">ORDERS</text>
+      </view>
+
+      <view wx:if="{{loading}}" class="loading">正在读取…</view>
+
+      <view wx:elif="{{!orders.length}}" class="orders-empty">
+        <view class="oe-txt">还没有点过菜</view>
+        <view class="oe-go pressable" hover-class="pressed" bindtap="goMenu">去菜单看看 ›</view>
+      </view>
+
+      <view wx:else class="order-list">
+        <view wx:for="{{orders}}" wx:key="id" class="ocard">
+          <view class="ocard-top">
+            <text class="ocard-date serif">{{item.dateShort}}</text>
+            <text class="ocard-status {{item.status === 'done' ? 'on' : ''}}">{{item.statusText}}</text>
+          </view>
+          <view class="ocard-sum">{{item.summary}}</view>
+          <view wx:if="{{item.remark}}" class="ocard-note">「{{item.remark}}」</view>
+          <view class="ocard-foot">
+            <text class="ocard-count">{{item.itemCount}} 份</text>
+            <text wx:if="{{item.totalAmount > 0}}" class="ocard-total serif">¥{{item.totalAmount}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

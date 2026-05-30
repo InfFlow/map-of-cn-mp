@@ -1,0 +1,205 @@
+.page {
+  padding: 24rpx 44rpx 80rpx;
+}
+
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+.hero {
+  padding: 48rpx 0 6rpx;
+}
+.hero .h1 {
+  font-size: 104rpx;
+  line-height: 0.98;
+  margin-top: 20rpx;
+}
+.lede {
+  font-size: 29rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 28rpx;
+  max-width: 520rpx;
+}
+
+/* 登录 */
+.login-box {
+  margin-top: 80rpx;
+}
+.login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 30rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+}
+.login-btn.disabled {
+  opacity: 0.55;
+}
+.login-tip {
+  margin-top: 22rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--faint);
+  letter-spacing: 1rpx;
+}
+
+/* 资料 */
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 56rpx 0 10rpx;
+}
+.avatar {
+  width: 124rpx;
+  height: 124rpx;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 60rpx;
+  font-weight: 700;
+  margin-right: 30rpx;
+}
+.profile-name {
+  font-size: 46rpx;
+  font-weight: 700;
+  letter-spacing: -0.5rpx;
+}
+.profile-id {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+
+.block {
+  margin-top: 54rpx;
+}
+
+/* 昵称编辑 */
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+.name-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--ink);
+  padding: 18rpx 20rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--line);
+}
+.ph {
+  color: var(--faint);
+}
+.name-save {
+  flex: 0 0 auto;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+  padding: 18rpx 32rpx;
+}
+.name-save.disabled {
+  opacity: 0.5;
+}
+
+/* 订单 */
+.orders-empty {
+  padding: 70rpx 0;
+  text-align: center;
+}
+.oe-txt {
+  font-size: 27rpx;
+  color: var(--muted);
+}
+.oe-go {
+  display: inline-block;
+  margin-top: 26rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  border: 1rpx solid var(--ink);
+  padding: 14rpx 32rpx;
+}
+
+.ocard {
+  border: 1rpx solid var(--line);
+  padding: 28rpx 26rpx;
+  margin-bottom: 22rpx;
+  background: var(--surface);
+}
+.ocard-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ocard-date {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+.ocard-status {
+  font-size: 21rpx;
+  letter-spacing: 2rpx;
+  color: var(--muted);
+  border: 1rpx solid var(--line);
+  padding: 4rpx 14rpx;
+}
+.ocard-status.on {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.ocard-sum {
+  margin-top: 16rpx;
+  font-size: 27rpx;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.ocard-note {
+  margin-top: 12rpx;
+  font-size: 25rpx;
+  color: var(--muted);
+  font-style: italic;
+}
+.ocard-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.ocard-count {
+  font-size: 23rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+.ocard-total {
+  font-size: 32rpx;
+  font-weight: 700;
+}

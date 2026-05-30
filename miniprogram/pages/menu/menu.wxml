@@ -1,0 +1,103 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">MENU</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">为你下厨</view>
+    <view class="h1 display">今天<view class="br"></view>想吃什么</view>
+    <view class="lede">挑几道想吃的，写上备注，交给我来做。</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:34rpx;width:180rpx;"></view>
+      <view wx:for="{{[1,2,3]}}" wx:key="*this" class="sk sk-block" style="height:120rpx;margin-top:22rpx;"></view>
+    </view>
+  </block>
+
+  <block wx:elif="{{!error}}">
+    <!-- 分类导航：吸顶 -->
+    <view wx:if="{{categories.length > 1}}" class="catbar">
+      <scroll-view scroll-x class="catbar-scroll" enhanced show-scrollbar="{{false}}">
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="catchip {{activeCat === item.id ? 'on' : ''}}"
+          bindtap="jumpTo"
+          data-cat="{{item.id}}"
+        >{{item.name}}</view>
+      </scroll-view>
+    </view>
+
+    <view
+      wx:for="{{categories}}"
+      wx:key="id"
+      wx:for-item="cat"
+      class="block rise d2"
+      id="cat-{{cat.id}}"
+    >
+      <view class="sec">
+        <text class="sec-zh">{{cat.name}}</text>
+        <text class="sec-en">{{cat.dishes.length}} 道</text>
+      </view>
+
+      <view
+        wx:for="{{cat.dishes}}"
+        wx:key="id"
+        wx:for-item="d"
+        class="dish"
+      >
+        <view class="dish-thumb {{d.imageUrl ? '' : 'ph'}}" style="{{d.imageUrl ? 'background-image:url(' + d.imageUrl + ')' : ''}}">
+          <text wx:if="{{!d.imageUrl}}" class="dish-thumb-ph serif">{{d.name[0]}}</text>
+        </view>
+        <view class="dish-mid">
+          <view class="dish-name serif">{{d.name}}</view>
+          <view wx:if="{{d.description}}" class="dish-desc">{{d.description}}</view>
+          <view class="dish-price serif">{{d.price > 0 ? '¥' + d.price : '随意'}}</view>
+        </view>
+        <view class="stepper">
+          <view
+            wx:if="{{d.qty > 0}}"
+            class="step minus pressable"
+            hover-class="pressed"
+            catchtap="changeQty"
+            data-id="{{d.id}}"
+            data-delta="{{-1}}"
+          >−</view>
+          <text wx:if="{{d.qty > 0}}" class="step-qty serif">{{d.qty}}</text>
+          <view
+            class="step plus pressable"
+            hover-class="pressed"
+            catchtap="changeQty"
+            data-id="{{d.id}}"
+            data-delta="{{1}}"
+          >＋</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="foot rise d3">
+      <view class="hair"></view>
+      <view class="foot-txt">想吃的都点上 · 不必客气</view>
+    </view>
+  </block>
+
+  <view wx:if="{{error}}" class="empty">{{error}}</view>
+
+  <!-- 购物车结算条 -->
+  <view class="cartbar {{cartCount > 0 ? 'show' : ''}}">
+    <view class="cart-info">
+      <text class="cart-count">已选 {{cartCount}} 份</text>
+      <text wx:if="{{cartTotal > 0}}" class="cart-total serif">合计 ¥{{cartTotal}}</text>
+    </view>
+    <view class="cart-go pressable" hover-class="pressed" bindtap="goOrder">去点单 ›</view>
+  </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop" style="bottom:148rpx;">↑</view>
+</view>

@@ -2,7 +2,10 @@
   "pages": [
     "pages/index/index",
     "pages/timeline/timeline",
-    "pages/detail/detail"
+    "pages/detail/detail",
+    "pages/menu/menu",
+    "pages/order/order",
+    "pages/mine/mine"
   ],
   "window": {
     "navigationBarBackgroundColor": "#f4f1ea",
@@ -23,6 +26,14 @@
       {
         "pagePath": "pages/timeline/timeline",
         "text": "时间线"
+      },
+      {
+        "pagePath": "pages/menu/menu",
+        "text": "菜单"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
       }
     ]
   },

@@ -1,0 +1,73 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">ORDER</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">确认这一桌</view>
+    <view class="h1 display">点单</view>
+  </view>
+
+  <block wx:if="{{items.length}}">
+    <view class="block rise d2">
+      <view class="sec">
+        <text class="sec-zh">已选菜品</text>
+        <text class="sec-en">{{items.length}} 项</text>
+      </view>
+
+      <view wx:for="{{items}}" wx:key="id" class="oitem">
+        <view class="oitem-top">
+          <view class="oitem-name serif">{{item.name}}</view>
+          <view class="stepper">
+            <view class="step minus pressable" hover-class="pressed" catchtap="changeQty" data-id="{{item.id}}" data-delta="{{-1}}">−</view>
+            <text class="step-qty serif">{{item.qty}}</text>
+            <view class="step plus pressable" hover-class="pressed" catchtap="changeQty" data-id="{{item.id}}" data-delta="{{1}}">＋</view>
+          </view>
+        </view>
+        <view class="oitem-sub">
+          <text class="oitem-price serif">{{item.price > 0 ? '¥' + item.price : '随意'}}</text>
+          <input
+            class="oitem-remark"
+            value="{{item.remark}}"
+            placeholder="备注，如：少辣 / 多放糖"
+            placeholder-class="ph"
+            bindinput="onItemRemark"
+            data-id="{{item.id}}"
+            maxlength="40"
+          />
+        </view>
+      </view>
+    </view>
+
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">给大厨的话</text>
+        <text class="sec-en">NOTE</text>
+      </view>
+      <textarea
+        class="note"
+        value="{{remark}}"
+        placeholder="想几点吃？有什么忌口或小心愿…"
+        placeholder-class="ph"
+        bindinput="onRemark"
+        maxlength="200"
+        auto-height
+      />
+    </view>
+  </block>
+
+  <view wx:else class="empty">购物车是空的，先去菜单选几道菜。</view>
+
+  <!-- 提交条 -->
+  <view wx:if="{{items.length}}" class="submitbar">
+    <view class="sb-info">
+      <text wx:if="{{total > 0}}" class="sb-total serif">合计 ¥{{total}}</text>
+      <text wx:else class="sb-total serif">{{items.length}} 道菜</text>
+    </view>
+    <view class="sb-btn pressable {{submitting ? 'disabled' : ''}}" hover-class="pressed" bindtap="submit">提交点单</view>
+  </view>
+</view>
