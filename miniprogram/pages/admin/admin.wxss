@@ -323,9 +323,12 @@
 .sheet {
   width: 100%;
   background: var(--bg);
-  padding: 34rpx 44rpx 48rpx;
+  padding: 34rpx 44rpx calc(48rpx + env(safe-area-inset-bottom));
   border-top-left-radius: 18rpx;
   border-top-right-radius: 18rpx;
+  max-height: 92vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: sheetup 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 @keyframes sheetup {

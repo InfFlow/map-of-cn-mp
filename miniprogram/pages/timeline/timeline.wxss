@@ -1,5 +1,5 @@
 .wrap {
-  padding: 24rpx 44rpx 60rpx;
+  padding: 24rpx 44rpx calc(var(--tabbar-h) + 48rpx);
 }
 
 /* 报头 + 英雄区（与首页一致的语言） */

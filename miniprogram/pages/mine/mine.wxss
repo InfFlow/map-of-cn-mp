@@ -1,5 +1,5 @@
 .page {
-  padding: 24rpx 44rpx 80rpx;
+  padding: 24rpx 44rpx calc(var(--tabbar-h) + 48rpx);
 }
 
 .mast-row {

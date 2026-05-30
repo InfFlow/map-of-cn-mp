@@ -146,6 +146,9 @@
   background: var(--paper);
   border-top: 2rpx solid var(--ink);
   padding: 32rpx 36rpx calc(40rpx + env(safe-area-inset-bottom));
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transform: translateY(102%);
   transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -211,4 +214,6 @@
   color: var(--bg);
   font-size: 28rpx;
   letter-spacing: 2rpx;
+  position: sticky;
+  bottom: 0;
 }
