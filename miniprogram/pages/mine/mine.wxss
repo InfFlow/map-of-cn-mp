@@ -203,3 +203,42 @@
   font-size: 32rpx;
   font-weight: 700;
 }
+
+/* 后台管理入口 */
+.admin-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 30rpx 34rpx;
+}
+.admin-entry .ae-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.admin-entry .ae-zh {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--bg);
+}
+.admin-entry .ae-sub {
+  font-size: 21rpx;
+  letter-spacing: 2rpx;
+  color: rgba(244, 241, 234, 0.62);
+}
+.admin-entry .ae-arrow {
+  font-size: 44rpx;
+  color: var(--bg);
+}
+.admin-claim {
+  text-align: center;
+  margin-top: 40rpx;
+}
+.admin-claim .ac-link {
+  font-size: 22rpx;
+  letter-spacing: 2rpx;
+  color: var(--faint);
+  padding: 12rpx 20rpx;
+}

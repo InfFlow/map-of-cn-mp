@@ -1,0 +1,184 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">ADMIN</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <!-- 无权限 -->
+  <block wx:if="{{notAdmin}}">
+    <view class="gate rise d2">
+      <view class="gate-zh display">需要管理员</view>
+      <view class="gate-sub">请先在「我的」页登录并认领管理员身份。</view>
+      <view class="gate-btn pressable" hover-class="pressed" bindtap="goLogin">去「我的」 ›</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{ready}}">
+    <!-- Tab 切换 -->
+    <view class="tabs rise d1">
+      <view class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
+      <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
+      <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
+    </view>
+
+    <!-- ============ 菜品 ============ -->
+    <block wx:if="{{tab === 'dishes'}}">
+      <scroll-view scroll-x class="catbar" wx:if="{{categories.length}}">
+        <view class="catchip {{activeCat === item.id ? 'on' : ''}}" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="pickCat">{{item.name}}</view>
+      </scroll-view>
+
+      <view wx:if="{{!filteredDishes.length}}" class="empty">该分类下还没有菜品</view>
+
+      <view class="dish-list">
+        <view wx:for="{{filteredDishes}}" wx:key="id" class="d-card {{item.available ? '' : 'off'}}">
+          <view class="d-thumb">
+            <image wx:if="{{item.imageUrl}}" src="{{item.imageUrl}}" mode="aspectFill" class="d-img"></image>
+            <text wx:else class="d-thumb-ph serif">{{item.name[0]}}</text>
+          </view>
+          <view class="d-mid">
+            <view class="d-name serif">{{item.name}}</view>
+            <view class="d-badges">
+              <text wx:if="{{item.recommended}}" class="bdg rec">推荐</text>
+              <text wx:if="{{item.spicy > 0}}" class="bdg">{{item.spicyText}}</text>
+              <text wx:if="{{item.portion}}" class="bdg">{{item.portion}}</text>
+              <text wx:if="{{!item.available}}" class="bdg muted">已下架</text>
+            </view>
+            <view wx:if="{{item.description}}" class="d-desc">{{item.description}}</view>
+            <view class="d-price serif">{{item.price > 0 ? '¥' + item.price : '随意'}}</view>
+          </view>
+          <view class="d-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveDish">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveDish">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggleDish">{{item.available ? '下架' : '上架'}}</text>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openDishEditor">编辑</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delDish">删除</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openDishEditor">＋ 新增菜品</view>
+    </block>
+
+    <!-- ============ 分类 ============ -->
+    <block wx:elif="{{tab === 'categories'}}">
+      <view wx:if="{{!categories.length}}" class="empty">还没有分类</view>
+      <view class="cat-list">
+        <view wx:for="{{categories}}" wx:key="id" class="c-row {{item.visible ? '' : 'off'}}">
+          <view class="c-mid">
+            <text class="c-name serif">{{item.name}}</text>
+            <text wx:if="{{!item.visible}}" class="bdg muted">已隐藏</text>
+          </view>
+          <view class="c-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveCat">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveCat">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggleCat">{{item.visible ? '隐藏' : '显示'}}</text>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openCatEditor">改名</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delCat">删除</text>
+          </view>
+        </view>
+      </view>
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openCatEditor">＋ 新增分类</view>
+    </block>
+
+    <!-- ============ 订单 ============ -->
+    <block wx:elif="{{tab === 'orders'}}">
+      <view wx:if="{{ordersLoaded && !orders.length}}" class="empty">还没有订单</view>
+      <view wx:elif="{{!ordersLoaded}}" class="empty">正在读取…</view>
+      <view class="order-list">
+        <view wx:for="{{orders}}" wx:key="id" class="o-card">
+          <view class="o-top">
+            <text class="o-date serif">{{item.dateShort}}</text>
+            <text class="o-status s-{{item.status}} pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="changeStatus">{{item.statusLabel}} ▾</text>
+          </view>
+          <view class="o-who">{{item.nickname || '匿名'}}</view>
+          <view class="o-sum">{{item.summary}}</view>
+          <view wx:if="{{item.remark}}" class="o-note">「{{item.remark}}」</view>
+          <view class="o-foot">
+            <text class="o-count">{{item.itemCount}} 份</text>
+            <text wx:if="{{item.totalAmount > 0}}" class="o-total serif">¥{{item.totalAmount}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <view wx:else class="empty">正在读取…</view>
+
+  <!-- 分类编辑器 -->
+  <view wx:if="{{catEditor.show}}" class="mask" bindtap="closeCatEditor">
+    <view class="sheet" catchtap>
+      <view class="sheet-title serif">{{catEditor.id ? '编辑分类' : '新增分类'}}</view>
+      <input class="fld" value="{{catEditor.name}}" placeholder="分类名称，如「家常热菜」" placeholder-class="ph" bindinput="onCatName" maxlength="20" />
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeCatEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveCat">保存</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 菜品编辑器 -->
+  <view wx:if="{{dishEditor.show}}" class="mask" bindtap="closeDishEditor">
+    <view class="sheet tall" catchtap>
+      <view class="sheet-title serif">{{dishEditor.id ? '编辑菜品' : '新增菜品'}}</view>
+      <scroll-view scroll-y class="sheet-scroll">
+        <view class="fl">分类</view>
+        <picker mode="selector" range="{{categories}}" range-key="name" value="{{dishEditor.catIndex}}" bindchange="onDishCat">
+          <view class="fld picker">{{categories[dishEditor.catIndex].name || '请选择分类'}}</view>
+        </picker>
+
+        <view class="fl">菜名</view>
+        <input class="fld" value="{{dishEditor.name}}" placeholder="菜名" placeholder-class="ph" data-f="name" bindinput="onDishField" maxlength="40" />
+
+        <view class="fl">描述</view>
+        <input class="fld" value="{{dishEditor.description}}" placeholder="一句话描述（可空）" placeholder-class="ph" data-f="description" bindinput="onDishField" maxlength="60" />
+
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">价格（元）</view>
+            <input class="fld" type="digit" value="{{dishEditor.price}}" placeholder="0 表示随意" placeholder-class="ph" data-f="price" bindinput="onDishField" />
+          </view>
+          <view class="fl-col">
+            <view class="fl">分量</view>
+            <input class="fld" value="{{dishEditor.portion}}" placeholder="如：大份 / 2人份" placeholder-class="ph" data-f="portion" bindinput="onDishField" maxlength="16" />
+          </view>
+        </view>
+
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">辣度</view>
+            <picker mode="selector" range="{{spicyOptions}}" value="{{dishEditor.spicy}}" bindchange="onDishSpicy">
+              <view class="fld picker">{{spicyOptions[dishEditor.spicy]}}</view>
+            </picker>
+          </view>
+          <view class="fl-col rec-col">
+            <view class="fl">推荐</view>
+            <switch checked="{{dishEditor.recommended}}" color="#1b1712" bindchange="onDishRec" />
+          </view>
+        </view>
+
+        <view class="fl">图片</view>
+        <view class="img-row">
+          <view wx:if="{{dishEditor.imageUrl}}" class="img-prev">
+            <image src="{{dishEditor.imageUrl}}" mode="aspectFill" class="img-prev-i"></image>
+            <text class="img-x pressable" hover-class="pressed" bindtap="removeImage">×</text>
+          </view>
+          <view wx:else class="img-add pressable" hover-class="pressed" bindtap="chooseImage">
+            <text>{{dishEditor.uploading ? '上传中…' : '＋ 选择图片'}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeDishEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveDish">保存</text>
+      </view>
+    </view>
+  </view>
+</view>

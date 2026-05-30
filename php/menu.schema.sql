@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `app_users` (
   `openid`     VARCHAR(64)  COLLATE utf8mb4_unicode_ci NOT NULL,
   `nickname`   VARCHAR(64)  COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `avatar_url` VARCHAR(512) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `is_admin`   TINYINT(1) NOT NULL DEFAULT 0,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`openid`)
@@ -77,3 +78,7 @@ ALTER TABLE `dishes`
   ADD COLUMN `is_recommended` TINYINT(1) NOT NULL DEFAULT 0 AFTER `is_available`,
   ADD COLUMN `spicy_level` TINYINT NOT NULL DEFAULT 0 AFTER `is_recommended`,
   ADD COLUMN `portion` VARCHAR(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' AFTER `spicy_level`;
+
+-- 老库升级：app_users 增加管理员标记列（小程序内后台用 openid 认领管理员）。
+ALTER TABLE `app_users`
+  ADD COLUMN `is_admin` TINYINT(1) NOT NULL DEFAULT 0 AFTER `avatar_url`;

@@ -32,6 +32,16 @@
       </view>
     </view>
 
+    <view wx:if="{{user.isAdmin}}" class="block rise d2">
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openAdmin">
+        <view class="ae-mid">
+          <text class="ae-zh serif">后台管理</text>
+          <text class="ae-sub">分类 · 菜品 · 订单</text>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+    </view>
+
     <view class="block rise d2">
       <view class="sec">
         <text class="sec-zh">昵称</text>
@@ -70,6 +80,10 @@
           </view>
         </view>
       </view>
+    </view>
+
+    <view wx:if="{{!user.isAdmin}}" class="admin-claim rise d4">
+      <text class="ac-link" bindtap="claimAdmin">管理员入口</text>
     </view>
   </block>
 </view>
