@@ -1,0 +1,129 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">STATS</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">数字里的我们</view>
+    <view class="h1 display">足迹<view class="br"></view>统计</view>
+    <view class="lede">走过的路、点亮的城、花掉的钱，都数给你看。</view>
+  </view>
+
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:120rpx;margin-top:24rpx;"></view>
+      <view class="sk sk-block" style="height:300rpx;margin-top:24rpx;"></view>
+    </view>
+  </block>
+
+  <block wx:elif="{{!error}}">
+    <!-- 概览大数字 -->
+    <view class="grid4 rise d2">
+      <view class="cellnum">
+        <text class="num display">{{stats.provinceCount}}</text>
+        <text class="lab">省份 Provinces</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{stats.cityCount}}</text>
+        <text class="lab">城市 Cities</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{stats.journeyCount}}</text>
+        <text class="lab">回忆 Memories</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{totalKm}}</text>
+        <text class="lab">公里 Kilometres</text>
+      </view>
+    </view>
+    <view class="km-note">≈ 按出行先后把城市连起来的大圆里程</view>
+
+    <!-- 省份分布 -->
+    <view wx:if="{{provBars.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">省份分布</text>
+        <text class="sec-en">By Province</text>
+      </view>
+      <view class="bars">
+        <view wx:for="{{provBars}}" wx:key="label" class="bar-row">
+          <text class="bar-lab">{{item.label}}</text>
+          <view class="bar-track"><view class="bar-fill" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 季节分布 -->
+    <view wx:if="{{seasonBars.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">季节偏好</text>
+        <text class="sec-en">By Season</text>
+      </view>
+      <view class="bars">
+        <view wx:for="{{seasonBars}}" wx:key="label" class="bar-row">
+          <text class="bar-lab">{{item.label}}</text>
+          <view class="bar-track"><view class="bar-fill" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 年度足迹 -->
+    <view wx:if="{{yearBars.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">年度足迹</text>
+        <text class="sec-en">By Year</text>
+      </view>
+      <view class="bars">
+        <view wx:for="{{yearBars}}" wx:key="label" class="bar-row">
+          <text class="bar-lab">{{item.label}}</text>
+          <view class="bar-track"><view class="bar-fill" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 消费统计 -->
+    <view class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">消费统计</text>
+        <text class="sec-en">Spending</text>
+      </view>
+
+      <view wx:if="{{needLogin}}" class="exp-login pressable" hover-class="pressed" bindtap="goLogin">
+        登录后查看你们的行程消费统计 ›
+      </view>
+
+      <view wx:elif="{{expLoading}}" class="loading">正在汇总消费…</view>
+
+      <block wx:elif="{{expBars.length}}">
+        <view class="exp-total">
+          <text class="exp-total-num display">¥{{expTotal}}</text>
+          <text class="exp-total-lab">共 {{expCount}} 笔 · 按行程汇总</text>
+        </view>
+        <view class="bars">
+          <view wx:for="{{expBars}}" wx:key="label" class="bar-row">
+            <text class="bar-lab">{{item.label}}</text>
+            <view class="bar-track"><view class="bar-fill" style="width:{{item.pct}}%;"></view></view>
+            <text class="bar-val serif">¥{{item.value}}</text>
+          </view>
+        </view>
+      </block>
+
+      <view wx:else class="exp-empty">还没有记账。去「行程」里给某段旅程记一笔吧。</view>
+    </view>
+
+    <view class="foot rise d5">
+      <view class="hair"></view>
+      <view class="foot-txt">数字会长大，故事也是</view>
+    </view>
+  </block>
+
+  <view wx:if="{{error}}" class="empty">{{error}}</view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+</view>

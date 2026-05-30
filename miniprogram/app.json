@@ -10,6 +10,7 @@
     "pages/admin/admin",
     "pages/wish/wish",
     "pages/album/album",
+    "pages/stats/stats",
     "pages/ai/ai"
   ],
   "window": {
