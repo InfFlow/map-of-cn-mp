@@ -50,7 +50,7 @@ miniprogram/
 ### 在微信开发者工具里运行
 
 1. 打开微信开发者工具 → 导入项目 → 选择本目录 `map-of-us-mp/`。
-2. AppID 已填好：`wxdf663f2649d53f09`（`project.config.json`）。
+2. AppID 已填好：`wx41376fd7ee080d4f`（`project.config.json`）。
 3. 开发阶段：详情 → 本地设置 → 勾选「不校验合法域名、TLS 版本以及 HTTPS 证书」，即可直接联网调试。
 4. 正式发布前：登录小程序管理后台 → 开发管理 → 开发设置 → 服务器域名，把
    `https://ql.hlat.xyz` 加入 **request 合法域名**（域名需已 ICP 备案）。
