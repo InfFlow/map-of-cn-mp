@@ -75,6 +75,7 @@ const idxRows = journeys
       <div class="idx-no serif">${String(i + 1).padStart(2, '0')}</div>
       <div class="idx-mid"><div class="idx-city">${j.city}<span class="idx-season">${j.season}</span></div><div class="idx-title">${j.title}</div></div>
       <div class="idx-date">${j.date}</div>
+      <div class="idx-arrow">\u203a</div>
     </div>`,
   )
   .join('')
@@ -93,18 +94,21 @@ const indexScreen = `
       <div class="stat vr"><div class="n display">${stats.city}</div><div class="l">城市</div></div>
       <div class="stat vr"><div class="n display">${stats.trip}</div><div class="l">回忆</div></div>
     </div>
-    <div class="sec"><span class="sec-zh">足迹地图</span><span class="sec-en">The Map</span></div>
-    <div class="map-frame">${mapSvg}</div>
+    <div class="sec"><span class="sec-zh">足迹地图</span><span class="legend"><span class="lg"><span class="sw sw-area"></span>省份</span><span class="lg"><span class="sw sw-pin"></span>城市</span></span></div>
+    <div class="map-frame"><span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>${mapSvg}</div>
+    <div class="map-cap">FIG.01 — 已点亮 ${stats.province} 省 · ${stats.city} 城</div>
     <div class="sec mt"><span class="sec-zh">最近的回忆</span><span class="sec-en">Timeline ›</span></div>
     <div class="index-list">${idxRows}</div>
     <div class="hair mt2"></div>
     <div class="foot-txt">这张地图，跟着我们之后的每一次出发慢慢长大</div>
+    <div class="totop">\u2191</div>
   </div>`
 
 // ---- 时间线 ----
 const anniCards = data.anniversaries
   .map(
     (a) => `<div class="anni">
+      <div class="anni-tag">ANNIVERSARY</div>
       <div class="anni-date serif">${a.date}</div>
       <div class="anni-hair"></div>
       <div class="anni-label">${a.label}</div>
@@ -117,12 +121,13 @@ const tlItems = journeys
     (j, i) => `<div class="tl-item">
     <div class="tl-rail"><span class="tl-no serif">${String(i + 1).padStart(2, '0')}</span><div class="tl-line"></div></div>
     <div class="tl-body">
-      <div class="tl-cover" style="background:${toneGradient(j.coverTone)}"></div>
+      <div class="tl-cover" style="background:${toneGradient(j.coverTone)}"><span class="figno tl-figno">PLATE ${String(i + 1).padStart(2, '0')}</span></div>
       <div class="tl-meta"><span>${j.season}</span><span class="tl-dot">·</span><span>${j.date}</span></div>
       <div class="tl-city display">${j.city}</div>
       <div class="tl-title">${j.title}</div>
       <div class="tl-intro">${j.intro}</div>
       <div class="tl-tags">${j.tags.map((t) => `<span class="chip">${t}</span>`).join('')}</div>
+      <div class="tl-more">阅读这段回忆 <span class="tl-more-arrow">\u203a</span></div>
     </div>
   </div>`,
   )
@@ -138,6 +143,7 @@ const timelineScreen = `
     <div class="tl">${tlItems}</div>
     <div class="hair"></div>
     <div class="foot-txt">每一次出发，都会被这张地图记住</div>
+    <div class="totop">\u2191</div>
   </div>`
 
 // ---- 详情（最新一段） ----
@@ -147,23 +153,24 @@ const detailScreen = `
     <div class="mast-row"><span class="mast-name">${d0.province}</span><span class="mast-vol">${d0.date}</span></div>
     <div class="rule"></div>
     <div class="d-head"><div class="kicker">${d0.season}</div><div class="d-city display">${d0.city}</div><div class="d-title serif">${d0.title}</div></div>
-    <div class="d-cover" style="background:${toneGradient(d0.coverTone)}"></div>
-    <div class="d-lede">${d0.intro}</div>
+    <div class="d-cover" style="background:${toneGradient(d0.coverTone)}"><span class="figno d-cover-fig">COVER · ${d0.city}</span></div>
+    <div class="d-lede dropcap">${d0.intro}</div>
     <div class="d-facts">
       <div class="fact"><span class="fk">天气 / WEATHER</span><span class="fv">${d0.weather}</span></div>
       <div class="fact"><span class="fk">地标 / LANDMARK</span><span class="fv">${d0.landmark}</span></div>
     </div>
     <div class="d-tags">${d0.tags.map((t) => `<span class="chip">#${t}</span>`).join('')}</div>
-    <div class="sec mt"><span class="sec-zh">那天的画面</span><span class="sec-en">Frames</span></div>
+    <div class="sec mt"><span class="sec-zh">那天的画面</span><span class="sec-en">Frames · ${d0.photos.length}</span></div>
     <div class="photos">${d0.photos
       .map(
-        (p) => `<div class="photo-cell"><div class="photo" style="background:${toneGradient(p.tone)}"></div><div class="photo-cap">${p.title}</div><div class="photo-sub">${p.subtitle || ''}</div></div>`,
+        (p, i) => `<div class="photo-cell"><div class="photo" style="background:${toneGradient(p.tone)}"><span class="figno photo-fig">FIG.${String(i + 1).padStart(2, '0')}</span></div><div class="photo-cap">${p.title}</div><div class="photo-sub">${p.subtitle || ''}</div></div>`,
       )
       .join('')}</div>
     <div class="sec mt"><span class="sec-zh">手记</span><span class="sec-en">Notes</span></div>
     ${d0.notes.map((n) => `<div class="note serif">${n}</div>`).join('')}
     <div class="hair mt2"></div>
     <div class="foot-txt sp">Map of Us · 我们的地图</div>
+    <div class="totop">\u2191</div>
   </div>`
 
 const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
@@ -177,7 +184,10 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   body{background:#e7e1d6;padding:34px;display:flex;gap:30px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
   .col{display:flex;flex-direction:column;align-items:center;}
   .label{color:#6f6657;font-weight:700;margin-bottom:12px;font-size:12px;letter-spacing:2px;}
-  .phone{width:344px;background:var(--bg);border-radius:42px;box-shadow:0 30px 70px rgba(27,23,18,.22);overflow:hidden;border:10px solid #fff;}
+  .phone{position:relative;width:344px;background:var(--bg);border-radius:42px;box-shadow:0 30px 70px rgba(27,23,18,.22);overflow:hidden;border:10px solid #fff;}
+  .figno{font-family:Georgia,"Songti SC",serif;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--faint);}
+  .totop{position:absolute;right:16px;bottom:20px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--ink);color:var(--ink);font-size:17px;z-index:5;}
+  .dropcap::first-letter{font-family:Georgia,"Songti SC",serif;font-weight:700;float:left;font-size:48px;line-height:.82;padding:3px 8px 0 0;color:var(--ink);}
   .bar{background:var(--bg);color:var(--ink);text-align:center;padding:13px;font-weight:600;font-size:14px;}
   .screen{height:706px;overflow:auto;background:var(--bg);}
   .pad{padding:14px 20px 30px;}
@@ -204,7 +214,18 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .stat.vr::before{content:"";position:absolute;left:0;top:16px;bottom:14px;width:1px;background:var(--line);}
   .stat .n{font-size:33px;line-height:1;}
   .stat .l{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:6px;}
-  .map-frame{border:1px solid var(--line);padding:6px;background:var(--paper);}
+  .legend{display:flex;gap:11px;}
+  .lg{display:flex;align-items:center;gap:4px;font-size:9px;letter-spacing:1px;color:var(--muted);}
+  .sw{width:8px;height:8px;}
+  .sw-area{background:var(--line);border:1px solid var(--ink);}
+  .sw-pin{width:6px;height:6px;border-radius:50%;background:var(--ink);}
+  .map-frame{position:relative;border:1px solid var(--line);padding:6px;background:var(--paper);}
+  .tick{position:absolute;width:8px;height:8px;border:1.5px solid var(--ink);}
+  .tick.tl{left:-1px;top:-1px;border-right:0;border-bottom:0;}
+  .tick.tr{right:-1px;top:-1px;border-left:0;border-bottom:0;}
+  .tick.bl{left:-1px;bottom:-1px;border-right:0;border-top:0;}
+  .tick.br{right:-1px;bottom:-1px;border-left:0;border-top:0;}
+  .map-cap{margin-top:7px;font-family:Georgia,"Songti SC",serif;font-size:10px;letter-spacing:.5px;color:var(--muted);text-align:center;}
   .index-list{}
   .idx-row{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line);}
   .idx-row:last-child{border-bottom:0;}
@@ -214,11 +235,13 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .idx-season{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:1px;}
   .idx-title{font-size:12px;color:var(--ink2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .idx-date{font-size:11px;color:var(--muted);}
+  .idx-arrow{font-size:15px;color:var(--faint);margin-left:3px;}
   .foot-txt{margin-top:14px;text-align:center;font-size:12px;color:var(--muted);}
   .foot-txt.sp{letter-spacing:2px;}
   /* 时间线 */
   .anni-scroll{display:flex;gap:11px;overflow-x:auto;padding-bottom:4px;}
   .anni{min-width:150px;border:1px solid var(--line);background:var(--paper);padding:13px 14px 15px;}
+  .anni-tag{font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--faint);margin-bottom:7px;}
   .anni-date{font-size:17px;font-weight:700;}
   .anni-hair{height:1px;background:var(--ink);width:24px;margin:8px 0;}
   .anni-label{font-size:13px;font-weight:700;}
@@ -229,18 +252,22 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .tl-line{width:1px;flex:1;background:var(--line);margin-top:6px;}
   .tl-item:last-child .tl-line{background:transparent;}
   .tl-body{flex:1;min-width:0;border-bottom:1px solid var(--line);padding-bottom:18px;}
-  .tl-cover{width:100%;height:165px;}
+  .tl-cover{position:relative;width:100%;height:165px;}
+  .tl-figno{position:absolute;left:9px;bottom:8px;background:rgba(244,241,234,.7);padding:2px 5px;color:var(--ink);opacity:.6;}
   .tl-meta{display:flex;align-items:center;gap:6px;margin-top:11px;font-size:10px;letter-spacing:1px;color:var(--muted);}
   .tl-dot{color:var(--faint);}
   .tl-city{font-size:24px;line-height:1.1;margin-top:4px;}
   .tl-title{font-size:14px;font-weight:700;margin-top:6px;}
   .tl-intro{font-size:12px;color:var(--ink2);line-height:1.7;margin-top:5px;}
   .tl-tags{margin-top:9px;}
+  .tl-more{margin-top:9px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink);display:flex;align-items:center;gap:4px;}
+  .tl-more-arrow{font-size:14px;color:var(--faint);}
   /* 详情 */
   .d-head{padding:18px 0 2px;}
   .d-city{font-size:46px;line-height:1;margin-top:7px;}
   .d-title{font-size:16px;font-weight:700;color:var(--ink2);margin-top:9px;}
-  .d-cover{width:100%;height:240px;margin-top:15px;}
+  .d-cover{position:relative;width:100%;height:240px;margin-top:15px;}
+  .d-cover-fig{position:absolute;left:9px;bottom:9px;background:rgba(244,241,234,.7);padding:2px 6px;color:var(--ink);opacity:.6;}
   .d-lede{font-size:14px;line-height:1.9;margin-top:17px;}
   .d-facts{margin-top:16px;border-top:1px solid var(--line);}
   .fact{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);}
@@ -249,7 +276,8 @@ const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
   .d-tags{margin-top:14px;}
   .photos{display:flex;flex-wrap:wrap;gap:11px;}
   .photo-cell{width:calc((100% - 11px)/2);}
-  .photo{width:100%;height:120px;border:1px solid var(--line);}
+  .photo{position:relative;width:100%;height:120px;border:1px solid var(--line);}
+  .photo-fig{position:absolute;left:6px;bottom:5px;background:rgba(244,241,234,.72);padding:1px 4px;color:var(--ink);opacity:.6;}
   .photo-cap{font-size:12px;font-weight:700;margin-top:7px;}
   .photo-sub{font-size:10px;color:var(--muted);margin-top:2px;}
   .note{font-size:14px;line-height:1.95;padding:12px 0 12px 15px;border-bottom:1px solid var(--line);position:relative;}

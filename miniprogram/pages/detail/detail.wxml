@@ -1,4 +1,13 @@
-<view wx:if="{{loading}}" class="loading">加载中…</view>
+<!-- 骨架屏 -->
+<view wx:if="{{loading}}" class="wrap">
+  <view class="sk sk-block" style="height:24rpx;width:40%;"></view>
+  <view class="sk sk-block" style="height:2rpx;margin-top:18rpx;"></view>
+  <view class="sk sk-block" style="height:96rpx;width:55%;margin-top:44rpx;"></view>
+  <view class="sk sk-block" style="height:520rpx;margin-top:36rpx;"></view>
+  <view class="sk sk-block" style="height:24rpx;width:90%;margin-top:36rpx;"></view>
+  <view class="sk sk-block" style="height:24rpx;width:80%;margin-top:14rpx;"></view>
+</view>
+
 <view wx:elif="{{error}}" class="empty">{{error}}</view>
 
 <view wx:else class="wrap">
@@ -18,9 +27,10 @@
 
   <view class="d-cover rise d2" style="background-image: {{trip.coverGrad}};">
     <image wx:if="{{trip.cover}}" class="d-cover-img" src="{{trip.cover}}" mode="aspectFill"></image>
+    <text class="d-cover-fig figno">COVER · {{trip.city}}</text>
   </view>
 
-  <view wx:if="{{trip.intro}}" class="d-lede rise d2">{{trip.intro}}</view>
+  <view wx:if="{{trip.intro}}" class="d-lede dropcap rise d2">{{trip.intro}}</view>
 
   <view class="d-facts rise d2">
     <view wx:if="{{trip.weather}}" class="fact">
@@ -40,7 +50,7 @@
   <view wx:if="{{trip.photos.length}}" class="block rise d3">
     <view class="sec">
       <text class="sec-zh">那天的画面</text>
-      <text class="sec-en">Frames</text>
+      <text class="sec-en">Frames · {{trip.photos.length}}</text>
     </view>
     <view class="photos">
       <view
@@ -50,8 +60,9 @@
         bindtap="preview"
         data-url="{{item.imageUrl}}"
       >
-        <view class="photo pressable" hover-class="pressed" hover-stay-time="80" style="background-image: {{item.grad}};">
+        <view class="photo pressable" hover-class="pressed" hover-stay-time="60" style="background-image: {{item.grad}};">
           <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <text class="photo-fig figno">{{item.fig}}</text>
         </view>
         <view class="photo-cap">{{item.title}}</view>
         <view wx:if="{{item.subtitle}}" class="photo-sub">{{item.subtitle}}</view>
@@ -71,4 +82,6 @@
     <view class="hair"></view>
     <view class="foot-txt">Map of Us · 我们的地图</view>
   </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
 </view>

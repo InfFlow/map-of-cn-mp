@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "Map of Us"
+  "navigationBarTitleText": "Map of Us",
+  "enablePullDownRefresh": true,
+  "backgroundColorTop": "#f4f1ea",
+  "backgroundTextStyle": "dark"
 }

@@ -1,21 +1,31 @@
 <view class="wrap">
-  <view wx:if="{{loading}}" class="loading">加载中…</view>
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">TIMELINE</text>
+      <text class="mast-vol">{{trips.length ? trips.length + ' TRIPS' : '我们走过的日子'}}</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">按时间回看</view>
+    <view class="h1 display">我们走过<view class="br"></view>的日子</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:34rpx;width:160rpx;"></view>
+      <view class="sk sk-block" style="height:360rpx;margin-top:30rpx;"></view>
+      <view class="sk sk-block" style="height:50rpx;width:60%;margin-top:24rpx;"></view>
+      <view class="sk sk-block" style="height:24rpx;width:90%;margin-top:18rpx;"></view>
+      <view class="sk sk-block" style="height:24rpx;width:80%;margin-top:12rpx;"></view>
+    </view>
+  </block>
+
   <view wx:elif="{{error}}" class="empty">{{error}}</view>
 
   <block wx:else>
-    <view class="mast rise d1">
-      <view class="mast-row">
-        <text class="mast-name">TIMELINE</text>
-        <text class="mast-vol">{{trips.length}} TRIPS</text>
-      </view>
-      <view class="rule"></view>
-    </view>
-
-    <view class="hero rise d1">
-      <view class="kicker">按时间回看</view>
-      <view class="h1 display">我们走过<view class="br"></view>的日子</view>
-    </view>
-
     <view wx:if="{{anniversaries.length}}" class="block rise d2">
       <view class="sec">
         <text class="sec-zh">纪念日</text>
@@ -23,6 +33,7 @@
       </view>
       <scroll-view scroll-x class="anni-scroll" show-scrollbar="{{false}}" enhanced>
         <view wx:for="{{anniversaries}}" wx:key="id" class="anni">
+          <view class="anni-tag">ANNIVERSARY</view>
           <view class="anni-date serif">{{item.dateShort}}</view>
           <view class="anni-hair"></view>
           <view class="anni-label">{{item.label}}</view>
@@ -43,7 +54,7 @@
           wx:key="id"
           class="tl-item pressable"
           hover-class="pressed"
-          hover-stay-time="80"
+          hover-stay-time="60"
           bindtap="openDetail"
           data-id="{{item.id}}"
         >
@@ -54,6 +65,7 @@
           <view class="tl-body">
             <view class="tl-cover" style="background-image: {{item.coverGrad}};">
               <image wx:if="{{item.cover}}" class="tl-img" src="{{item.cover}}" mode="aspectFill"></image>
+              <text class="tl-figno figno">PLATE {{item.no}}</text>
             </view>
             <view class="tl-meta">
               <text class="tl-season">{{item.season}}</text>
@@ -66,6 +78,7 @@
             <view class="tl-tags">
               <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="chip">{{tag}}</text>
             </view>
+            <view class="tl-more">阅读这段回忆 <text class="tl-more-arrow">›</text></view>
           </view>
         </view>
       </view>
@@ -76,4 +89,6 @@
       <view class="foot-txt">每一次出发，都会被这张地图记住</view>
     </view>
   </block>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
 </view>

@@ -15,72 +15,97 @@
     </view>
   </view>
 
-  <view class="stats rise d2">
-    <view class="stat">
-      <view class="n display">{{stats.provinceCount}}</view>
-      <view class="l">省份</view>
-    </view>
-    <view class="stat">
-      <view class="vr"></view>
-      <view class="n display">{{stats.cityCount}}</view>
-      <view class="l">城市</view>
-    </view>
-    <view class="stat">
-      <view class="vr"></view>
-      <view class="n display">{{stats.journeyCount}}</view>
-      <view class="l">回忆</view>
-    </view>
-  </view>
-
-  <view class="block rise d3">
-    <view class="sec">
-      <text class="sec-zh">足迹地图</text>
-      <text class="sec-en">The Map</text>
-    </view>
-    <view class="map-frame">
-      <map
-        class="map"
-        id="map"
-        latitude="{{center.latitude}}"
-        longitude="{{center.longitude}}"
-        scale="{{scale}}"
-        markers="{{markers}}"
-        polygons="{{polygons}}"
-        include-points="{{includePoints}}"
-        bindmarkertap="onMarkerTap"
-      ></map>
-    </view>
-  </view>
-
-  <view wx:if="{{recent.length}}" class="block rise d4">
-    <view class="sec">
-      <text class="sec-zh">最近的回忆</text>
-      <text class="sec-en" bindtap="goTimeline">Timeline ›</text>
-    </view>
-    <view class="index-list">
-      <view
-        wx:for="{{recent}}"
-        wx:key="id"
-        class="idx-row pressable"
-        hover-class="pressed"
-        hover-stay-time="80"
-        bindtap="openDetail"
-        data-id="{{item.id}}"
-      >
-        <text class="idx-no serif">{{item.no}}</text>
-        <view class="idx-mid">
-          <view class="idx-city">{{item.city}}<text class="idx-season">{{item.season}}</text></view>
-          <view class="idx-title">{{item.title}}</view>
-        </view>
-        <text class="idx-date">{{item.dateShort}}</text>
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="stats">
+      <view class="stat" wx:for="{{[1,2,3]}}" wx:key="*this">
+        <view class="sk sk-block" style="width:70rpx;height:60rpx;"></view>
+        <view class="sk" style="width:40rpx;height:18rpx;margin-top:16rpx;"></view>
       </view>
     </view>
-  </view>
+    <view class="block">
+      <view class="sk sk-block" style="height:34rpx;width:200rpx;"></view>
+      <view class="sk sk-block" style="height:472rpx;margin-top:24rpx;"></view>
+    </view>
+  </block>
 
-  <view class="foot rise d5">
-    <view class="hair"></view>
-    <view class="foot-txt">这张地图，跟着我们之后的每一次出发慢慢长大</view>
-  </view>
+  <block wx:elif="{{!error}}">
+    <view class="stats rise d2">
+      <view class="stat">
+        <view class="n display">{{stats.provinceCount}}</view>
+        <view class="l">省份</view>
+      </view>
+      <view class="stat">
+        <view class="vr"></view>
+        <view class="n display">{{stats.cityCount}}</view>
+        <view class="l">城市</view>
+      </view>
+      <view class="stat">
+        <view class="vr"></view>
+        <view class="n display">{{stats.journeyCount}}</view>
+        <view class="l">回忆</view>
+      </view>
+    </view>
+
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">足迹地图</text>
+        <view class="legend">
+          <view class="lg"><view class="sw sw-area"></view>省份</view>
+          <view class="lg"><view class="sw sw-pin"></view>城市</view>
+        </view>
+      </view>
+      <view class="map-frame">
+        <view class="tick tl"></view><view class="tick tr"></view>
+        <view class="tick bl"></view><view class="tick br"></view>
+        <map
+          class="map"
+          id="map"
+          latitude="{{center.latitude}}"
+          longitude="{{center.longitude}}"
+          scale="{{scale}}"
+          markers="{{markers}}"
+          polygons="{{polygons}}"
+          include-points="{{includePoints}}"
+          bindmarkertap="onMarkerTap"
+        ></map>
+      </view>
+      <view class="map-cap">{{mapCaption}}</view>
+    </view>
+
+    <view wx:if="{{recent.length}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">最近的回忆</text>
+        <text class="sec-en tap" bindtap="goTimeline">Timeline ›</text>
+      </view>
+      <view class="index-list">
+        <view
+          wx:for="{{recent}}"
+          wx:key="id"
+          class="idx-row pressable"
+          hover-class="pressed"
+          hover-stay-time="60"
+          bindtap="openDetail"
+          data-id="{{item.id}}"
+        >
+          <text class="idx-no serif">{{item.no}}</text>
+          <view class="idx-mid">
+            <view class="idx-city">{{item.city}}<text class="idx-season">{{item.season}}</text></view>
+            <view class="idx-title">{{item.title}}</view>
+          </view>
+          <text class="idx-date">{{item.dateShort}}</text>
+          <text class="idx-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="foot rise d5">
+      <view class="hair"></view>
+      <view class="foot-txt">这张地图，跟着我们之后的每一次出发慢慢长大</view>
+    </view>
+  </block>
 
   <view wx:if="{{error}}" class="empty">{{error}}</view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
 </view>

@@ -47,18 +47,28 @@
   background-size: cover;
   background-position: center;
   overflow: hidden;
+  position: relative;
 }
 .d-cover-img {
   width: 100%;
   height: 100%;
 }
+.d-cover-fig {
+  position: absolute;
+  left: 18rpx;
+  bottom: 16rpx;
+  color: var(--ink);
+  opacity: 0.5;
+  background: rgba(244, 241, 234, 0.7);
+  padding: 4rpx 12rpx;
+}
 
-/* 引文式简介 */
+/* 引文式简介（首字下沉） */
 .d-lede {
   font-size: 30rpx;
   line-height: 1.9;
   color: var(--ink);
-  margin-top: 36rpx;
+  margin-top: 40rpx;
 }
 
 /* 事实表：天气 / 地标 */
@@ -107,10 +117,20 @@
   background-position: center;
   overflow: hidden;
   border: 1rpx solid var(--line);
+  position: relative;
 }
 .photo-img {
   width: 100%;
   height: 100%;
+}
+.photo-fig {
+  position: absolute;
+  left: 12rpx;
+  bottom: 10rpx;
+  color: var(--ink);
+  opacity: 0.5;
+  background: rgba(244, 241, 234, 0.72);
+  padding: 2rpx 8rpx;
 }
 .photo-cap {
   font-size: 24rpx;

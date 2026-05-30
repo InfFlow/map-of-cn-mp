@@ -9,7 +9,10 @@
   body{background:#e7e1d6;padding:34px;display:flex;gap:30px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
   .col{display:flex;flex-direction:column;align-items:center;}
   .label{color:#6f6657;font-weight:700;margin-bottom:12px;font-size:12px;letter-spacing:2px;}
-  .phone{width:344px;background:var(--bg);border-radius:42px;box-shadow:0 30px 70px rgba(27,23,18,.22);overflow:hidden;border:10px solid #fff;}
+  .phone{position:relative;width:344px;background:var(--bg);border-radius:42px;box-shadow:0 30px 70px rgba(27,23,18,.22);overflow:hidden;border:10px solid #fff;}
+  .figno{font-family:Georgia,"Songti SC",serif;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--faint);}
+  .totop{position:absolute;right:16px;bottom:20px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--ink);color:var(--ink);font-size:17px;z-index:5;}
+  .dropcap::first-letter{font-family:Georgia,"Songti SC",serif;font-weight:700;float:left;font-size:48px;line-height:.82;padding:3px 8px 0 0;color:var(--ink);}
   .bar{background:var(--bg);color:var(--ink);text-align:center;padding:13px;font-weight:600;font-size:14px;}
   .screen{height:706px;overflow:auto;background:var(--bg);}
   .pad{padding:14px 20px 30px;}
@@ -36,7 +39,18 @@
   .stat.vr::before{content:"";position:absolute;left:0;top:16px;bottom:14px;width:1px;background:var(--line);}
   .stat .n{font-size:33px;line-height:1;}
   .stat .l{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:6px;}
-  .map-frame{border:1px solid var(--line);padding:6px;background:var(--paper);}
+  .legend{display:flex;gap:11px;}
+  .lg{display:flex;align-items:center;gap:4px;font-size:9px;letter-spacing:1px;color:var(--muted);}
+  .sw{width:8px;height:8px;}
+  .sw-area{background:var(--line);border:1px solid var(--ink);}
+  .sw-pin{width:6px;height:6px;border-radius:50%;background:var(--ink);}
+  .map-frame{position:relative;border:1px solid var(--line);padding:6px;background:var(--paper);}
+  .tick{position:absolute;width:8px;height:8px;border:1.5px solid var(--ink);}
+  .tick.tl{left:-1px;top:-1px;border-right:0;border-bottom:0;}
+  .tick.tr{right:-1px;top:-1px;border-left:0;border-bottom:0;}
+  .tick.bl{left:-1px;bottom:-1px;border-right:0;border-top:0;}
+  .tick.br{right:-1px;bottom:-1px;border-left:0;border-top:0;}
+  .map-cap{margin-top:7px;font-family:Georgia,"Songti SC",serif;font-size:10px;letter-spacing:.5px;color:var(--muted);text-align:center;}
   .index-list{}
   .idx-row{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line);}
   .idx-row:last-child{border-bottom:0;}
@@ -46,11 +60,13 @@
   .idx-season{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:1px;}
   .idx-title{font-size:12px;color:var(--ink2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .idx-date{font-size:11px;color:var(--muted);}
+  .idx-arrow{font-size:15px;color:var(--faint);margin-left:3px;}
   .foot-txt{margin-top:14px;text-align:center;font-size:12px;color:var(--muted);}
   .foot-txt.sp{letter-spacing:2px;}
   /* 时间线 */
   .anni-scroll{display:flex;gap:11px;overflow-x:auto;padding-bottom:4px;}
   .anni{min-width:150px;border:1px solid var(--line);background:var(--paper);padding:13px 14px 15px;}
+  .anni-tag{font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--faint);margin-bottom:7px;}
   .anni-date{font-size:17px;font-weight:700;}
   .anni-hair{height:1px;background:var(--ink);width:24px;margin:8px 0;}
   .anni-label{font-size:13px;font-weight:700;}
@@ -61,18 +77,22 @@
   .tl-line{width:1px;flex:1;background:var(--line);margin-top:6px;}
   .tl-item:last-child .tl-line{background:transparent;}
   .tl-body{flex:1;min-width:0;border-bottom:1px solid var(--line);padding-bottom:18px;}
-  .tl-cover{width:100%;height:165px;}
+  .tl-cover{position:relative;width:100%;height:165px;}
+  .tl-figno{position:absolute;left:9px;bottom:8px;background:rgba(244,241,234,.7);padding:2px 5px;color:var(--ink);opacity:.6;}
   .tl-meta{display:flex;align-items:center;gap:6px;margin-top:11px;font-size:10px;letter-spacing:1px;color:var(--muted);}
   .tl-dot{color:var(--faint);}
   .tl-city{font-size:24px;line-height:1.1;margin-top:4px;}
   .tl-title{font-size:14px;font-weight:700;margin-top:6px;}
   .tl-intro{font-size:12px;color:var(--ink2);line-height:1.7;margin-top:5px;}
   .tl-tags{margin-top:9px;}
+  .tl-more{margin-top:9px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink);display:flex;align-items:center;gap:4px;}
+  .tl-more-arrow{font-size:14px;color:var(--faint);}
   /* 详情 */
   .d-head{padding:18px 0 2px;}
   .d-city{font-size:46px;line-height:1;margin-top:7px;}
   .d-title{font-size:16px;font-weight:700;color:var(--ink2);margin-top:9px;}
-  .d-cover{width:100%;height:240px;margin-top:15px;}
+  .d-cover{position:relative;width:100%;height:240px;margin-top:15px;}
+  .d-cover-fig{position:absolute;left:9px;bottom:9px;background:rgba(244,241,234,.7);padding:2px 6px;color:var(--ink);opacity:.6;}
   .d-lede{font-size:14px;line-height:1.9;margin-top:17px;}
   .d-facts{margin-top:16px;border-top:1px solid var(--line);}
   .fact{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);}
@@ -81,7 +101,8 @@
   .d-tags{margin-top:14px;}
   .photos{display:flex;flex-wrap:wrap;gap:11px;}
   .photo-cell{width:calc((100% - 11px)/2);}
-  .photo{width:100%;height:120px;border:1px solid var(--line);}
+  .photo{position:relative;width:100%;height:120px;border:1px solid var(--line);}
+  .photo-fig{position:absolute;left:6px;bottom:5px;background:rgba(244,241,234,.72);padding:1px 4px;color:var(--ink);opacity:.6;}
   .photo-cap{font-size:12px;font-weight:700;margin-top:7px;}
   .photo-sub{font-size:10px;color:var(--muted);margin-top:2px;}
   .note{font-size:14px;line-height:1.95;padding:12px 0 12px 15px;border-bottom:1px solid var(--line);position:relative;}
@@ -102,8 +123,8 @@
       <div class="stat vr"><div class="n display">5</div><div class="l">城市</div></div>
       <div class="stat vr"><div class="n display">5</div><div class="l">回忆</div></div>
     </div>
-    <div class="sec"><span class="sec-zh">足迹地图</span><span class="sec-en">The Map</span></div>
-    <div class="map-frame"><svg viewBox="0 0 600 600" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#faf8f3"><path d="M466.2,391.7 L467.4,392.6 L470.5,392.1 L471.9,390.9 L473.6,394.5 L473.5,397.6 L472.2,400.7 L473.8,404.5 L475.1,413.0 L474.9,417.4 L477.2,419.6 L478.3,419.5 L479.9,420.9 L482.8,421.4 L484.7,417.9 L486.8,417.9 L488.3,413.0 L490.0,414.6 L490.6,417.4 L491.5,420.6 L492.5,423.1 L492.8,425.4 L496.6,423.4 L498.5,424.3 L500.1,421.5 L502.9,422.6 L506.0,427.0 L506.6,431.0 L508.9,427.9 L510.7,423.6 L510.1,416.7 L511.6,412.5 L513.6,409.3 L516.2,405.2 L518.8,407.3 L520.0,408.9 L520.4,408.4 L521.2,407.7 L520.6,404.8 L517.2,403.3 L519.5,396.9 L520.9,400.9 L523.9,397.0 L526.5,393.0 L528.8,392.0 L530.7,390.2 L530.5,388.2 L530.3,384.1 L528.5,379.5 L531.1,377.0 L532.8,372.0 L531.6,367.8 L530.5,363.3 L531.6,363.1 L532.9,363.6 L535.0,363.7 L537.1,363.5 L536.8,360.7 L537.3,357.8 L536.0,355.4 L537.2,351.8 L537.2,348.7 L535.5,345.1 L536.1,341.7 L539.4,337.9 L537.5,336.8 L535.7,335.8 L531.8,333.3 L530.1,330.7 L525.3,321.5 L521.9,319.2 L518.5,313.7 L522.2,310.8 L522.0,307.1 L519.8,306.4 L518.6,304.1 L517.8,303.2 L517.2,298.3 L515.4,298.2 L512.8,298.9 L511.1,300.3 L511.0,302.8 L508.7,304.4 L506.6,304.3 L505.9,302.1 L503.7,301.1 L499.6,300.3 L497.2,296.7 L495.0,293.3 L493.0,292.7 L491.0,293.0 L490.0,295.8 L489.1,301.1 L489.0,304.6 L487.0,306.6 L485.6,310.9 L483.9,311.5 L482.2,314.3 L484.2,315.6 L485.5,320.2 L483.0,321.4 L481.5,323.1 L478.7,322.6 L475.1,322.3 L476.1,326.1 L475.4,328.0 L475.5,332.1 L474.3,336.8 L471.5,343.1 L469.0,345.5 L467.4,349.5 L464.1,350.4 L462.5,352.6 L460.8,356.6 L459.1,357.4 L458.1,361.6 L459.0,364.8 L459.8,367.0 L460.8,367.8 L462.9,370.1 L465.6,377.5 L466.1,380.5 L465.8,384.6 L466.1,387.8 L466.2,391.7 Z" fill="#1b171214" stroke="#1b1712" stroke-width="1" stroke-opacity=".7"/>
+    <div class="sec"><span class="sec-zh">足迹地图</span><span class="legend"><span class="lg"><span class="sw sw-area"></span>省份</span><span class="lg"><span class="sw sw-pin"></span>城市</span></span></div>
+    <div class="map-frame"><span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span><svg viewBox="0 0 600 600" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#faf8f3"><path d="M466.2,391.7 L467.4,392.6 L470.5,392.1 L471.9,390.9 L473.6,394.5 L473.5,397.6 L472.2,400.7 L473.8,404.5 L475.1,413.0 L474.9,417.4 L477.2,419.6 L478.3,419.5 L479.9,420.9 L482.8,421.4 L484.7,417.9 L486.8,417.9 L488.3,413.0 L490.0,414.6 L490.6,417.4 L491.5,420.6 L492.5,423.1 L492.8,425.4 L496.6,423.4 L498.5,424.3 L500.1,421.5 L502.9,422.6 L506.0,427.0 L506.6,431.0 L508.9,427.9 L510.7,423.6 L510.1,416.7 L511.6,412.5 L513.6,409.3 L516.2,405.2 L518.8,407.3 L520.0,408.9 L520.4,408.4 L521.2,407.7 L520.6,404.8 L517.2,403.3 L519.5,396.9 L520.9,400.9 L523.9,397.0 L526.5,393.0 L528.8,392.0 L530.7,390.2 L530.5,388.2 L530.3,384.1 L528.5,379.5 L531.1,377.0 L532.8,372.0 L531.6,367.8 L530.5,363.3 L531.6,363.1 L532.9,363.6 L535.0,363.7 L537.1,363.5 L536.8,360.7 L537.3,357.8 L536.0,355.4 L537.2,351.8 L537.2,348.7 L535.5,345.1 L536.1,341.7 L539.4,337.9 L537.5,336.8 L535.7,335.8 L531.8,333.3 L530.1,330.7 L525.3,321.5 L521.9,319.2 L518.5,313.7 L522.2,310.8 L522.0,307.1 L519.8,306.4 L518.6,304.1 L517.8,303.2 L517.2,298.3 L515.4,298.2 L512.8,298.9 L511.1,300.3 L511.0,302.8 L508.7,304.4 L506.6,304.3 L505.9,302.1 L503.7,301.1 L499.6,300.3 L497.2,296.7 L495.0,293.3 L493.0,292.7 L491.0,293.0 L490.0,295.8 L489.1,301.1 L489.0,304.6 L487.0,306.6 L485.6,310.9 L483.9,311.5 L482.2,314.3 L484.2,315.6 L485.5,320.2 L483.0,321.4 L481.5,323.1 L478.7,322.6 L475.1,322.3 L476.1,326.1 L475.4,328.0 L475.5,332.1 L474.3,336.8 L471.5,343.1 L469.0,345.5 L467.4,349.5 L464.1,350.4 L462.5,352.6 L460.8,356.6 L459.1,357.4 L458.1,361.6 L459.0,364.8 L459.8,367.0 L460.8,367.8 L462.9,370.1 L465.6,377.5 L466.1,380.5 L465.8,384.6 L466.1,387.8 L466.2,391.7 Z" fill="#1b171214" stroke="#1b1712" stroke-width="1" stroke-opacity=".7"/>
 <path d="M540.6,333.5 L542.1,334.3 L542.9,335.2 L543.8,335.1 L544.1,333.9 L544.2,332.4 L543.5,331.7 L543.1,330.5 L543.3,330.1 L543.2,329.6 L540.4,329.2 L539.2,327.6 L538.3,328.0 L536.4,326.8 L536.0,327.5 L537.0,329.6 L537.1,330.4 L536.9,331.0 L537.9,333.4 L539.5,332.9 L539.7,333.5 L540.6,333.5 Z" fill="#1b171214" stroke="#1b1712" stroke-width="1" stroke-opacity=".7"/>
 <path d="M541.6,326.7 L540.9,326.2 L540.4,326.5 L540.2,327.5 L540.7,328.3 L541.6,326.7 Z" fill="#1b171214" stroke="#1b1712" stroke-width="1" stroke-opacity=".7"/>
 <path d="M541.9,342.9 L541.5,343.3 L542.7,343.8 L541.9,343.0 L541.9,342.9 Z" fill="#1b171214" stroke="#1b1712" stroke-width="1" stroke-opacity=".7"/>
@@ -185,30 +206,37 @@
 <g><path d="M 491.51682397728916 309.6636348740551 A 9 9 0 1 1 509.51682397728916 309.6636348740551 L 500.51682397728916 334.6636348740551 Z" fill="#1b1712"/><circle cx="500.51682397728916" cy="309.6636348740551" r="3.6" fill="#f4f1ea"/></g><text x="500.5" y="349.7" font-size="13" fill="#1b1712" text-anchor="middle" font-weight="700">杭州</text>
 <g><path d="M 496.05535917281065 111.06538230739255 A 9 9 0 1 1 514.0553591728107 111.06538230739255 L 505.05535917281065 136.06538230739255 Z" fill="#1b1712"/><circle cx="505.05535917281065" cy="111.06538230739255" r="3.6" fill="#f4f1ea"/></g><text x="505.1" y="151.1" font-size="13" fill="#1b1712" text-anchor="middle" font-weight="700">青岛</text>
 <g><path d="M 430.96977202824195 91.04100127438937 A 9 9 0 1 1 448.96977202824195 91.04100127438937 L 439.96977202824195 116.04100127438937 Z" fill="#1b1712"/><circle cx="439.96977202824195" cy="91.04100127438937" r="3.6" fill="#f4f1ea"/></g><text x="440.0" y="131.0" font-size="13" fill="#1b1712" text-anchor="middle" font-weight="700">济南</text></svg></div>
+    <div class="map-cap">FIG.01 — 已点亮 4 省 · 5 城</div>
     <div class="sec mt"><span class="sec-zh">最近的回忆</span><span class="sec-en">Timeline ›</span></div>
     <div class="index-list"><div class="idx-row">
       <div class="idx-no serif">01</div>
       <div class="idx-mid"><div class="idx-city">成都<span class="idx-season">春末</span></div><div class="idx-title">把慢生活过成一天</div></div>
       <div class="idx-date">2025.04.26</div>
+      <div class="idx-arrow">›</div>
     </div><div class="idx-row">
       <div class="idx-no serif">02</div>
       <div class="idx-mid"><div class="idx-city">厦门<span class="idx-season">冬天</span></div><div class="idx-title">冬天也有热烈的海</div></div>
       <div class="idx-date">2025.01.12</div>
+      <div class="idx-arrow">›</div>
     </div><div class="idx-row">
       <div class="idx-no serif">03</div>
       <div class="idx-mid"><div class="idx-city">杭州<span class="idx-season">秋天</span></div><div class="idx-title">下雨也算约会天气</div></div>
       <div class="idx-date">2024.10.03</div>
+      <div class="idx-arrow">›</div>
     </div><div class="idx-row">
       <div class="idx-no serif">04</div>
       <div class="idx-mid"><div class="idx-city">青岛<span class="idx-season">夏天</span></div><div class="idx-title">把海风装进口袋</div></div>
       <div class="idx-date">2024.06.18</div>
+      <div class="idx-arrow">›</div>
     </div><div class="idx-row">
       <div class="idx-no serif">05</div>
       <div class="idx-mid"><div class="idx-city">济南<span class="idx-season">春天</span></div><div class="idx-title">在泉水边慢慢走</div></div>
       <div class="idx-date">2024.04.05</div>
+      <div class="idx-arrow">›</div>
     </div></div>
     <div class="hair mt2"></div>
     <div class="foot-txt">这张地图，跟着我们之后的每一次出发慢慢长大</div>
+    <div class="totop">↑</div>
   </div></div></div></div>
   <div class="col"><div class="label">时间线 TIMELINE</div><div class="phone"><div class="bar">时间线</div><div class="screen">
   <div class="pad">
@@ -217,16 +245,19 @@
     <div class="hero"><div class="kicker">按时间回看</div><div class="h1 h1-sm display">我们走过<br>的日子</div></div>
     <div class="sec"><span class="sec-zh">纪念日</span><span class="sec-en">Milestones</span></div>
     <div class="anni-scroll"><div class="anni">
+      <div class="anni-tag">ANNIVERSARY</div>
       <div class="anni-date serif">2024.04.05</div>
       <div class="anni-hair"></div>
       <div class="anni-label">第一次旅行</div>
       <div class="anni-city">济南</div>
     </div><div class="anni">
+      <div class="anni-tag">ANNIVERSARY</div>
       <div class="anni-date serif">2024.06.22</div>
       <div class="anni-hair"></div>
       <div class="anni-label">第 100 天</div>
       <div class="anni-city">青岛</div>
     </div><div class="anni">
+      <div class="anni-tag">ANNIVERSARY</div>
       <div class="anni-date serif">2025.01.12</div>
       <div class="anni-hair"></div>
       <div class="anni-label">写给未来的明信片</div>
@@ -236,74 +267,81 @@
     <div class="tl"><div class="tl-item">
     <div class="tl-rail"><span class="tl-no serif">01</span><div class="tl-line"></div></div>
     <div class="tl-body">
-      <div class="tl-cover" style="background:linear-gradient(150deg, #d8d6d8 0%, #aeacb0 100%)"></div>
+      <div class="tl-cover" style="background:linear-gradient(150deg, #d8d6d8 0%, #aeacb0 100%)"><span class="figno tl-figno">PLATE 01</span></div>
       <div class="tl-meta"><span>春末</span><span class="tl-dot">·</span><span>2025.04.26</span></div>
       <div class="tl-city display">成都</div>
       <div class="tl-title">把慢生活过成一天</div>
       <div class="tl-intro">成都适合慢下来。我们喝茶、排队吃火锅，晚上走在灯火里，觉得这趟很值得。</div>
       <div class="tl-tags"><span class="chip">火锅</span><span class="chip">茶馆</span><span class="chip">慢生活</span></div>
+      <div class="tl-more">阅读这段回忆 <span class="tl-more-arrow">›</span></div>
     </div>
   </div><div class="tl-item">
     <div class="tl-rail"><span class="tl-no serif">02</span><div class="tl-line"></div></div>
     <div class="tl-body">
-      <div class="tl-cover" style="background:linear-gradient(150deg, #d9dad6 0%, #aeb2ac 100%)"></div>
+      <div class="tl-cover" style="background:linear-gradient(150deg, #d9dad6 0%, #aeb2ac 100%)"><span class="figno tl-figno">PLATE 02</span></div>
       <div class="tl-meta"><span>冬天</span><span class="tl-dot">·</span><span>2025.01.12</span></div>
       <div class="tl-city display">厦门</div>
       <div class="tl-title">冬天也有热烈的海</div>
       <div class="tl-intro">厦门的冬天很温柔。我们在岛上听街头音乐，给未来写了一张明信片。</div>
       <div class="tl-tags"><span class="chip">鼓浪屿</span><span class="chip">明信片</span><span class="chip">海岛</span></div>
+      <div class="tl-more">阅读这段回忆 <span class="tl-more-arrow">›</span></div>
     </div>
   </div><div class="tl-item">
     <div class="tl-rail"><span class="tl-no serif">03</span><div class="tl-line"></div></div>
     <div class="tl-body">
-      <div class="tl-cover" style="background:linear-gradient(150deg, #dad9d2 0%, #b1aea2 100%)"></div>
+      <div class="tl-cover" style="background:linear-gradient(150deg, #dad9d2 0%, #b1aea2 100%)"><span class="figno tl-figno">PLATE 03</span></div>
       <div class="tl-meta"><span>秋天</span><span class="tl-dot">·</span><span>2024.10.03</span></div>
       <div class="tl-city display">杭州</div>
       <div class="tl-title">下雨也算约会天气</div>
       <div class="tl-intro">杭州下着小雨，我们撑一把伞绕着西湖走。照片里有雾气，也有很安静的开心。</div>
       <div class="tl-tags"><span class="chip">西湖</span><span class="chip">小雨</span><span class="chip">同一把伞</span></div>
+      <div class="tl-more">阅读这段回忆 <span class="tl-more-arrow">›</span></div>
     </div>
   </div><div class="tl-item">
     <div class="tl-rail"><span class="tl-no serif">04</span><div class="tl-line"></div></div>
     <div class="tl-body">
-      <div class="tl-cover" style="background:linear-gradient(150deg, #d6d8d6 0%, #aab0b0 100%)"></div>
+      <div class="tl-cover" style="background:linear-gradient(150deg, #d6d8d6 0%, #aab0b0 100%)"><span class="figno tl-figno">PLATE 04</span></div>
       <div class="tl-meta"><span>夏天</span><span class="tl-dot">·</span><span>2024.06.18</span></div>
       <div class="tl-city display">青岛</div>
       <div class="tl-title">把海风装进口袋</div>
       <div class="tl-intro">青岛是蓝色的。我们从老城区走到海边，买了冰饮，等浪花一次次拍上来。</div>
       <div class="tl-tags"><span class="chip">海边</span><span class="chip">栈桥</span><span class="chip">老城区</span></div>
+      <div class="tl-more">阅读这段回忆 <span class="tl-more-arrow">›</span></div>
     </div>
   </div><div class="tl-item">
     <div class="tl-rail"><span class="tl-no serif">05</span><div class="tl-line"></div></div>
     <div class="tl-body">
-      <div class="tl-cover" style="background:linear-gradient(150deg, #dfdcd2 0%, #b7b2a4 100%)"></div>
+      <div class="tl-cover" style="background:linear-gradient(150deg, #dfdcd2 0%, #b7b2a4 100%)"><span class="figno tl-figno">PLATE 05</span></div>
       <div class="tl-meta"><span>春天</span><span class="tl-dot">·</span><span>2024.04.05</span></div>
       <div class="tl-city display">济南</div>
       <div class="tl-title">在泉水边慢慢走</div>
       <div class="tl-intro">第一站选了济南。那天风很轻，我们沿着湖边走到天黑，记住了水面、柳树和彼此的笑。</div>
       <div class="tl-tags"><span class="chip">泉水</span><span class="chip">大明湖</span><span class="chip">春天散步</span></div>
+      <div class="tl-more">阅读这段回忆 <span class="tl-more-arrow">›</span></div>
     </div>
   </div></div>
     <div class="hair"></div>
     <div class="foot-txt">每一次出发，都会被这张地图记住</div>
+    <div class="totop">↑</div>
   </div></div></div></div>
   <div class="col"><div class="label">详情 DETAIL</div><div class="phone"><div class="bar">成都</div><div class="screen">
   <div class="pad">
     <div class="mast-row"><span class="mast-name">四川</span><span class="mast-vol">2025.04.26</span></div>
     <div class="rule"></div>
     <div class="d-head"><div class="kicker">春末</div><div class="d-city display">成都</div><div class="d-title serif">把慢生活过成一天</div></div>
-    <div class="d-cover" style="background:linear-gradient(150deg, #d8d6d8 0%, #aeacb0 100%)"></div>
-    <div class="d-lede">成都适合慢下来。我们喝茶、排队吃火锅，晚上走在灯火里，觉得这趟很值得。</div>
+    <div class="d-cover" style="background:linear-gradient(150deg, #d8d6d8 0%, #aeacb0 100%)"><span class="figno d-cover-fig">COVER · 成都</span></div>
+    <div class="d-lede dropcap">成都适合慢下来。我们喝茶、排队吃火锅，晚上走在灯火里，觉得这趟很值得。</div>
     <div class="d-facts">
       <div class="fact"><span class="fk">天气 / WEATHER</span><span class="fv">阴 23°C</span></div>
       <div class="fact"><span class="fk">地标 / LANDMARK</span><span class="fv">宽窄巷子</span></div>
     </div>
     <div class="d-tags"><span class="chip">#火锅</span><span class="chip">#茶馆</span><span class="chip">#慢生活</span></div>
-    <div class="sec mt"><span class="sec-zh">那天的画面</span><span class="sec-en">Frames</span></div>
-    <div class="photos"><div class="photo-cell"><div class="photo" style="background:linear-gradient(150deg, #dcdbcf 0%, #b4b29c 100%)"></div><div class="photo-cap">茶馆午后</div><div class="photo-sub">盖碗茶冒热气</div></div><div class="photo-cell"><div class="photo" style="background:linear-gradient(150deg, #e1dacd 0%, #bdb39c 100%)"></div><div class="photo-cap">热辣晚餐</div><div class="photo-sub">越吃越开心</div></div><div class="photo-cell"><div class="photo" style="background:linear-gradient(150deg, #d2d2d6 0%, #a4a4ab 100%)"></div><div class="photo-cap">巷子灯火</div><div class="photo-sub">慢慢往回走</div></div></div>
+    <div class="sec mt"><span class="sec-zh">那天的画面</span><span class="sec-en">Frames · 3</span></div>
+    <div class="photos"><div class="photo-cell"><div class="photo" style="background:linear-gradient(150deg, #dcdbcf 0%, #b4b29c 100%)"><span class="figno photo-fig">FIG.01</span></div><div class="photo-cap">茶馆午后</div><div class="photo-sub">盖碗茶冒热气</div></div><div class="photo-cell"><div class="photo" style="background:linear-gradient(150deg, #e1dacd 0%, #bdb39c 100%)"><span class="figno photo-fig">FIG.02</span></div><div class="photo-cap">热辣晚餐</div><div class="photo-sub">越吃越开心</div></div><div class="photo-cell"><div class="photo" style="background:linear-gradient(150deg, #d2d2d6 0%, #a4a4ab 100%)"><span class="figno photo-fig">FIG.03</span></div><div class="photo-cap">巷子灯火</div><div class="photo-sub">慢慢往回走</div></div></div>
     <div class="sec mt"><span class="sec-zh">手记</span><span class="sec-en">Notes</span></div>
     <div class="note serif">火锅太辣，但没有人认输。</div><div class="note serif">这一天没有很满的行程，却记得很清楚。</div>
     <div class="hair mt2"></div>
     <div class="foot-txt sp">Map of Us · 我们的地图</div>
+    <div class="totop">↑</div>
   </div></div></div></div>
 </body></html>

@@ -52,6 +52,13 @@
   background: var(--paper);
   white-space: normal;
 }
+.anni-tag {
+  font-size: 17rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--faint);
+  margin-bottom: 14rpx;
+}
 .anni-date {
   font-size: 34rpx;
   font-weight: 700;
@@ -118,6 +125,15 @@
   width: 100%;
   height: 100%;
 }
+.tl-figno {
+  position: absolute;
+  left: 18rpx;
+  bottom: 16rpx;
+  color: var(--ink);
+  opacity: 0.5;
+  background: rgba(244, 241, 234, 0.7);
+  padding: 4rpx 10rpx;
+}
 .tl-meta {
   display: flex;
   align-items: center;
@@ -149,6 +165,20 @@
 }
 .tl-tags {
   margin-top: 18rpx;
+}
+.tl-more {
+  margin-top: 18rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.tl-more-arrow {
+  font-size: 28rpx;
+  color: var(--faint);
 }
 
 /* 页脚 */

@@ -29,11 +29,27 @@ Page({
     polygons: [],
     includePoints: [],
     recent: [],
+    mapCaption: '',
+    loading: true,
+    showTop: false,
     error: '',
   },
 
   onLoad() {
     this.loadAll()
+  },
+
+  onPullDownRefresh() {
+    this.loadAll().then(() => wx.stopPullDownRefresh())
+  },
+
+  onPageScroll(e) {
+    const show = e.scrollTop > 480
+    if (show !== this.data.showTop) this.setData({ showTop: show })
+  },
+
+  backToTop() {
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 })
   },
 
   async loadAll() {
@@ -90,6 +106,12 @@ Page({
           dateShort: String(j.date),
         }))
 
+      const stats = {
+        provinceCount: new Set(journeys.map((j) => j.province)).size,
+        cityCount: new Set(journeys.map((j) => j.city)).size,
+        journeyCount: journeys.length,
+      }
+
       this._markers = markers
       this.setData({
         markers,
@@ -97,24 +119,27 @@ Page({
         includePoints,
         recent,
         days: daysTogether(data.anniversaries),
-        stats: {
-          provinceCount: new Set(journeys.map((j) => j.province)).size,
-          cityCount: new Set(journeys.map((j) => j.city)).size,
-          journeyCount: journeys.length,
-        },
+        stats,
+        mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} 省 · ${stats.cityCount} 城`,
+        loading: false,
+        error: '',
       })
     } catch (e) {
-      this.setData({ error: '加载失败，请检查网络或后端地址' })
+      this.setData({ loading: false, error: '加载失败，请检查网络或后端地址' })
     }
   },
 
   onMarkerTap(e) {
     const marker = (this._markers || []).find((m) => m.id === e.detail.markerId)
-    if (marker) wx.navigateTo({ url: `/pages/detail/detail?id=${marker.journeyId}` })
+    if (marker) {
+      wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+      wx.navigateTo({ url: `/pages/detail/detail?id=${marker.journeyId}` })
+    }
   },
 
   openDetail(e) {
     const id = e.currentTarget.dataset.id
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
   },
 

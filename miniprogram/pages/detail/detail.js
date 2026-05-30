@@ -5,11 +5,21 @@ Page({
   data: {
     trip: null,
     loading: true,
+    showTop: false,
     error: '',
   },
 
   onLoad(options) {
     this.load(options.id)
+  },
+
+  onPageScroll(e) {
+    const show = e.scrollTop > 520
+    if (show !== this.data.showTop) this.setData({ showTop: show })
+  },
+
+  backToTop() {
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 })
   },
 
   async load(id) {
@@ -20,9 +30,10 @@ Page({
         this.setData({ loading: false, error: '没有找到这段回忆' })
         return
       }
-      const photos = (j.photos || []).map((p) => ({
+      const photos = (j.photos || []).map((p, i) => ({
         ...p,
         grad: toneGradient(p.tone),
+        fig: 'FIG.' + String(i + 1).padStart(2, '0'),
       }))
       const trip = {
         ...j,
@@ -43,6 +54,7 @@ Page({
     const url = e.currentTarget.dataset.url
     if (!url) return
     const urls = (this.data.trip.photos || []).map((p) => p.imageUrl).filter(Boolean)
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     wx.previewImage({ current: url, urls })
   },
 })

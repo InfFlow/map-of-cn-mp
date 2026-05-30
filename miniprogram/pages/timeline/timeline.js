@@ -6,11 +6,21 @@ Page({
     trips: [],
     anniversaries: [],
     loading: true,
+    showTop: false,
     error: '',
   },
 
   onLoad() {
     this.load()
+  },
+
+  onPageScroll(e) {
+    const show = e.scrollTop > 480
+    if (show !== this.data.showTop) this.setData({ showTop: show })
+  },
+
+  backToTop() {
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 })
   },
 
   async load() {
@@ -45,6 +55,7 @@ Page({
 
   openDetail(e) {
     const id = e.currentTarget.dataset.id
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
   },
 })
