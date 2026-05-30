@@ -212,3 +212,32 @@ page {
   padding: 160rpx 0;
   font-size: 27rpx;
 }
+/* 空状态文案（全局统一） */
+.empty .empty-zh {
+  font-size: 28rpx;
+  color: var(--ink-2);
+}
+.empty .empty-en {
+  margin-top: 8rpx;
+  font-size: 21rpx;
+  color: var(--faint);
+  letter-spacing: 2rpx;
+}
+.empty .empty-hint {
+  margin-top: 18rpx;
+  font-size: 22rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+/* 统一的杂志线条空状态插画（行程/相册/心愿共用一套风格） */
+.empty-fig {
+  width: 168rpx;
+  height: 168rpx;
+  margin: 0 auto 30rpx;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 160rpx 160rpx;
+}
+.empty-fig-plans { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%2048C22%2030%2030%2040%2038%2026s10-8%2014-12%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.4%22%20stroke-width=%221.6%22%20stroke-linecap=%22round%22%20stroke-dasharray=%223%205%22/%3E%3Ccircle%20cx=%2212%22%20cy=%2248%22%20r=%223.2%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.5%22%20stroke-width=%221.6%22/%3E%3Cpath%20d=%22M50%2011c3%200%205%202%205%205%200%203.5-5%208-5%208s-5-4.5-5-8c0-3%202-5%205-5z%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.5%22%20stroke-width=%221.6%22%20stroke-linejoin=%22round%22/%3E%3Cpath%20d=%22M8%2056h48%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.22%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3C/svg%3E"); }
+.empty-fig-album { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%20fill=%22none%22%3E%3Crect%20x=%2211%22%20y=%2215%22%20width=%2242%22%20height=%2232%22%20rx=%223%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.45%22%20stroke-width=%221.6%22/%3E%3Ccircle%20cx=%2222%22%20cy=%2226%22%20r=%223%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.45%22%20stroke-width=%221.4%22/%3E%3Cpath%20d=%22M13%2044l12-11%208%207%207-6%2011%209%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.45%22%20stroke-width=%221.6%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3Cpath%20d=%22M8%2056h48%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.22%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3C/svg%3E"); }
+.empty-fig-wish { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%20fill=%22none%22%3E%3Cpath%20d=%22M32%2013l5.2%2011.2L49%2025l-9.2%208%202.8%2012L32%2038.8%2021.4%2045l2.8-12L15%2025l11.8-0.8L32%2013z%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.45%22%20stroke-width=%221.6%22%20stroke-linejoin=%22round%22/%3E%3Cpath%20d=%22M50%2016l1.5%203M14%2018l1.5%203%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.4%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3Cpath%20d=%22M8%2056h48%22%20stroke=%22%231b1712%22%20stroke-opacity=%220.22%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3C/svg%3E"); }

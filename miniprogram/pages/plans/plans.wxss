@@ -33,6 +33,12 @@
 .hero .br {
   height: 0;
 }
+.hero .hero-sub {
+  margin-top: 18rpx;
+  font-size: 23rpx;
+  letter-spacing: 2rpx;
+  color: var(--faint, rgba(27, 23, 18, 0.5));
+}
 
 .block {
   margin-top: 52rpx;
@@ -103,7 +109,8 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(27, 23, 18, 0) 40%, rgba(27, 23, 18, 0.42) 100%);
+  /* 加强由下而上的渐变遮罩，浅色封面上标题也清晰 */
+  background: linear-gradient(180deg, rgba(27, 23, 18, 0) 26%, rgba(27, 23, 18, 0.32) 60%, rgba(27, 23, 18, 0.7) 100%);
 }
 .plan-cover-img {
   position: absolute;
@@ -117,12 +124,14 @@
   top: 18rpx;
   right: 22rpx;
   z-index: 2;
-  padding: 4rpx 18rpx;
+  padding: 5rpx 18rpx;
   font-size: 22rpx;
   font-weight: 700;
   letter-spacing: 1rpx;
-  color: #1b1712;
-  background: rgba(255, 255, 255, 0.9);
+  /* 描边风徽标，与整体线条风统一，任意封面上都清晰 */
+  color: #fff;
+  background: rgba(27, 23, 18, 0.28);
+  border: 1rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 999rpx;
 }
 .plan-figno {

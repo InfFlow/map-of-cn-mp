@@ -29,14 +29,19 @@
 
     <view wx:if="{{!ready}}" class="loading">正在读取…</view>
 
-    <view wx:elif="{{!wishes.length}}" class="empty">还没有心愿，点上面添加一个吧</view>
+    <view wx:elif="{{!wishes.length}}" class="empty">
+      <view class="empty-fig empty-fig-wish"></view>
+      <view class="empty-zh">还没有心愿</view>
+      <view class="empty-en">No wishes yet</view>
+      <view class="empty-hint">点上面添加一个想一起去的地方吧</view>
+    </view>
 
     <view wx:else class="wish-list rise d3">
       <view wx:for="{{wishes}}" wx:key="id" class="wish {{item.done ? 'is-done' : ''}}">
         <view class="wish-check pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggle">
           <text class="tick">{{item.done ? '✓' : ''}}</text>
         </view>
-        <view class="wish-mid" data-id="{{item.id}}" bindtap="openEditor">
+        <view class="wish-mid pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openEditor">
           <view class="wish-name serif">{{item.placeName}}</view>
           <view wx:if="{{item.province || item.city}}" class="wish-loc">{{item.province}}{{item.city ? ' · ' + item.city : ''}}</view>
           <view wx:if="{{item.memo}}" class="wish-memo">{{item.memo}}</view>
