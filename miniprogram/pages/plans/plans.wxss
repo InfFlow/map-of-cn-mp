@@ -102,7 +102,28 @@
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(180deg, rgba(27, 23, 18, 0) 40%, rgba(27, 23, 18, 0.42) 100%);
+}
+.plan-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.plan-days {
+  position: absolute;
+  top: 18rpx;
+  right: 22rpx;
+  z-index: 2;
+  padding: 4rpx 18rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+  color: #1b1712;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999rpx;
 }
 .plan-figno {
   position: absolute;
@@ -556,6 +577,67 @@
 .field-input.on,
 .field-area.on {
   border-color: var(--ink);
+}
+/* 日期范围 起 → 止 */
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.dr-pick {
+  flex: 1;
+  min-width: 0;
+}
+.dr-sep {
+  color: var(--muted);
+  font-size: 24rpx;
+}
+/* 封面图选择 */
+.cover-pick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  height: 120rpx;
+  border: 1rpx dashed var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+.cover-plus {
+  font-size: 34rpx;
+}
+.cover-hint {
+  font-size: 24rpx;
+}
+.cover-pick.has {
+  justify-content: flex-start;
+  gap: 18rpx;
+  height: auto;
+  padding: 14rpx;
+  border-style: solid;
+}
+.cover-thumb {
+  width: 168rpx;
+  height: 108rpx;
+  border-radius: 4rpx;
+  background: var(--bg);
+  flex: none;
+}
+.cover-ops {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+.cover-op {
+  padding: 8rpx 22rpx;
+  font-size: 23rpx;
+  text-align: center;
+  border: 1rpx solid var(--line);
+  color: var(--ink-2);
+}
+.cover-op.danger {
+  color: #b4452f;
+  border-color: rgba(180, 69, 47, 0.4);
 }
 .field-row {
   display: flex;

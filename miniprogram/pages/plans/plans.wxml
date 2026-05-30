@@ -58,11 +58,13 @@
     <block wx:else>
       <!-- 计划封面卡 -->
       <view class="block rise d3">
-        <view class="plan-cover" style="background-image: {{active.coverGrad}};">
+        <view class="plan-cover {{active.coverImageUrl ? 'has-img' : ''}}" style="background-image: {{active.coverGrad}};">
+          <image wx:if="{{active.coverImageUrl}}" class="plan-cover-img" src="{{active.coverImageUrl}}" mode="aspectFill"></image>
           <text class="plan-figno figno">PLAN</text>
+          <text wx:if="{{active.dayCountText}}" class="plan-days">{{active.dayCountText}}</text>
           <view class="plan-cover-foot">
             <text class="plan-cover-city display">{{active.title}}</text>
-            <text wx:if="{{active.planDateText}}" class="plan-cover-date">{{active.planDateText}}</text>
+            <text wx:if="{{active.planDateText}}" class="plan-cover-date">{{active.planDateText}}{{active.planDateEndText ? ' – ' + active.planDateEndText : ''}}</text>
           </view>
         </view>
         <view wx:if="{{active.note}}" class="plan-note">{{active.note}}</view>
@@ -319,10 +321,33 @@
     <input class="field-input {{focusField === 'ptitle' ? 'on' : ''}}" value="{{planEditor.title}}" placeholder="如：杭州三日" placeholder-class="field-ph" maxlength="30" data-k="ptitle" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onPlanTitle" />
   </view>
   <view class="field">
-    <text class="field-label">出发日期</text>
-    <picker mode="date" value="{{planEditor.planDate}}" bindchange="onPlanDate">
-      <view class="field-picker">{{planEditor.planDate || '选择日期（可选）'}}</view>
-    </picker>
+    <view class="field-head">
+      <text class="field-label">日期范围</text>
+      <text wx:if="{{planEditor.dayCountText}}" class="field-count">{{planEditor.dayCountText}}</text>
+    </view>
+    <view class="date-range">
+      <picker class="dr-pick" mode="date" value="{{planEditor.planDate}}" bindchange="onPlanDate">
+        <view class="field-picker">{{planEditor.planDate || '开始日期'}}</view>
+      </picker>
+      <text class="dr-sep">→</text>
+      <picker class="dr-pick" mode="date" start="{{planEditor.planDate}}" value="{{planEditor.planDateEnd}}" bindchange="onPlanDateEnd">
+        <view class="field-picker">{{planEditor.planDateEnd || '结束日期'}}</view>
+      </picker>
+    </view>
+  </view>
+  <view class="field">
+    <text class="field-label">封面图</text>
+    <view wx:if="{{planEditor.coverImageUrl}}" class="cover-pick has">
+      <image class="cover-thumb" src="{{planEditor.coverImageUrl}}" mode="aspectFill"></image>
+      <view class="cover-ops">
+        <view class="cover-op" hover-class="pressed" catchtap="chooseCoverImage">{{planEditor.uploadingCover ? '上传中…' : '更换'}}</view>
+        <view class="cover-op danger" hover-class="pressed" catchtap="removeCoverImage">移除</view>
+      </view>
+    </view>
+    <view wx:else class="cover-pick" hover-class="pressed" catchtap="chooseCoverImage">
+      <text class="cover-plus">＋</text>
+      <text class="cover-hint">{{planEditor.uploadingCover ? '上传中…' : '上传封面图（可选）'}}</text>
+    </view>
   </view>
   <view class="field">
     <view class="field-head">

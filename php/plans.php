@@ -22,7 +22,7 @@ try {
     $pdo = db();
 
     $plans = $pdo->query(
-        'SELECT id, title, cover_tone, plan_date, note, sort_order
+        'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, sort_order
          FROM trip_plans WHERE is_visible = 1
          ORDER BY sort_order ASC, created_at DESC, id ASC'
     )->fetchAll();
@@ -56,6 +56,8 @@ try {
             'title' => $p['title'],
             'coverTone' => $p['cover_tone'],
             'planDate' => $p['plan_date'] ? date('Y.m.d', strtotime((string) $p['plan_date'])) : null,
+            'planDateEnd' => $p['plan_date_end'] ? date('Y.m.d', strtotime((string) $p['plan_date_end'])) : null,
+            'coverImageUrl' => $p['cover_image_url'] ?: null,
             'note' => $p['note'],
             'stops' => $stopsBy[$p['id']] ?? [],
         ];

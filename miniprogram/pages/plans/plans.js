@@ -22,6 +22,16 @@ function toISO(d) {
   if (!d) return ''
   return String(d).slice(0, 10).replace(/\./g, '-')
 }
+// 起止日期 → 行程天数（含首尾），无效或缺失返回 0
+function dayCount(start, end) {
+  const s = toISO(start)
+  const e = toISO(end)
+  if (!s || !e) return 0
+  const ms = new Date(e + 'T00:00:00').getTime() - new Date(s + 'T00:00:00').getTime()
+  if (isNaN(ms)) return 0
+  const days = Math.round(ms / 86400000) + 1
+  return days > 0 ? days : 0
+}
 
 Page({
   data: {
@@ -67,7 +77,7 @@ Page({
     expenseTotal: 0,
     expenseEditor: { show: false, catIndex: 0, amount: '', memo: '' },
 
-    planEditor: { show: false, mode: 'add', id: '', title: '', toneIndex: 0, coverTone: TONE_LIST[0], planDate: '', note: '' },
+    planEditor: { show: false, mode: 'add', id: '', title: '', toneIndex: 0, coverTone: TONE_LIST[0], planDate: '', planDateEnd: '', dayCountText: '', coverImageUrl: '', uploadingCover: false, note: '' },
     stopEditor: {
       show: false, mode: 'add', id: 0, planId: '',
       name: '', address: '', plannedTime: '', note: '', day: 1,
@@ -128,13 +138,20 @@ Page({
         const r = await api.getPlans()
         plans = (r.plans || []).map((p) => ({ ...p, visible: true }))
       }
-      plans = plans.map((p) => ({
-        ...p,
-        coverGrad: toneGradient(p.coverTone),
-        planDateText: toDotted(p.planDate),
-        planDateISO: toISO(p.planDate),
-        stops: (p.stops || []).map((s) => ({ ...s })),
-      }))
+      plans = plans.map((p) => {
+        const dc = dayCount(p.planDate, p.planDateEnd)
+        return {
+          ...p,
+          coverGrad: toneGradient(p.coverTone),
+          planDateText: toDotted(p.planDate),
+          planDateISO: toISO(p.planDate),
+          planDateEndText: toDotted(p.planDateEnd),
+          planDateEndISO: toISO(p.planDateEnd),
+          dayCountText: dc ? dc + ' 天' : '',
+          coverImageUrl: p.coverImageUrl || '',
+          stops: (p.stops || []).map((s) => ({ ...s })),
+        }
+      })
       const activeIndex = Math.min(this.data.activeIndex, Math.max(plans.length - 1, 0))
       this.setData({ plans, activeIndex, loading: false, ready: true, legs: {} })
       this.applyActive()
@@ -310,15 +327,20 @@ Page({
   /* ---------------- 计划 CRUD ---------------- */
   openPlanAdd() {
     this.setData({
-      planEditor: { show: true, mode: 'add', id: '', title: '', toneIndex: 0, coverTone: this.data.toneList[0], planDate: '', note: '' },
+      planEditor: { show: true, mode: 'add', id: '', title: '', toneIndex: 0, coverTone: this.data.toneList[0], planDate: '', planDateEnd: '', dayCountText: '', coverImageUrl: '', uploadingCover: false, note: '' },
     })
   },
   openPlanEdit() {
     const p = this.data.active
     if (!p) return
     const toneIndex = Math.max(0, this.data.toneList.indexOf(p.coverTone))
+    const dc = dayCount(p.planDateISO, p.planDateEndISO)
     this.setData({
-      planEditor: { show: true, mode: 'edit', id: p.id, title: p.title, toneIndex, coverTone: p.coverTone, planDate: p.planDateISO || '', note: p.note || '' },
+      planEditor: {
+        show: true, mode: 'edit', id: p.id, title: p.title, toneIndex, coverTone: p.coverTone,
+        planDate: p.planDateISO || '', planDateEnd: p.planDateEndISO || '', dayCountText: dc ? '共 ' + dc + ' 天' : '',
+        coverImageUrl: p.coverImageUrl || '', uploadingCover: false, note: p.note || '',
+      },
     })
   },
   closePlanEditor() {
@@ -344,7 +366,50 @@ Page({
     this.setData({ 'planEditor.note': e.detail.value })
   },
   onPlanDate(e) {
-    this.setData({ 'planEditor.planDate': e.detail.value })
+    this.setData({ 'planEditor.planDate': e.detail.value }, () => this.refreshDayCount())
+  },
+  onPlanDateEnd(e) {
+    this.setData({ 'planEditor.planDateEnd': e.detail.value }, () => this.refreshDayCount())
+  },
+  // 起止日期都填时，编辑器内实时显示天数（结束早于开始则提示）
+  refreshDayCount() {
+    const ed = this.data.planEditor
+    let txt = ''
+    if (ed.planDate && ed.planDateEnd) {
+      const dc = dayCount(ed.planDate, ed.planDateEnd)
+      txt = dc ? '共 ' + dc + ' 天' : '结束日期不能早于开始日期'
+    }
+    this.setData({ 'planEditor.dayCountText': txt })
+  },
+  // 选择并上传封面图（复用 upload_image 接口）
+  chooseCoverImage() {
+    if (!this.data.openid) {
+      wx.showToast({ title: '请先登录', icon: 'none' })
+      return
+    }
+    wx.chooseMedia({
+      count: 1, mediaType: ['image'], sizeType: ['compressed'], sourceType: ['album', 'camera'],
+      success: (res) => {
+        const filePath = res.tempFiles && res.tempFiles[0] && res.tempFiles[0].tempFilePath
+        if (!filePath) return
+        this.setData({ 'planEditor.uploadingCover': true })
+        wx.showLoading({ title: '上传中', mask: true })
+        api
+          .uploadImage(filePath, this.data.openid)
+          .then((d) => {
+            wx.hideLoading()
+            this.setData({ 'planEditor.coverImageUrl': d.imageUrl, 'planEditor.uploadingCover': false })
+          })
+          .catch((err) => {
+            wx.hideLoading()
+            this.setData({ 'planEditor.uploadingCover': false })
+            wx.showToast({ title: (err && err.message) || '上传失败', icon: 'none' })
+          })
+      },
+    })
+  },
+  removeCoverImage() {
+    this.setData({ 'planEditor.coverImageUrl': '' })
   },
   pickPlanTone(e) {
     const i = e.currentTarget.dataset.index
@@ -362,6 +427,8 @@ Page({
       title: ed.title.trim(),
       coverTone: ed.coverTone,
       planDate: ed.planDate || '',
+      planDateEnd: ed.planDateEnd || '',
+      coverImageUrl: ed.coverImageUrl || '',
       note: ed.note || '',
     }
     if (ed.mode === 'edit') payload.id = ed.id
