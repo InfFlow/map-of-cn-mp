@@ -26,6 +26,8 @@ module.exports = {
   getPlans: () => request('/plans.php'),
   // 高德路线：{ origin:'lng,lat', destination:'lng,lat', city?, cityd? } -> { recommend, options }
   getRoute: (data) => request('/route.php', { method: 'POST', data }),
+  // 高德天气：{ location:'lng,lat' } 或 { city:adcode } -> { ok, city, weather, temperature, dayTemp, nightTemp, tip, ... }
+  getWeather: (data) => request('/weather.php', { method: 'POST', data }),
   // 微信登录：{ code, nickname?, avatarUrl? } -> { openid, nickname, avatarUrl }
   wxAuth: (data) => request('/auth.php', { method: 'POST', data }),
   // 下单：{ openid, nickname, remark, items:[{ id, qty, remark }] } -> { id, itemCount, totalAmount, status }

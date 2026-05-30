@@ -278,3 +278,175 @@
   background: var(--ink);
   color: var(--bg);
 }
+
+/* 今日天气条 */
+.wx-strip {
+  margin-top: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  padding: 22rpx 0;
+  border-top: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+}
+.wx-l {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  min-width: 0;
+}
+.wx-temp {
+  font-size: 64rpx;
+  line-height: 1;
+  letter-spacing: -1rpx;
+}
+.wx-mid {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.wx-cond {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.wx-range {
+  font-size: 21rpx;
+  color: var(--muted);
+  margin-top: 4rpx;
+}
+.wx-tip {
+  flex: 0 1 auto;
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  text-align: right;
+  max-width: 320rpx;
+}
+.wx-off {
+  justify-content: center;
+}
+.wx-off-txt {
+  font-size: 24rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+
+/* 今天的回忆 */
+.otd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+.otd {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid var(--line);
+}
+.otd-badge {
+  flex: none;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  color: var(--bg);
+  background: var(--ink);
+  padding: 8rpx 14rpx;
+}
+.otd-mid {
+  flex: 1;
+  min-width: 0;
+}
+.otd-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.otd-sub {
+  font-size: 22rpx;
+  color: var(--muted);
+  margin-top: 4rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.otd-arrow {
+  flex: none;
+  font-size: 30rpx;
+  color: var(--faint);
+}
+
+/* 纪念日轮播 */
+.anniv-swiper {
+  height: 260rpx;
+}
+.anniv-item {
+  box-sizing: border-box;
+  padding-right: 18rpx;
+}
+.anniv-card {
+  height: 100%;
+  box-sizing: border-box;
+  border: 1rpx solid var(--line);
+  padding: 28rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+}
+.anniv-card.today {
+  background: var(--ink);
+}
+.anniv-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.anniv-kicker {
+  font-size: 19rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.anniv-card.today .anniv-kicker {
+  color: rgba(244, 241, 234, 0.7);
+}
+.anniv-sub {
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 20rpx;
+  color: var(--faint);
+}
+.anniv-card.today .anniv-sub {
+  color: rgba(244, 241, 234, 0.7);
+}
+.anniv-count {
+  font-size: 56rpx;
+  line-height: 1.05;
+  margin-top: 18rpx;
+  color: var(--ink);
+}
+.anniv-card.today .anniv-count {
+  color: var(--bg);
+}
+.anniv-label {
+  font-size: 27rpx;
+  font-weight: 700;
+  margin-top: auto;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.anniv-card.today .anniv-label {
+  color: var(--bg);
+}
+.anniv-date {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 21rpx;
+  color: var(--muted);
+  margin-top: 6rpx;
+}
+.anniv-card.today .anniv-date {
+  color: rgba(244, 241, 234, 0.6);
+}

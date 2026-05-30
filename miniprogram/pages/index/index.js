@@ -1,6 +1,16 @@
 const api = require('../../utils/api')
+const { anniversaryCount } = require('../../utils/util')
 
 const app = getApp()
+
+// 把 "2024.05.01" 解析为 {y,m,d}
+function parseMD(s) {
+  const p = String(s || '').split('.')
+  if (p.length < 3) return null
+  const y = Number(p[0]), m = Number(p[1]), d = Number(p[2])
+  if (!y || !m || !d) return null
+  return { y, m, d }
+}
 
 function daysTogether(anniversaries) {
   // 从形如「第 100 天」的纪念日反推在一起的起点
@@ -33,6 +43,10 @@ Page({
     recent: [],
     badges: [],
     unlocked: 0,
+    anniv: [],
+    onThisDay: [],
+    weather: null,
+    weatherDenied: false,
     mapCaption: '',
     loading: true,
     showTop: false,
@@ -41,6 +55,7 @@ Page({
 
   onLoad() {
     this.loadAll()
+    this.loadWeather()
   },
 
   onShow() {
@@ -60,6 +75,38 @@ Page({
 
   backToTop() {
     wx.pageScrollTo({ scrollTop: 0, duration: 300 })
+  },
+
+  loadWeather() {
+    wx.getLocation({
+      type: 'gcj02',
+      success: (r) => {
+        api
+          .getWeather({ location: `${r.longitude},${r.latitude}` })
+          .then((w) => {
+            if (w && w.ok) this.setData({ weather: w, weatherDenied: false })
+          })
+          .catch(() => {})
+      },
+      fail: () => {
+        this.setData({ weatherDenied: true })
+      },
+    })
+  },
+
+  enableWeather() {
+    // 用户此前拒绝过定位：引导到设置重新授权
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.getSetting({
+      success: (res) => {
+        if (res.authSetting['scope.userLocation'] === false) {
+          wx.openSetting({ success: () => this.loadWeather() })
+        } else {
+          this.loadWeather()
+        }
+      },
+      fail: () => this.loadWeather(),
+    })
   },
 
   async loadAll() {
@@ -173,6 +220,54 @@ Page({
       }))
       const unlocked = badges.filter((b) => b.on).length
 
+      // 纪念日轮播：今天 → 临近 → 已过，取前若干个
+      const anniv = (data.anniversaries || [])
+        .map((a) => {
+          const c = anniversaryCount(a.date, a.repeatYearly)
+          const sortKey =
+            c.kind === 'today' ? -1 : c.kind === 'countdown' ? c.days : 100000 + c.days
+          return {
+            label: a.label || '',
+            dateShort: String(a.date),
+            countText: c.text,
+            countKind: c.kind,
+            countSub: c.sub || '',
+            sortKey,
+          }
+        })
+        .sort((x, y) => x.sortKey - y.sortKey)
+        .slice(0, 8)
+
+      // 今天的回忆：历年「今天」走过的城 / 纪念日
+      const now = new Date()
+      const tm = now.getMonth() + 1
+      const td = now.getDate()
+      const onThisDay = []
+      journeys.forEach((j) => {
+        const k = parseMD(j.date)
+        if (k && k.m === tm && k.d === td) {
+          onThisDay.push({
+            type: 'journey',
+            id: j.id,
+            city: j.city,
+            title: j.title,
+            dateShort: String(j.date),
+            yearsAgo: Math.max(0, now.getFullYear() - k.y),
+          })
+        }
+      })
+      ;(data.anniversaries || []).forEach((a) => {
+        const k = parseMD(a.date)
+        if (k && k.m === tm && k.d === td) {
+          onThisDay.push({
+            type: 'anniv',
+            label: a.label || '',
+            dateShort: String(a.date),
+            yearsAgo: Math.max(0, now.getFullYear() - k.y),
+          })
+        }
+      })
+
       this._markers = markers
       this.setData({
         markers,
@@ -183,6 +278,8 @@ Page({
         recent,
         badges,
         unlocked,
+        anniv,
+        onThisDay,
         days: daysTogether(data.anniversaries),
         stats,
         mapCaption: `FIG.01 — 已点亮 ${stats.provinceCount} / 34 省 · ${stats.cityCount} 城${routePoints.length > 1 ? ' · 足迹连线' : ''}`,
