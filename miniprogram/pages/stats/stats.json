@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "足迹统计",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
+}

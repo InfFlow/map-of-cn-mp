@@ -61,6 +61,11 @@ Page({
     wx.navigateTo({ url: '/pages/album/album' })
   },
 
+  openStats() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/stats/stats' })
+  },
+
   claimAdmin() {
     const user = this.data.user
     if (!user || !user.openid) return

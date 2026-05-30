@@ -1,0 +1,172 @@
+.page {
+  padding: 24rpx 44rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+/* 英雄区 */
+.hero {
+  padding: 48rpx 0 6rpx;
+}
+.hero .h1 {
+  font-size: 116rpx;
+  line-height: 0.96;
+  margin-top: 20rpx;
+}
+.hero .br {
+  height: 0;
+}
+.lede {
+  font-size: 29rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 30rpx;
+  max-width: 520rpx;
+}
+
+/* 概览四宫格 */
+.grid4 {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 44rpx;
+  border-top: 1rpx solid var(--line);
+  border-left: 1rpx solid var(--line);
+}
+.cellnum {
+  width: 50%;
+  box-sizing: border-box;
+  border-right: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  padding: 34rpx 28rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+}
+.num {
+  font-size: 78rpx;
+  line-height: 1;
+}
+.lab {
+  font-size: 21rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink-2);
+  margin-top: 14rpx;
+}
+.km-note {
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 21rpx;
+  color: var(--muted);
+  margin-top: 16rpx;
+  text-align: right;
+}
+
+/* 条形图 */
+.block {
+  margin-top: 56rpx;
+}
+.bars {
+  margin-top: 26rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+.bar-lab {
+  flex: none;
+  width: 96rpx;
+  font-size: 24rpx;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bar-track {
+  flex: 1;
+  height: 18rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--ink);
+  transition: width 0.5s ease;
+}
+.bar-val {
+  flex: none;
+  min-width: 64rpx;
+  text-align: right;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+/* 消费 */
+.exp-login {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 25rpx;
+  color: var(--muted);
+  border: 1rpx solid var(--line);
+  padding: 32rpx 0;
+}
+.exp-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 24rpx;
+  padding-bottom: 22rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+.exp-total-num {
+  font-size: 60rpx;
+  line-height: 1;
+}
+.exp-total-lab {
+  font-size: 21rpx;
+  color: var(--muted);
+}
+.exp-empty {
+  margin-top: 24rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+.loading {
+  margin-top: 24rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 64rpx;
+}
+.foot-txt {
+  margin-top: 30rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+}

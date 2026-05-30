@@ -54,6 +54,13 @@
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openStats">
+        <view class="ae-mid">
+          <text class="ae-zh serif">足迹统计</text>
+          <text class="ae-sub">省 · 城 · 里程 · 消费</text>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
     </view>
 
     <view class="block rise d2">
