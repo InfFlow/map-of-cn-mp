@@ -7,34 +7,73 @@
     <view class="rule"></view>
   </view>
 
-  <view class="seg rise d1">
-    <view class="seg-item {{mode === 'dish' ? 'on' : ''}}" data-mode="dish" bindtap="switchMode">AI 点菜</view>
-    <view class="seg-item {{mode === 'scene' ? 'on' : ''}}" data-mode="scene" bindtap="switchMode">景区问答</view>
-  </view>
+  <scroll-view class="seg-scroll rise d1" scroll-x="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="seg">
+      <view class="seg-item {{mode === 'dish' ? 'on' : ''}}" data-mode="dish" bindtap="switchMode">AI 点菜</view>
+      <view class="seg-item {{mode === 'scene' ? 'on' : ''}}" data-mode="scene" bindtap="switchMode">景区问答</view>
+      <view class="seg-item {{mode === 'place' ? 'on' : ''}}" data-mode="place" bindtap="switchMode">地点介绍</view>
+      <view class="seg-item {{mode === 'trip' ? 'on' : ''}}" data-mode="trip" bindtap="switchMode">行程攻略</view>
+    </view>
+  </scroll-view>
 
   <view class="intro rise d2">
-    <view class="h1 display">{{mode === 'dish' ? '今天吃点什么' : '这地方怎么玩'}}</view>
-    <view class="lede">{{mode === 'dish' ? '说出口味 / 菜系 / 想吃的，AI 帮你点几道菜' : '问问当地玩法、美食、行程，AI 给你建议'}}</view>
+    <view class="h1 display">
+      {{mode === 'dish' ? '今天吃点什么' : mode === 'scene' ? '这地方怎么玩' : mode === 'place' ? '带你了解这地方' : '一键生成行程'}}
+    </view>
+    <view class="lede">
+      {{mode === 'dish' ? '说出口味 / 菜系 / 想吃的，AI 帮你点几道菜' : mode === 'scene' ? '问问当地玩法、美食、行程，AI 给你建议' : mode === 'place' ? '怎么玩、怎么逛、附近吃什么，AI 一次说清' : 'AI 排好每天的行程，可一键导入到你的计划'}}
+    </view>
   </view>
 
-  <view wx:if="{{mode === 'scene'}}" class="field rise d2">
-    <text class="flabel">城市 / 地点（可选）</text>
-    <input class="finput" value="{{city}}" bindinput="onCity" placeholder="如 杭州 / 京都" placeholder-class="ph" />
-  </view>
+  <!-- 点菜 / 景区问答 -->
+  <block wx:if="{{mode === 'dish' || mode === 'scene'}}">
+    <view wx:if="{{mode === 'scene'}}" class="field rise d2">
+      <text class="flabel">城市 / 地点（可选）</text>
+      <input class="finput" value="{{city}}" bindinput="onCity" placeholder="如 杭州 / 京都" placeholder-class="ph" />
+    </view>
+    <view class="field rise d3">
+      <text class="flabel">{{mode === 'dish' ? '想吃的口味 / 菜系 / 食材' : '你的问题'}}</text>
+      <textarea class="ftext" value="{{query}}" bindinput="onInput" placeholder="{{mode === 'dish' ? '例：想吃清淡的江浙菜，喜欢海鲜' : '例：适合情侣的小众去处有哪些'}}" placeholder-class="ph" maxlength="200" />
+    </view>
+  </block>
 
-  <view class="field rise d3">
-    <text class="flabel">{{mode === 'dish' ? '想吃的口味 / 菜系 / 食材' : '你的问题'}}</text>
-    <textarea class="ftext" value="{{query}}" bindinput="onInput" placeholder="{{mode === 'dish' ? '例：想吃清淡的江浙菜，喜欢海鲜' : '例：适合情侣的小众去处有哪些'}}" placeholder-class="ph" maxlength="200" />
-  </view>
+  <!-- 地点介绍 -->
+  <block wx:elif="{{mode === 'place'}}">
+    <view class="field rise d2">
+      <text class="flabel">想了解的地点</text>
+      <input class="finput" value="{{place}}" bindinput="onPlace" placeholder="如 西湖 / 故宫 / 鼓浪屿" placeholder-class="ph" />
+    </view>
+  </block>
+
+  <!-- 行程攻略 -->
+  <block wx:elif="{{mode === 'trip'}}">
+    <view class="field rise d2">
+      <text class="flabel">目的地</text>
+      <input class="finput" value="{{city}}" bindinput="onCity" placeholder="如 杭州 / 成都 / 厦门" placeholder-class="ph" />
+    </view>
+    <view class="field rise d2">
+      <text class="flabel">玩几天</text>
+      <view class="stepper">
+        <view class="step-btn pressable" hover-class="pressed" data-d="-1" bindtap="changeDays">−</view>
+        <text class="step-val">{{days}} 天</text>
+        <view class="step-btn pressable" hover-class="pressed" data-d="1" bindtap="changeDays">＋</view>
+      </view>
+    </view>
+    <view class="field rise d3">
+      <text class="flabel">偏好（可选）</text>
+      <input class="finput" value="{{prefs}}" bindinput="onPrefs" placeholder="如 爱拍照 / 不爬山 / 美食优先" placeholder-class="ph" />
+    </view>
+  </block>
 
   <view class="presets rise d3">
     <view wx:for="{{presets}}" wx:key="*this" class="chip pressable" hover-class="pressed" data-text="{{item}}" bindtap="usePreset">{{item}}</view>
   </view>
 
   <view class="ask-btn pressable {{loading ? 'disabled' : ''}}" hover-class="pressed" bindtap="ask">
-    {{loading ? 'AI 思考中…' : '让 AI 推荐'}}
+    {{loading ? 'AI 思考中…' : (mode === 'trip' ? '生成行程攻略' : mode === 'place' ? '让 AI 介绍' : '让 AI 推荐')}}
   </view>
 
+  <!-- 加载骨架 -->
   <view wx:if="{{loading}}" class="answer-box rise">
     <view class="sk sk-line" style="width: 80%"></view>
     <view class="sk sk-line" style="width: 95%"></view>
@@ -44,11 +83,72 @@
 
   <view wx:elif="{{error}}" class="answer-err">{{error}}</view>
 
-  <view wx:elif="{{answer}}" class="answer-box rise">
+  <!-- 点菜 / 景区：纯文本 -->
+  <view wx:elif="{{answer && (mode === 'dish' || mode === 'scene')}}" class="answer-box rise">
     <view class="answer-head">
       <text class="figno">DEEPSEEK · 仅供参考</text>
       <text class="copy pressable" hover-class="pressed" bindtap="copyAnswer">复制</text>
     </view>
     <text class="answer-text" decode="{{true}}" space="nbsp">{{answer}}</text>
+  </view>
+
+  <!-- 地点介绍：分区卡片 -->
+  <view wx:elif="{{placeDetail && mode === 'place'}}" class="answer-box rise">
+    <view class="answer-head">
+      <text class="figno">DEEPSEEK · 仅供参考</text>
+    </view>
+    <view wx:if="{{placeDetail.intro}}" class="place-intro">{{placeDetail.intro}}</view>
+    <view wx:if="{{placeDetail.play.length}}" class="dsec">
+      <view class="dsec-h">怎么玩</view>
+      <view wx:for="{{placeDetail.play}}" wx:key="*this" class="dsec-li">· {{item}}</view>
+    </view>
+    <view wx:if="{{placeDetail.walk.length}}" class="dsec">
+      <view class="dsec-h">怎么逛</view>
+      <view wx:for="{{placeDetail.walk}}" wx:key="*this" class="dsec-li">· {{item}}</view>
+    </view>
+    <view wx:if="{{placeDetail.food.length}}" class="dsec">
+      <view class="dsec-h">附近美食</view>
+      <view wx:for="{{placeDetail.food}}" wx:key="*this" class="dsec-li">· {{item}}</view>
+    </view>
+    <view wx:if="{{placeDetail.tips.length}}" class="dsec">
+      <view class="dsec-h">贴士</view>
+      <view wx:for="{{placeDetail.tips}}" wx:key="*this" class="dsec-li">· {{item}}</view>
+    </view>
+  </view>
+
+  <!-- 行程攻略：时间轴 + 一键导入 -->
+  <view wx:elif="{{tripPlan && mode === 'trip'}}" class="answer-box rise">
+    <view class="answer-head">
+      <text class="figno">DEEPSEEK · 仅供参考</text>
+      <text class="copy pressable" hover-class="pressed" bindtap="copyTrip">复制</text>
+    </view>
+    <view class="trip-title display">{{tripPlan.title}}</view>
+    <view wx:if="{{tripPlan.intro}}" class="trip-intro">{{tripPlan.intro}}</view>
+
+    <view wx:for="{{tripPlan.days}}" wx:for-item="d" wx:key="day" class="trip-day">
+      <view class="trip-day-h"><text class="trip-day-no">DAY {{d.day}}</text><text wx:if="{{d.theme}}" class="trip-day-theme">{{d.theme}}</text></view>
+      <view class="tl">
+        <view wx:for="{{d.stops}}" wx:for-item="s" wx:key="name" class="tl-row">
+          <view class="tl-dot"></view>
+          <view class="tl-body">
+            <view class="tl-top"><text wx:if="{{s.time}}" class="tl-time">{{s.time}}</text><text class="tl-name">{{s.name}}</text></view>
+            <view wx:if="{{s.desc}}" class="tl-desc">{{s.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{tripPlan.foods.length}}" class="dsec">
+      <view class="dsec-h">当地美食</view>
+      <view wx:for="{{tripPlan.foods}}" wx:key="*this" class="dsec-li">· {{item}}</view>
+    </view>
+    <view wx:if="{{tripPlan.tips.length}}" class="dsec">
+      <view class="dsec-h">贴士</view>
+      <view wx:for="{{tripPlan.tips}}" wx:key="*this" class="dsec-li">· {{item}}</view>
+    </view>
+
+    <view class="import-btn pressable {{importing ? 'disabled' : ''}}" hover-class="pressed" bindtap="importPlan">
+      {{importing ? '导入中…' : '一键导入到我的计划'}}
+    </view>
   </view>
 </view>

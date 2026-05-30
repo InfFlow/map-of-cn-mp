@@ -109,6 +109,46 @@ function deepseek_chat(string $key, string $system, string $user, float $tempera
     return is_string($text) ? trim($text) : null;
 }
 
+/** 调用 DeepSeek，强制返回 JSON 对象；解析失败返回 null */
+function deepseek_json(string $key, string $system, string $user, float $temperature = 0.6, int $maxTokens = 1800): ?array
+{
+    if ($key === '') {
+        return null;
+    }
+    $payload = json_encode([
+        'model' => 'deepseek-chat',
+        'messages' => [
+            ['role' => 'system', 'content' => $system],
+            ['role' => 'user', 'content' => $user],
+        ],
+        'temperature' => $temperature,
+        'max_tokens' => $maxTokens,
+        'response_format' => ['type' => 'json_object'],
+        'stream' => false,
+    ], JSON_UNESCAPED_UNICODE);
+    $ctx = stream_context_create(['http' => [
+        'method' => 'POST',
+        'header' => "Content-Type: application/json\r\nAuthorization: Bearer {$key}\r\n",
+        'content' => $payload,
+        'timeout' => 45,
+        'ignore_errors' => true,
+    ]]);
+    $raw = @file_get_contents('https://api.deepseek.com/chat/completions', false, $ctx);
+    if ($raw === false) {
+        return null;
+    }
+    $data = json_decode($raw, true);
+    $text = $data['choices'][0]['message']['content'] ?? null;
+    if (!is_string($text)) {
+        return null;
+    }
+    // 去除可能的 ```json 代码围栏
+    $text = trim($text);
+    $text = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $text);
+    $parsed = json_decode($text, true);
+    return is_array($parsed) ? $parsed : null;
+}
+
 try {
     $pdo = db();
     $config = require dirname(__DIR__) . '_private/config.php';
@@ -163,7 +203,7 @@ try {
         'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
         'expenses', 'add_expense', 'del_expense',
         'add_journey_photo', 'del_journey_photo',
-        'geo', 'regeo', 'ai_recommend', 'upload_image',
+        'geo', 'regeo', 'ai_recommend', 'ai_place', 'ai_plan', 'import_plan', 'upload_image',
         /* 菜单后台：菜品 / 分类 / 订单 —— 情侣双方都可编辑 */
         'overview', 'orders', 'set_order_status',
         'add_category', 'update_category', 'toggle_category', 'del_category', 'reorder_categories',
@@ -1037,6 +1077,103 @@ try {
                 fail('AI 暂时不可用，请稍后再试', 502);
             }
             out(['ok' => true, 'mode' => $mode, 'answer' => $text]);
+        }
+
+        /* ============ AI 地点介绍：怎么玩 / 怎么逛 / 附近美食 / 贴士 ============ */
+        case 'ai_place': {
+            $key = (string) ($config['deepseek_key'] ?? '');
+            if ($key === '') {
+                fail('未配置 DeepSeek key', 503);
+            }
+            $place = trim((string) ($body['place'] ?? $body['city'] ?? ''));
+            if ($place === '') {
+                fail('请填写地点');
+            }
+            $system = '你是一位贴心的本地向导，熟悉中国各地景点、玩法与美食，服务对象是情侣出游。'
+                . '请用 JSON 返回，键固定为：intro（一句话简介，30字内）、play（数组，2-4 条「怎么玩」要点，每条15字内）、'
+                . 'walk（数组，2-4 条「怎么逛/路线建议」，每条20字内）、food（数组，3-5 条附近美食/小吃，每条「名称 — 一句推荐理由」）、'
+                . 'tips（数组，2-3 条实用贴士，如最佳时间/避坑/穿搭）。只输出 JSON，不要寒暄。';
+            $user = '地点：' . $place;
+            $data = deepseek_json($key, $system, $user, 0.7, 1200);
+            if (!is_array($data)) {
+                fail('AI 暂时不可用，请稍后再试', 502);
+            }
+            out(['ok' => true, 'place' => $place, 'detail' => $data]);
+        }
+
+        /* ============ AI 生成行程攻略（结构化，可一键导入计划） ============ */
+        case 'ai_plan': {
+            $key = (string) ($config['deepseek_key'] ?? '');
+            if ($key === '') {
+                fail('未配置 DeepSeek key', 503);
+            }
+            $city = trim((string) ($body['city'] ?? ''));
+            if ($city === '') {
+                fail('请填写城市/目的地');
+            }
+            $days = max(1, min(10, (int) ($body['days'] ?? 2)));
+            $prefs = mb_substr(trim((string) ($body['prefs'] ?? '')), 0, 200);
+            $system = '你是资深旅行规划师，为情侣定制行程。请用 JSON 返回，键固定为：'
+                . 'title（行程标题，含城市与天数，20字内）、intro（一句话亮点，40字内）、'
+                . 'days（数组，长度等于天数；每个元素为 {day:第几天的数字, theme:当天主题(15字内), '
+                . 'stops:数组，每天3-5个地点，每个为 {name:地点名(20字内), time:建议时段(如"上午"/"14:00"), desc:一句玩法说明(30字内)}}）、'
+                . 'foods（数组，4-6 条当地美食，每条「名称 — 一句推荐」）、tips（数组，2-3 条实用贴士）。'
+                . '地点要真实存在、顺路合理。只输出 JSON，不要寒暄。';
+            $user = "目的地：{$city}；天数：{$days} 天" . ($prefs !== '' ? "；偏好：{$prefs}" : '') . '。';
+            $data = deepseek_json($key, $system, $user, 0.6, 2200);
+            if (!is_array($data) || empty($data['days'])) {
+                fail('AI 暂时不可用，请稍后再试', 502);
+            }
+            out(['ok' => true, 'city' => $city, 'days' => $days, 'plan' => $data]);
+        }
+
+        /* ============ 把 AI 攻略一键导入为「我的计划」+ 行程地点 ============ */
+        case 'import_plan': {
+            $title = mb_substr(trim((string) ($body['title'] ?? '')), 0, 128);
+            if ($title === '') {
+                fail('计划标题必填');
+            }
+            $tone = mb_substr(trim((string) ($body['coverTone'] ?? '')), 0, 64) ?: 'tone-slate';
+            $planDate = trim((string) ($body['planDate'] ?? ''));
+            $planDate = is_date($planDate) ? $planDate : null;
+            $note = trim((string) ($body['note'] ?? ''));
+            $days = $body['days'] ?? [];
+            if (!is_array($days) || !$days) {
+                fail('缺少行程内容');
+            }
+            $pdo->beginTransaction();
+            try {
+                $planId = gen_id('p_');
+                $next = (int) $pdo->query('SELECT COALESCE(MAX(sort_order),0)+1 FROM trip_plans')->fetchColumn();
+                $pdo->prepare('INSERT INTO trip_plans (id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, sort_order) VALUES (?,?,?,?,?,?,?,?)')
+                    ->execute([$planId, $title, $tone, $planDate, null, '', $note, $next]);
+                $stStop = $pdo->prepare('INSERT INTO plan_stops (plan_id, name, address, latitude, longitude, note, planned_time, day, sort_order) VALUES (?,?,?,?,?,?,?,?,?)');
+                $sort = 0;
+                $stopCount = 0;
+                foreach ($days as $d) {
+                    $dayNum = max(1, min(60, (int) ($d['day'] ?? 1)));
+                    $stops = isset($d['stops']) && is_array($d['stops']) ? $d['stops'] : [];
+                    foreach ($stops as $s) {
+                        $name = mb_substr(trim((string) ($s['name'] ?? '')), 0, 128);
+                        if ($name === '') {
+                            continue;
+                        }
+                        $stopNote = mb_substr(trim((string) ($s['desc'] ?? $s['note'] ?? '')), 0, 255);
+                        $time = mb_substr(trim((string) ($s['time'] ?? $s['plannedTime'] ?? '')), 0, 32);
+                        $stStop->execute([$planId, $name, '', null, null, $stopNote, $time, $dayNum, $sort++]);
+                        if (++$stopCount >= 80) {
+                            break 2;
+                        }
+                    }
+                }
+                $pdo->commit();
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                fail('导入失败，请重试', 500);
+            }
+            out(['ok' => true, 'id' => $planId, 'stops' => $stopCount]);
         }
 
         default:
