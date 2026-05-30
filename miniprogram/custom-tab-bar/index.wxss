@@ -1,0 +1,59 @@
+/* 自定义 tabBar —— 由 tools/gen-tabbar-icons.js 生成图标，请勿手改图标段 */
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: #faf8f3;
+  border-top: 1rpx solid rgba(27, 23, 18, 0.13);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 1000;
+}
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 98rpx;
+  transition: transform 0.16s ease;
+}
+.tab.pressed { transform: scale(0.88); }
+.tab .ico {
+  width: 46rpx;
+  height: 46rpx;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 44rpx 44rpx;
+  opacity: 0.95;
+}
+.tab .lab {
+  margin-top: 2rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: #8c8475;
+  font-family: Georgia, "Times New Roman", "Songti SC", "STSong", serif;
+}
+.tab.on .lab { color: #1b1712; }
+.tab .dot {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #1b1712;
+  margin-top: 5rpx;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.tab.on .dot { opacity: 1; transform: scale(1); }
+.ico-index { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M12%2021c4.5-4.2%206.6-7.5%206.6-10.6a6.6%206.6%200%201%200-13.2%200C5.4%2013.5%207.5%2016.8%2012%2021z%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2210.2%22%20r%3D%222.3%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%2F%3E%3C%2Fsvg%3E"); }
+.tab.on .ico-index { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M12%2021c4.5-4.2%206.6-7.5%206.6-10.6a6.6%206.6%200%201%200-13.2%200C5.4%2013.5%207.5%2016.8%2012%2021z%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2210.2%22%20r%3D%222.3%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%2F%3E%3C%2Fsvg%3E"); }
+.ico-timeline { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%228.2%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M12%207.2V12l3.3%202%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.tab.on .ico-timeline { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%228.2%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M12%207.2V12l3.3%202%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.ico-plans { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M21%203.6L3.5%2010.3l6.4%202.4%202.4%206.4L21%203.6z%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M21%203.6l-11.1%209.1%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.tab.on .ico-plans { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M21%203.6L3.5%2010.3l6.4%202.4%202.4%206.4L21%203.6z%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M21%203.6l-11.1%209.1%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.ico-menu { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%225%22%20cy%3D%227%22%20r%3D%221.1%22%20fill%3D%22%238c8475%22%2F%3E%3Ccircle%20cx%3D%225%22%20cy%3D%2212%22%20r%3D%221.1%22%20fill%3D%22%238c8475%22%2F%3E%3Ccircle%20cx%3D%225%22%20cy%3D%2217%22%20r%3D%221.1%22%20fill%3D%22%238c8475%22%2F%3E%3Cpath%20d%3D%22M9%207h10M9%2012h10M9%2017h10%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.tab.on .ico-menu { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%225%22%20cy%3D%227%22%20r%3D%221.1%22%20fill%3D%22%231b1712%22%2F%3E%3Ccircle%20cx%3D%225%22%20cy%3D%2212%22%20r%3D%221.1%22%20fill%3D%22%231b1712%22%2F%3E%3Ccircle%20cx%3D%225%22%20cy%3D%2217%22%20r%3D%221.1%22%20fill%3D%22%231b1712%22%2F%3E%3Cpath%20d%3D%22M9%207h10M9%2012h10M9%2017h10%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.ico-mine { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%228%22%20r%3D%223.3%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M5.6%2019.4c0-3.5%202.9-6.2%206.4-6.2s6.4%202.7%206.4%206.2%22%20stroke%3D%22%238c8475%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }
+.tab.on .ico-mine { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%228%22%20r%3D%223.3%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M5.6%2019.4c0-3.5%202.9-6.2%206.4-6.2s6.4%202.7%206.4%206.2%22%20stroke%3D%22%231b1712%22%20stroke-width%3D%221.4%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"); }

@@ -1,5 +1,5 @@
 const api = require('../../utils/api')
-const { prettyDate, toneGradient } = require('../../utils/util')
+const { prettyDate, toneGradient, anniversaryCount } = require('../../utils/util')
 
 Page({
   data: {
@@ -12,6 +12,12 @@ Page({
 
   onLoad() {
     this.load()
+  },
+
+  onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 })
+    }
   },
 
   onPageScroll(e) {
@@ -44,11 +50,17 @@ Page({
           cover: j.photos && j.photos[0] && j.photos[0].imageUrl,
         }
       })
-      const anniversaries = (data.anniversaries || []).map((a) => ({
-        ...a,
-        dateText: prettyDate(a.date),
-        dateShort: String(a.date),
-      }))
+      const anniversaries = (data.anniversaries || []).map((a) => {
+        const c = anniversaryCount(a.date, a.repeatYearly)
+        return {
+          ...a,
+          dateText: prettyDate(a.date),
+          dateShort: String(a.date),
+          countText: c.text,
+          countKind: c.kind,
+          countSub: c.sub || '',
+        }
+      })
       this.setData({ trips, anniversaries, loading: false })
     } catch (e) {
       this.setData({ loading: false, error: '加载失败，请检查网络' })

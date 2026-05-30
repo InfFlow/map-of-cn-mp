@@ -59,10 +59,20 @@
   color: var(--faint);
   margin-bottom: 14rpx;
 }
-.anni-date {
-  font-size: 34rpx;
+.anni-count {
+  font-size: 40rpx;
   font-weight: 700;
   letter-spacing: 0.5rpx;
+  line-height: 1.1;
+}
+.anni-count.countdown {
+  color: var(--ink);
+}
+.anni-count.countup {
+  color: var(--ink-2);
+}
+.anni-count.today {
+  color: var(--ink);
 }
 .anni-hair {
   height: 1rpx;
@@ -74,11 +84,18 @@
   font-size: 26rpx;
   font-weight: 700;
 }
+.anni-foot {
+  margin-top: 10rpx;
+}
+.anni-date {
+  font-size: 22rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
 .anni-city {
   font-size: 22rpx;
   color: var(--muted);
-  margin-top: 8rpx;
-  letter-spacing: 2rpx;
+  letter-spacing: 1rpx;
 }
 
 /* 年份分隔（目录式） */

@@ -1,0 +1,306 @@
+<view class="wrap">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">ITINERARY</text>
+      <text class="mast-vol">{{plans.length ? plans.length + ' PLANS' : '出发之前'}}</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">出发之前</view>
+    <view class="h1 display">我们的<view class="br"></view>旅行计划</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:64rpx;width:60%;"></view>
+      <view class="sk sk-block" style="height:300rpx;margin-top:30rpx;"></view>
+      <view class="sk sk-block" style="height:120rpx;margin-top:20rpx;"></view>
+    </view>
+  </block>
+
+  <view wx:elif="{{error}}" class="empty">{{error}}</view>
+
+  <block wx:else>
+    <!-- 计划选择条 -->
+    <view class="block rise d2">
+      <scroll-view scroll-x class="tab-scroll" show-scrollbar="{{false}}" enhanced>
+        <view
+          wx:for="{{plans}}"
+          wx:key="id"
+          class="ptab {{index === activeIndex ? 'on' : ''}}"
+          data-index="{{index}}"
+          bindtap="selectPlan"
+        >
+          <text class="ptab-title">{{item.title}}</text>
+          <text class="ptab-meta">{{item.stops.length}} 站{{item.planDateText ? ' · ' + item.planDateText : ''}}</text>
+          <text wx:if="{{!item.visible}}" class="ptab-hidden">隐藏</text>
+        </view>
+        <view wx:if="{{canEdit}}" class="ptab add" bindtap="openPlanAdd">＋ 新建计划</view>
+      </scroll-view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{!active}}" class="empty">
+      <view class="empty-zh">还没有旅行计划</view>
+      <view class="empty-en">No itineraries yet</view>
+      <view wx:if="{{canEdit}}" class="btn-line" bindtap="openPlanAdd">＋ 新建一个计划</view>
+    </view>
+
+    <block wx:else>
+      <!-- 计划封面卡 -->
+      <view class="block rise d3">
+        <view class="plan-cover" style="background-image: {{active.coverGrad}};">
+          <text class="plan-figno figno">PLAN</text>
+          <view class="plan-cover-foot">
+            <text class="plan-cover-city display">{{active.title}}</text>
+            <text wx:if="{{active.planDateText}}" class="plan-cover-date">{{active.planDateText}}</text>
+          </view>
+        </view>
+        <view wx:if="{{active.note}}" class="plan-note">{{active.note}}</view>
+
+        <view wx:if="{{canEdit}}" class="plan-acts">
+          <view class="chip-btn" hover-class="pressed" bindtap="openPlanEdit">编辑</view>
+          <view class="chip-btn" hover-class="pressed" bindtap="togglePlan">{{active.visible ? '设为隐藏' : '取消隐藏'}}</view>
+          <view class="chip-btn danger" hover-class="pressed" bindtap="delPlan">删除</view>
+        </view>
+
+        <view wx:if="{{active}}" class="plan-share">
+          <button class="chip-btn share-btn" open-type="share" hover-class="pressed">分享给 TA</button>
+          <view class="chip-btn" hover-class="pressed" bindtap="copyPlan">复制行程</view>
+        </view>
+      </view>
+
+      <!-- 目的地（可拖动排序） -->
+      <view class="block rise d3">
+        <view class="sec">
+          <text class="sec-zh">目的地</text>
+          <text class="sec-en">Destinations</text>
+        </view>
+        <view wx:if="{{canEdit}}" class="drag-tip">长按右侧手柄拖动排序</view>
+
+        <view wx:if="{{!active.stops.length}}" class="empty sm">
+          <view class="empty-zh">还没有目的地</view>
+          <view wx:if="{{canEdit}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
+        </view>
+
+        <movable-area wx:else class="drag-area" style="height: {{areaH}}px;">
+          <movable-view
+            wx:for="{{active.stops}}"
+            wx:key="id"
+            class="mv-stop {{dragId === item.id ? 'drag' : ''}}"
+            direction="vertical"
+            y="{{item._y}}"
+            inertia="{{false}}"
+            damping="50"
+            out-of-bounds="{{false}}"
+            disabled="{{!canEdit}}"
+            data-id="{{item.id}}"
+            bindtouchstart="onStopTouchStart"
+            bindchange="onStopChange"
+            bindtouchend="onStopTouchEnd"
+            style="height: {{rowH}}px;"
+          >
+            <view class="stop-card">
+              <view class="stop-rail">
+                <text class="stop-no serif">{{item.no}}</text>
+              </view>
+              <view class="stop-main" bindtap="openStopEdit" data-id="{{item.id}}">
+                <view class="stop-top">
+                  <text wx:if="{{item.plannedTime}}" class="stop-time">{{item.plannedTime}}</text>
+                  <text class="stop-name">{{item.name}}</text>
+                  <text wx:if="{{item.latitude == null}}" class="stop-nogeo">未定位</text>
+                </view>
+                <text wx:if="{{item.address}}" class="stop-addr">{{item.address}}</text>
+                <text wx:if="{{item.note}}" class="stop-note">{{item.note}}</text>
+              </view>
+              <view wx:if="{{canEdit}}" class="stop-ops">
+                <view class="stop-del" catchtap="delStop" data-id="{{item.id}}">删</view>
+                <view class="stop-handle">≡</view>
+              </view>
+            </view>
+          </movable-view>
+        </movable-area>
+
+        <view wx:if="{{canEdit && active.stops.length}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
+      </view>
+
+      <!-- 交通 · 高德路线推荐 -->
+      <view wx:if="{{active.stops.length > 1}}" class="block rise d4">
+        <view class="sec">
+          <text class="sec-zh">怎么去</text>
+          <text class="sec-en">How to get there · 高德</text>
+        </view>
+        <view
+          wx:for="{{active.stops}}"
+          wx:key="id"
+          wx:if="{{index < active.stops.length - 1}}"
+          class="leg"
+        >
+          <view class="leg-head" bindtap="toggleLeg" data-index="{{index}}">
+            <view class="leg-route">
+              <text class="leg-a">{{item.name}}</text>
+              <text class="leg-arrow">→</text>
+              <text class="leg-b">{{active.stops[index + 1].name}}</text>
+            </view>
+            <text class="leg-toggle">{{legs[item.id + '_' + active.stops[index + 1].id].open ? '收起' : '查看路线'}}</text>
+          </view>
+
+          <view wx:if="{{legs[item.id + '_' + active.stops[index + 1].id].open}}" class="leg-body">
+            <view wx:if="{{legs[item.id + '_' + active.stops[index + 1].id].loading}}" class="leg-loading">规划中…</view>
+            <view wx:elif="{{legs[item.id + '_' + active.stops[index + 1].id].error}}" class="leg-err">{{legs[item.id + '_' + active.stops[index + 1].id].error}}</view>
+            <block wx:else>
+              <view class="leg-reco">
+                <text class="leg-mode">推荐 · {{legs[item.id + '_' + active.stops[index + 1].id].recoLabel}}</text>
+                <text class="leg-stat">{{legs[item.id + '_' + active.stops[index + 1].id].distance}}{{legs[item.id + '_' + active.stops[index + 1].id].duration ? ' · ' + legs[item.id + '_' + active.stops[index + 1].id].duration : ''}}</text>
+              </view>
+              <view
+                wx:for="{{legs[item.id + '_' + active.stops[index + 1].id].steps}}"
+                wx:for-item="step"
+                wx:key="*this"
+                class="leg-step"
+              >
+                <text class="leg-dot">·</text>
+                <text class="leg-step-txt">{{step}}</text>
+              </view>
+              <view wx:if="{{!legs[item.id + '_' + active.stops[index + 1].id].steps.length}}" class="leg-step">
+                <text class="leg-step-txt">{{legs[item.id + '_' + active.stops[index + 1].id].recoLabel}}前往即可</text>
+              </view>
+            </block>
+          </view>
+        </view>
+      </view>
+
+      <!-- 记账 · 预算花费 -->
+      <view wx:if="{{openid}}" class="block rise d4">
+        <view class="sec">
+          <text class="sec-zh">花费记账</text>
+          <text class="sec-en">Budget · ¥{{expenseTotal}}</text>
+        </view>
+        <view wx:if="{{!expenses.length}}" class="empty sm">
+          <view class="empty-zh">还没有记账</view>
+        </view>
+        <view wx:else class="exp-list">
+          <view wx:for="{{expenses}}" wx:key="id" class="exp-row">
+            <text class="exp-cat">{{item.catName}}</text>
+            <view class="exp-mid">
+              <text class="exp-memo">{{item.memo || item.catName}}</text>
+              <text wx:if="{{item.date}}" class="exp-date">{{item.date}}</text>
+            </view>
+            <text class="exp-amt serif">¥{{item.amount}}</text>
+            <text class="exp-del" catchtap="delExpense" data-id="{{item.id}}">删</text>
+          </view>
+        </view>
+        <view class="btn-line" bindtap="openExpenseAdd">＋ 记一笔</view>
+      </view>
+
+      <view class="foot rise d4">
+        <view class="hair"></view>
+        <view class="foot-txt">把想去的地方，排进我们的日子里</view>
+      </view>
+    </block>
+  </block>
+</view>
+
+<!-- 记账编辑器 -->
+<view wx:if="{{expenseEditor.show}}" class="mask" catchtap="closeExpenseEditor"></view>
+<view class="sheet {{expenseEditor.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-title">记一笔</view>
+  <view class="field">
+    <text class="field-label">类型</text>
+    <view class="exp-cats">
+      <view
+        wx:for="{{expCats}}"
+        wx:key="key"
+        class="exp-cat-chip {{expenseEditor.catIndex === index ? 'on' : ''}}"
+        data-index="{{index}}"
+        bindtap="pickExpCat"
+      >{{item.name}}</view>
+    </view>
+  </view>
+  <view class="field">
+    <text class="field-label">金额（元）</text>
+    <input class="field-input" type="digit" value="{{expenseEditor.amount}}" placeholder="0.00" bindinput="onExpAmount" />
+  </view>
+  <view class="field">
+    <text class="field-label">备注</text>
+    <input class="field-input" value="{{expenseEditor.memo}}" placeholder="如 午饭 / 门票" bindinput="onExpMemo" />
+  </view>
+  <view class="sheet-actions">
+    <view class="btn ghost" hover-class="pressed" catchtap="closeExpenseEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveExpense">保存</view>
+  </view>
+</view>
+
+<!-- 计划编辑器 -->
+<view wx:if="{{planEditor.show}}" class="mask" catchtap="closePlanEditor"></view>
+<view class="sheet {{planEditor.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-title">{{planEditor.mode === 'add' ? '新建计划' : '编辑计划'}}</view>
+  <view class="field">
+    <text class="field-label">计划标题</text>
+    <input class="field-input" value="{{planEditor.title}}" placeholder="如：杭州三日" bindinput="onPlanTitle" />
+  </view>
+  <view class="field">
+    <text class="field-label">出发日期</text>
+    <picker mode="date" value="{{planEditor.planDate}}" bindchange="onPlanDate">
+      <view class="field-picker">{{planEditor.planDate || '选择日期（可选）'}}</view>
+    </picker>
+  </view>
+  <view class="field">
+    <text class="field-label">备注</text>
+    <textarea class="field-area" value="{{planEditor.note}}" placeholder="这趟行程的主题、预算、注意事项…" bindinput="onPlanNote" auto-height />
+  </view>
+  <view class="field">
+    <text class="field-label">封面色调</text>
+    <scroll-view scroll-x class="tone-scroll" show-scrollbar="{{false}}">
+      <view
+        wx:for="{{toneSwatches}}"
+        wx:key="tone"
+        class="tone-dot {{planEditor.toneIndex === index ? 'on' : ''}}"
+        data-index="{{index}}"
+        bindtap="pickPlanTone"
+        style="background-image: {{item.grad}};"
+      ></view>
+    </scroll-view>
+  </view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="closePlanEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="savePlan">保存</view>
+  </view>
+</view>
+
+<!-- 目的地编辑器 -->
+<view wx:if="{{stopEditor.show}}" class="mask" catchtap="closeStopEditor"></view>
+<view class="sheet {{stopEditor.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-title">{{stopEditor.mode === 'add' ? '添加目的地' : '编辑目的地'}}</view>
+  <view class="field">
+    <text class="field-label">地点名称</text>
+    <input class="field-input" value="{{stopEditor.name}}" placeholder="如：西湖 · 断桥" data-field="name" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">时间</text>
+    <input class="field-input" value="{{stopEditor.plannedTime}}" placeholder="如：第一天 09:00（可选）" data-field="plannedTime" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">地址</text>
+    <view class="field-row">
+      <input class="field-input grow" value="{{stopEditor.address}}" placeholder="详细地址，用于定位" data-field="address" bindinput="onStopField" />
+      <view class="geo-btn {{stopEditor.geoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeStop">{{stopEditor.geoLoading ? '定位中' : '定位'}}</view>
+    </view>
+    <text wx:if="{{stopEditor.latitude}}" class="geo-hint">坐标 {{stopEditor.longitude}}, {{stopEditor.latitude}}</text>
+    <text wx:else class="geo-hint dim">点「定位」获取坐标，路线推荐才可用</text>
+  </view>
+  <view class="field">
+    <text class="field-label">备注</text>
+    <textarea class="field-area" value="{{stopEditor.note}}" placeholder="想做的事、门票、tips…" data-field="note" bindinput="onStopField" auto-height />
+  </view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="closeStopEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveStop">保存</view>
+  </view>
+</view>

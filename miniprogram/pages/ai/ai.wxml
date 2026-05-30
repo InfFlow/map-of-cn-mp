@@ -1,0 +1,54 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">AI</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="seg rise d1">
+    <view class="seg-item {{mode === 'dish' ? 'on' : ''}}" data-mode="dish" bindtap="switchMode">AI 点菜</view>
+    <view class="seg-item {{mode === 'scene' ? 'on' : ''}}" data-mode="scene" bindtap="switchMode">景区问答</view>
+  </view>
+
+  <view class="intro rise d2">
+    <view class="h1 display">{{mode === 'dish' ? '今天吃点什么' : '这地方怎么玩'}}</view>
+    <view class="lede">{{mode === 'dish' ? '说出口味 / 菜系 / 想吃的，AI 帮你点几道菜' : '问问当地玩法、美食、行程，AI 给你建议'}}</view>
+  </view>
+
+  <view wx:if="{{mode === 'scene'}}" class="field rise d2">
+    <text class="flabel">城市 / 地点（可选）</text>
+    <input class="finput" value="{{city}}" bindinput="onCity" placeholder="如 杭州 / 京都" placeholder-class="ph" />
+  </view>
+
+  <view class="field rise d3">
+    <text class="flabel">{{mode === 'dish' ? '想吃的口味 / 菜系 / 食材' : '你的问题'}}</text>
+    <textarea class="ftext" value="{{query}}" bindinput="onInput" placeholder="{{mode === 'dish' ? '例：想吃清淡的江浙菜，喜欢海鲜' : '例：适合情侣的小众去处有哪些'}}" placeholder-class="ph" maxlength="200" />
+  </view>
+
+  <view class="presets rise d3">
+    <view wx:for="{{presets}}" wx:key="*this" class="chip pressable" hover-class="pressed" data-text="{{item}}" bindtap="usePreset">{{item}}</view>
+  </view>
+
+  <view class="ask-btn pressable {{loading ? 'disabled' : ''}}" hover-class="pressed" bindtap="ask">
+    {{loading ? 'AI 思考中…' : '让 AI 推荐'}}
+  </view>
+
+  <view wx:if="{{loading}}" class="answer-box rise">
+    <view class="sk sk-line" style="width: 80%"></view>
+    <view class="sk sk-line" style="width: 95%"></view>
+    <view class="sk sk-line" style="width: 70%"></view>
+    <view class="sk sk-line" style="width: 88%"></view>
+  </view>
+
+  <view wx:elif="{{error}}" class="answer-err">{{error}}</view>
+
+  <view wx:elif="{{answer}}" class="answer-box rise">
+    <view class="answer-head">
+      <text class="figno">DEEPSEEK · 仅供参考</text>
+      <text class="copy pressable" hover-class="pressed" bindtap="copyAnswer">复制</text>
+    </view>
+    <text class="answer-text" decode="{{true}}" space="nbsp">{{answer}}</text>
+  </view>
+</view>

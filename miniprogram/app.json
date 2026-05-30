@@ -2,11 +2,14 @@
   "pages": [
     "pages/index/index",
     "pages/timeline/timeline",
+    "pages/plans/plans",
     "pages/detail/detail",
     "pages/menu/menu",
     "pages/order/order",
     "pages/mine/mine",
-    "pages/admin/admin"
+    "pages/admin/admin",
+    "pages/wish/wish",
+    "pages/ai/ai"
   ],
   "window": {
     "navigationBarBackgroundColor": "#f4f1ea",
@@ -15,6 +18,7 @@
     "backgroundColor": "#f4f1ea"
   },
   "tabBar": {
+    "custom": true,
     "color": "#8c8475",
     "selectedColor": "#1b1712",
     "backgroundColor": "#faf8f3",
@@ -27,6 +31,10 @@
       {
         "pagePath": "pages/timeline/timeline",
         "text": "时间线"
+      },
+      {
+        "pagePath": "pages/plans/plans",
+        "text": "行程"
       },
       {
         "pagePath": "pages/menu/menu",

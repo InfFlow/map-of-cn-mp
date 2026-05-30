@@ -20,6 +20,9 @@ Page({
   },
 
   onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 4 })
+    }
     const user = app.getUser()
     this.setData({ user, monogram: this.monogram(user), nickInput: (user && user.nickname) || '' })
     if (user && user.openid) {
@@ -46,6 +49,11 @@ Page({
   openAdmin() {
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     wx.navigateTo({ url: '/pages/admin/admin' })
+  },
+
+  openWish() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/wish/wish' })
   },
 
   claimAdmin() {
