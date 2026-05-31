@@ -80,6 +80,7 @@ Page({
     // 地图可视化
     mapMarkers: [],
     mapPolyline: [],
+    mapPolylineBase: [],
     mapInclude: [],
     mapCenter: { latitude: 34.5, longitude: 110 },
     geoStopCount: 0,
@@ -202,7 +203,7 @@ Page({
     if (!plan) {
       this.setData({
         active: null, areaH: 0,
-        mapMarkers: [], mapPolyline: [], mapInclude: [], geoStopCount: 0,
+        mapMarkers: [], mapPolyline: [], mapPolylineBase: [], mapInclude: [], geoStopCount: 0,
         multiDay: false, dayGroups: [], budgetBars: [],
       })
       return
@@ -281,7 +282,7 @@ Page({
 
     this.setData({
       active, areaH: stops.length * this.data.rowH,
-      mapMarkers, mapPolyline, mapInclude, mapCenter, geoStopCount: geo.length,
+      mapMarkers, mapPolyline, mapPolylineBase: mapPolyline, mapInclude, mapCenter, geoStopCount: geo.length,
       multiDay, dayGroups,
     })
     this.loadExpenses()
@@ -871,6 +872,20 @@ Page({
         route: { loading: canRoute, error: '', mode: '', modes: [] },
       },
     })
+    // 地图高亮当前这段：起点 → 本站（在原路线之上叠一条醒目实线）
+    if (canRoute) {
+      const hl = {
+        points: [
+          { latitude: Number(origin.lat), longitude: Number(origin.lng) },
+          { latitude: Number(stop.latitude), longitude: Number(stop.longitude) },
+        ],
+        color: '#c0392bF0', width: 6, arrowLine: true,
+      }
+      this.setData({
+        mapPolyline: (this.data.mapPolylineBase || []).concat([hl]),
+        mapInclude: hl.points,
+      })
+    }
     this.setTabBarHidden(true)
     if (canRoute) this.loadStopRoute(origin, stop)
   },
@@ -928,7 +943,7 @@ Page({
     wx.setClipboardData({ data: url, success: () => wx.showToast({ title: '链接已复制，可粘贴到浏览器打开', icon: 'none' }) })
   },
   closeStopSheet() {
-    this.setData({ 'stopSheet.show': false })
+    this.setData({ 'stopSheet.show': false, mapPolyline: this.data.mapPolylineBase || [] })
     this.setTabBarHidden(false)
   },
   /* ---------------- 当天全程：串联各段 + 估算总通勤时长 + 逐段导航 ---------------- */
