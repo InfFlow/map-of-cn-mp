@@ -198,42 +198,34 @@
   position: relative;
   width: 100%;
 }
-/* 换天分割线（覆盖在拖动列表之上，落在卡片之间的间隙处） */
-.day-sep {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 0;
+/* 换天小标题（落在每天第一张卡片的上方，整行一条） */
+.day-head {
+  flex: none;
+  height: 48rpx;
   display: flex;
   align-items: center;
-  pointer-events: none;
-  z-index: 5;
+  gap: 16rpx;
+  padding-bottom: 6rpx;
 }
-.day-sep::before {
-  content: '';
-  flex: 1;
-  height: 0;
-  border-top: 1rpx dashed var(--line);
-}
-.day-sep::after {
-  content: '';
-  flex: 1;
-  height: 0;
-  border-top: 1rpx dashed var(--line);
-}
-.day-sep-txt {
+.day-head-txt {
   flex: none;
-  margin: 0 16rpx;
-  padding: 4rpx 16rpx;
-  font-size: 20rpx;
+  padding: 5rpx 18rpx;
+  font-size: 22rpx;
   font-weight: 700;
   letter-spacing: 2rpx;
   color: var(--bg);
   background: var(--ink);
   border-radius: 999rpx;
 }
+.day-head-line {
+  flex: 1;
+  height: 0;
+  border-top: 1rpx dashed var(--line);
+}
 .mv-stop {
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .mv-stop.drag {
   z-index: 20;
@@ -245,7 +237,9 @@
 .stop-card {
   display: flex;
   align-items: stretch;
-  height: calc(100% - 16rpx);
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 16rpx;
   background: var(--surface);
   border: 1rpx solid var(--line);
   transition: box-shadow 0.18s, transform 0.18s;

@@ -10,6 +10,7 @@ Page({
     cartTotal: 0,
     activeCat: 0,
     showTop: false,
+    aiEnabled: app.globalData.aiEnabled,
   },
 
   onLoad() {

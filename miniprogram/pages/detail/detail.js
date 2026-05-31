@@ -1,3 +1,4 @@
+const app = getApp()
 const api = require('../../utils/api')
 const { prettyDate, toneGradient } = require('../../utils/util')
 const { buildJourneyPoster } = require('../../utils/poster')
@@ -14,6 +15,7 @@ Page({
     posterW: 300,
     posterH: 100,
     making: false,
+    aiEnabled: app.globalData.aiEnabled,
   },
 
   onLoad(options) {
