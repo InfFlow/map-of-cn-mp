@@ -1,0 +1,93 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">ATLAS</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们去过的地方</view>
+    <view class="h1 display">我的<view class="br"></view>足迹地图</view>
+    <view class="lede">所有走过的点，按城市收进这张地图里。</view>
+  </view>
+
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:380rpx;margin-top:24rpx;"></view>
+      <view class="sk sk-block" style="height:120rpx;margin-top:24rpx;"></view>
+    </view>
+  </block>
+
+  <view wx:elif="{{error}}" class="fp-empty">{{error}}</view>
+
+  <block wx:elif="{{stats.journeyCount === 0}}">
+    <view class="fp-empty">还没有带定位的足迹。去时间线给回忆加上地点，这里就会亮起来。</view>
+  </block>
+
+  <block wx:else>
+    <!-- 概览数字 -->
+    <view class="grid3 rise d2">
+      <view class="cellnum">
+        <text class="num display">{{stats.cityCount}}</text>
+        <text class="lab">城市 Cities</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{stats.provinceCount}}</text>
+        <text class="lab">省份 Provinces</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{stats.journeyCount}}</text>
+        <text class="lab">足迹 Spots</text>
+      </view>
+    </view>
+
+    <!-- 地图 -->
+    <view class="fp-map-wrap rise d2">
+      <map
+        class="fp-map"
+        latitude="{{center.latitude}}"
+        longitude="{{center.longitude}}"
+        scale="{{scale}}"
+        markers="{{markers}}"
+        include-points="{{includePoints}}"
+        show-location="{{false}}"
+        enable-rotate="{{false}}"
+        enable-overlooking="{{false}}"
+        bindmarkertap="onMarkerTap"
+        bindcallouttap="onMarkerTap"
+      ></map>
+      <view class="fp-map-cap">{{activeCity ? '已聚焦 · 再点一次该城市可看全部' : '点下方城市可聚焦 · 点标记进回忆'}}</view>
+    </view>
+
+    <!-- 按城市归类 -->
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">按城市</text>
+        <text class="sec-en">By City</text>
+      </view>
+      <view wx:for="{{cityGroups}}" wx:key="key" class="fp-city {{activeCity === item.key ? 'on' : ''}}">
+        <view class="fp-city-head pressable" hover-class="pressed" data-key="{{item.key}}" catchtap="focusCity">
+          <view class="fp-city-l">
+            <text class="fp-city-name serif">{{item.city}}</text>
+            <text wx:if="{{item.province}}" class="fp-city-prov">{{item.province}}</text>
+          </view>
+          <view class="fp-city-r">
+            <text class="fp-city-count serif">{{item.count}}</text>
+            <text class="fp-city-unit">个足迹</text>
+          </view>
+        </view>
+        <view class="fp-spots">
+          <view wx:for="{{item.items}}" wx:for-item="sp" wx:key="id" class="fp-spot pressable" hover-class="pressed" data-id="{{sp.id}}" catchtap="openDetail">
+            <text class="fp-spot-title">{{sp.title}}</text>
+            <text class="fp-spot-meta">{{sp.season}}{{sp.season && sp.date ? ' · ' : ''}}{{sp.date}}</text>
+            <text class="fp-spot-arrow serif">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+</view>

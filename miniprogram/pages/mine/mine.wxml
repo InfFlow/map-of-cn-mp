@@ -67,6 +67,16 @@
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openFootprints">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-atlas"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">我的足迹地图</text>
+            <text class="ae-sub">去过的点 · 按城市归类</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
       <view class="admin-entry pressable" hover-class="pressed" bindtap="openStats">
         <view class="ae-left">
           <view class="ae-ico ae-ico-stats"></view>
