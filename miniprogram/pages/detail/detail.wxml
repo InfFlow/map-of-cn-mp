@@ -57,7 +57,7 @@
     <text wx:for="{{trip.tags}}" wx:key="*this" class="chip">#{{item}}</text>
   </view>
 
-  <view class="ask-ai pressable rise d3" hover-class="pressed" bindtap="askAi">
+  <view wx:if="{{aiEnabled}}" class="ask-ai pressable rise d3" hover-class="pressed" bindtap="askAi">
     <text class="aa-zh">问问 AI：{{trip.city}}怎么玩、吃什么</text>
     <text class="aa-arrow serif">›</text>
   </view>

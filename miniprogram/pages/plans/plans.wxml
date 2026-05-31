@@ -130,6 +130,10 @@
               bindtouchend="onStopTouchEnd"
               style="height: {{rowH}}px;"
             >
+              <view wx:if="{{item.dayFirst && !dragId}}" class="day-head">
+                <text class="day-head-txt">{{item.dayLabel}}</text>
+                <view class="day-head-line"></view>
+              </view>
               <view class="stop-card">
                 <view class="stop-rail">
                   <text class="stop-no serif">{{item.no}}</text>
@@ -143,7 +147,7 @@
                   </view>
                   <text wx:if="{{item.address}}" class="stop-addr">{{item.address}}</text>
                   <text wx:if="{{item.note}}" class="stop-note">{{item.note}}</text>
-                  <view class="stop-ai pressable" hover-class="pressed" catchtap="aiPlace" data-name="{{item.name}}">AI · 怎么玩 / 怎么逛 / 附近美食 ›</view>
+                  <view wx:if="{{aiEnabled}}" class="stop-ai pressable" hover-class="pressed" catchtap="aiPlace" data-name="{{item.name}}">AI · 怎么玩 / 怎么逛 / 附近美食 ›</view>
                 </view>
                 <view wx:if="{{canEdit}}" class="stop-ops">
                   <view class="stop-del" catchtap="delStop" data-id="{{item.id}}">删</view>
@@ -152,16 +156,6 @@
               </view>
             </movable-view>
           </movable-area>
-          <view
-            wx:if="{{multiDay && !dragId}}"
-            wx:for="{{daySeps}}"
-            wx:for-item="sep"
-            wx:key="day"
-            class="day-sep"
-            style="top: {{sep.y}}px;"
-          >
-            <text class="day-sep-txt">{{sep.label}}</text>
-          </view>
         </view>
 
         <view wx:if="{{canEdit && active.stops.length}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
