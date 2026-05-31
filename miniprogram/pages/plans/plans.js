@@ -88,9 +88,9 @@ Page({
     },
     // 点击目的地弹出的「怎么去 + 一键导航」抽屉
     stopSheet: {
-      show: false, id: 0, name: '', address: '', latitude: null, longitude: null,
+      show: false, id: 0, name: '', address: '', note: '', plannedTime: '', latitude: null, longitude: null,
       originName: '', canNav: false, canRoute: false,
-      route: { loading: false, error: '', recoLabel: '', distance: '', duration: '', steps: [] },
+      route: { loading: false, error: '', mode: '', modes: [] },
     },
     // 每天出发点编辑器（默认从酒店出发，可自定义）
     dayStartEditor: {
@@ -793,16 +793,37 @@ Page({
     this.setData({
       stopSheet: {
         show: true, id: stop.id, name: stop.name, address: stop.address || '',
+        note: stop.note || '', plannedTime: stop.plannedTime || '',
         latitude: hasStopGeo ? Number(stop.latitude) : null,
         longitude: hasStopGeo ? Number(stop.longitude) : null,
         originName: origin ? origin.name : '',
         canNav: hasStopGeo,
         canRoute,
-        route: { loading: canRoute, error: '', recoLabel: '', distance: '', duration: '', steps: [] },
+        route: { loading: canRoute, error: '', mode: '', modes: [] },
       },
     })
     this.setTabBarHidden(true)
     if (canRoute) this.loadStopRoute(origin, stop)
+  },
+  // 把高德返回的某种方式整理成可展示对象
+  fmtMode(key, opt) {
+    const distTxt = (m) => (m >= 1000 ? (m / 1000).toFixed(1) + ' 公里' : m + ' 米')
+    const m = { key, label: RECO_LABEL[key] || '路线', duration: opt.duration ? opt.duration + ' 分钟' : '', distance: '', extra: '', steps: opt.steps || [] }
+    if (key === 'walking') {
+      m.distance = opt.distance ? distTxt(opt.distance) : ''
+    } else if (key === 'driving') {
+      m.distance = opt.distance ? distTxt(opt.distance) : ''
+      const ex = []
+      if (opt.tolls > 0) ex.push('过路费约 ¥' + opt.tolls)
+      if (opt.lights > 0) ex.push('红绿灯 ' + opt.lights + ' 个')
+      m.extra = ex.join(' · ')
+    } else if (key === 'transit') {
+      const ex = []
+      if (opt.cost > 0) ex.push('约 ¥' + opt.cost)
+      if (opt.walkingDistance > 0) ex.push('步行 ' + distTxt(opt.walkingDistance))
+      m.extra = ex.join(' · ')
+    }
+    return m
   },
   async loadStopRoute(origin, stop) {
     try {
@@ -810,20 +831,27 @@ Page({
         origin: `${origin.lng},${origin.lat}`,
         destination: `${stop.longitude},${stop.latitude}`,
       })
-      const reco = r.recommend
-      const opt = (r.options && r.options[reco]) || {}
-      this.setData({
-        'stopSheet.route': {
-          loading: false, error: '',
-          recoLabel: RECO_LABEL[reco] || '路线',
-          distance: opt.distance ? (opt.distance >= 1000 ? (opt.distance / 1000).toFixed(1) + ' 公里' : opt.distance + ' 米') : '',
-          duration: opt.duration ? opt.duration + ' 分钟' : '',
-          steps: opt.steps || [],
-        },
-      })
+      const order = ['walking', 'transit', 'driving']
+      const opts = r.options || {}
+      const modes = order.filter((k) => opts[k]).map((k) => this.fmtMode(k, opts[k]))
+      if (!modes.length) {
+        this.setData({ 'stopSheet.route': { loading: false, error: '未能规划出路线', mode: '', modes: [] } })
+        return
+      }
+      const reco = opts[r.recommend] ? r.recommend : modes[0].key
+      this.setData({ 'stopSheet.route': { loading: false, error: '', mode: reco, modes } })
     } catch (err) {
-      this.setData({ 'stopSheet.route': { loading: false, error: (err && err.data && err.data.message) || '规划失败', recoLabel: '', distance: '', duration: '', steps: [] } })
+      this.setData({ 'stopSheet.route': { loading: false, error: (err && err.data && err.data.message) || '规划失败', mode: '', modes: [] } })
     }
+  },
+  pickRouteMode(e) {
+    this.setData({ 'stopSheet.route.mode': e.currentTarget.dataset.mode })
+  },
+  copyStopAddr() {
+    const s = this.data.stopSheet
+    const txt = s.address || s.name
+    if (!txt) return
+    wx.setClipboardData({ data: txt, success: () => wx.showToast({ title: '已复制地址', icon: 'none' }) })
   },
   closeStopSheet() {
     this.setData({ 'stopSheet.show': false })

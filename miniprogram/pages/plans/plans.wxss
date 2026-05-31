@@ -465,10 +465,63 @@
 }
 
 /* 目的地抽屉：怎么去 + 一键导航 */
+.rd-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  margin: -6rpx 4rpx 0;
+}
+.rd-time {
+  flex: none;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  letter-spacing: 1rpx;
+}
 .rd-addr {
-  display: block;
-  margin: -6rpx 4rpx 6rpx;
+  flex: 1;
+  min-width: 0;
   font-size: 23rpx;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rd-copy {
+  flex: none;
+  font-size: 21rpx;
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 2rpx 16rpx;
+}
+.rd-note {
+  margin: 10rpx 4rpx 0;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.rd-tabs {
+  display: flex;
+  gap: 12rpx;
+  padding: 16rpx 0 6rpx;
+}
+.rd-tab {
+  flex: none;
+  font-size: 23rpx;
+  color: var(--ink-2);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 8rpx 24rpx;
+}
+.rd-tab.on {
+  color: var(--bg);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.rd-extra {
+  display: block;
+  padding: 0 4rpx 6rpx;
+  font-size: 22rpx;
   color: var(--muted);
 }
 .rd-route-head {

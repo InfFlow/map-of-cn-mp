@@ -200,13 +200,13 @@
             <text class="day-grp-no serif">DAY {{item.day}}</text>
             <text class="day-grp-cnt">{{item.stops.length}} 站</text>
           </view>
-          <view wx:for="{{item.stops}}" wx:for-item="st" wx:key="id" class="day-stop {{st.latitude != null ? 'pressable' : ''}}" hover-class="{{st.latitude != null ? 'pressed' : ''}}" data-id="{{st.id}}" bindtap="{{st.latitude != null ? 'openStopLocation' : ''}}">
+          <view wx:for="{{item.stops}}" wx:for-item="st" wx:key="id" class="day-stop pressable" hover-class="pressed" data-id="{{st.id}}" bindtap="openStopSheet">
             <text class="day-stop-no serif">{{st.no}}</text>
             <view class="day-stop-mid">
               <text class="day-stop-name">{{st.name}}</text>
               <text wx:if="{{st.plannedTime}}" class="day-stop-time">{{st.plannedTime}}</text>
             </view>
-            <text wx:if="{{st.latitude != null}}" class="day-stop-go">›</text>
+            <text class="day-stop-go">›</text>
           </view>
         </view>
       </view>
@@ -422,7 +422,12 @@
   <view class="sheet-grab"></view>
   <view class="sheet-x" hover-class="pressed" catchtap="closeStopSheet">✕</view>
   <view class="sheet-title">{{stopSheet.name}}</view>
-  <text wx:if="{{stopSheet.address}}" class="rd-addr">{{stopSheet.address}}</text>
+  <view class="rd-meta">
+    <text wx:if="{{stopSheet.plannedTime}}" class="rd-time">{{stopSheet.plannedTime}}</text>
+    <text wx:if="{{stopSheet.address}}" class="rd-addr">{{stopSheet.address}}</text>
+    <text wx:if="{{stopSheet.address}}" class="rd-copy" hover-class="pressed" catchtap="copyStopAddr">复制</text>
+  </view>
+  <view wx:if="{{stopSheet.note}}" class="rd-note">备注 · {{stopSheet.note}}</view>
 
   <view class="rd-route-head">
     <text class="rd-route-zh">怎么去</text>
@@ -437,17 +442,25 @@
     <view wx:if="{{stopSheet.route.loading}}" class="rd-loading">路线规划中…</view>
     <view wx:elif="{{stopSheet.route.error}}" class="rd-err">{{stopSheet.route.error}}</view>
     <block wx:else>
-      <view class="rd-reco">
-        <text class="rd-mode">推荐 · {{stopSheet.route.recoLabel}}</text>
-        <text class="rd-stat">{{stopSheet.route.distance}}{{stopSheet.route.duration ? ' · ' + stopSheet.route.duration : ''}}</text>
+      <view class="rd-tabs">
+        <view wx:for="{{stopSheet.route.modes}}" wx:key="key" class="rd-tab {{stopSheet.route.mode === item.key ? 'on' : ''}}" hover-class="pressed" data-mode="{{item.key}}" catchtap="pickRouteMode">{{item.label}}</view>
       </view>
-      <view wx:for="{{stopSheet.route.steps}}" wx:for-item="step" wx:key="*this" class="rd-step">
-        <text class="rd-dot">·</text>
-        <text class="rd-step-txt">{{step}}</text>
-      </view>
-      <view wx:if="{{!stopSheet.route.steps.length}}" class="rd-step">
-        <text class="rd-step-txt">{{stopSheet.route.recoLabel}}前往即可</text>
-      </view>
+      <block wx:for="{{stopSheet.route.modes}}" wx:key="key">
+        <view wx:if="{{stopSheet.route.mode === item.key}}" class="rd-pane">
+          <view class="rd-reco">
+            <text class="rd-mode">{{item.label}}</text>
+            <text class="rd-stat">{{item.duration}}{{item.distance ? ' · ' + item.distance : ''}}</text>
+          </view>
+          <text wx:if="{{item.extra}}" class="rd-extra">{{item.extra}}</text>
+          <view wx:for="{{item.steps}}" wx:for-item="step" wx:key="*this" class="rd-step">
+            <text class="rd-dot">·</text>
+            <text class="rd-step-txt">{{step}}</text>
+          </view>
+          <view wx:if="{{!item.steps.length}}" class="rd-step">
+            <text class="rd-step-txt">按「{{item.label}}」前往即可，点下方一键导航查看实时路线</text>
+          </view>
+        </view>
+      </block>
     </block>
   </block>
 
