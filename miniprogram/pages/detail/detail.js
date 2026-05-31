@@ -19,7 +19,14 @@ Page({
   },
 
   onLoad(options) {
+    this._id = options.id
     this.load(options.id)
+  },
+
+  retry() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.setData({ loading: true, error: '' })
+    this.load(this._id)
   },
 
   onPageScroll(e) {

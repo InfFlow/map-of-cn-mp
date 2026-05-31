@@ -12,11 +12,38 @@ App({
     // 升级为企业主体并补充相应服务类目后，把此处改成 true 即可一键恢复全部 AI 入口。
     aiEnabled: false,
     user: null, // { openid, nickname, avatarUrl }
+    networkType: 'unknown', // 当前网络类型
+    networkWeak: false,     // 是否弱网/离线
   },
 
   onLaunch() {
     const user = wx.getStorageSync('user')
     if (user && user.openid) this.globalData.user = user
+    this.watchNetwork()
+  },
+
+  // 监听网络状态：离线/弱网（2g）时提示，恢复时提示
+  watchNetwork() {
+    wx.getNetworkType({
+      success: (r) => this.applyNetwork(r.networkType, true),
+    })
+    wx.onNetworkStatusChange((r) => this.applyNetwork(r.networkType, r.isConnected))
+  },
+
+  applyNetwork(type, connected) {
+    const weak = !connected || type === 'none' || type === '2g'
+    const was = this.globalData.networkWeak
+    this.globalData.networkType = type
+    this.globalData.networkWeak = weak
+    if (weak && !was) {
+      wx.showToast({
+        title: type === 'none' || !connected ? '网络已断开' : '当前网络较弱',
+        icon: 'none',
+        duration: 2000,
+      })
+    } else if (!weak && was) {
+      wx.showToast({ title: '网络已恢复', icon: 'none', duration: 1500 })
+    }
   },
 
   // 微信快捷登录：wx.login 取 code → 后端 code2session 换 openid

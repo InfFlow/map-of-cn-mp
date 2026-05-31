@@ -229,6 +229,21 @@ page {
   color: var(--muted);
   letter-spacing: 1rpx;
 }
+/* 加载失败时的重试按钮（全局统一） */
+.retry-btn {
+  display: inline-block;
+  margin-top: 28rpx;
+  padding: 16rpx 48rpx;
+  font-size: 25rpx;
+  color: var(--ink);
+  border: 1rpx solid var(--ink);
+  border-radius: 999rpx;
+  background: var(--surface);
+}
+.retry-btn.pressed {
+  background: var(--ink);
+  color: var(--bg);
+}
 /* 统一的杂志线条空状态插画（行程/相册/心愿共用一套风格） */
 .empty-fig {
   width: 168rpx;

@@ -45,6 +45,11 @@ Page({
     this.loadAll()
   },
 
+  retry() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.loadAll()
+  },
+
   onPullDownRefresh() {
     this.loadAll().then(() => wx.stopPullDownRefresh())
   },

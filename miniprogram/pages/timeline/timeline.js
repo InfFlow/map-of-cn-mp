@@ -75,6 +75,11 @@ Page({
     wx.stopPullDownRefresh()
   },
 
+  retry() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.load()
+  },
+
   openDetail(e) {
     const id = e.currentTarget.dataset.id
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })

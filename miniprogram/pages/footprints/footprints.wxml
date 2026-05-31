@@ -20,7 +20,10 @@
     </view>
   </block>
 
-  <view wx:elif="{{error}}" class="fp-empty">{{error}}</view>
+  <view wx:elif="{{error}}" class="fp-empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
 
   <block wx:elif="{{stats.journeyCount === 0}}">
     <view class="fp-empty">还没有带定位的足迹。去时间线给回忆加上地点，这里就会亮起来。</view>

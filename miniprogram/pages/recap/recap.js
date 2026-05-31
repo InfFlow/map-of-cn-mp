@@ -70,6 +70,11 @@ Page({
     this.loadAll().then(() => wx.stopPullDownRefresh())
   },
 
+  retry() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.loadAll()
+  },
+
   onPageScroll(e) {
     const show = e.scrollTop > 480
     if (show !== this.data.showTop) this.setData({ showTop: show })
