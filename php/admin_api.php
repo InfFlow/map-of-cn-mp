@@ -248,7 +248,7 @@ try {
         'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
         'expenses', 'add_expense', 'del_expense',
         'add_journey_photo', 'del_journey_photo',
-        'geo', 'regeo', 'ai_recommend', 'ai_place', 'ai_plan', 'import_plan', 'upload_image',
+        'geo', 'regeo', 'weather', 'ai_recommend', 'ai_place', 'ai_plan', 'import_plan', 'upload_image',
         /* 菜单后台：菜品 / 分类 / 订单 —— 情侣双方都可编辑 */
         'overview', 'orders', 'set_order_status',
         'add_category', 'update_category', 'toggle_category', 'del_category', 'reorder_categories',
@@ -680,7 +680,7 @@ try {
             if ($ids) {
                 $ph = implode(',', array_fill(0, count($ids), '?'));
                 $ss = $pdo->prepare(
-                    "SELECT id, plan_id, name, address, latitude, longitude, note, planned_time, day, sort_order
+                    "SELECT id, plan_id, name, address, latitude, longitude, note, open_hours, ticket, booking_url, planned_time, day, sort_order
                      FROM plan_stops WHERE plan_id IN ($ph) ORDER BY sort_order ASC, id ASC"
                 );
                 $ss->execute($ids);
@@ -692,6 +692,9 @@ try {
                         'latitude' => $s['latitude'] === null ? null : (float) $s['latitude'],
                         'longitude' => $s['longitude'] === null ? null : (float) $s['longitude'],
                         'note' => $s['note'],
+                        'openHours' => $s['open_hours'] ?? '',
+                        'ticket' => $s['ticket'] ?? '',
+                        'bookingUrl' => $s['booking_url'] ?? '',
                         'plannedTime' => $s['planned_time'],
                         'day' => (int) ($s['day'] ?? 1),
                         'sortOrder' => (int) $s['sort_order'],
@@ -824,6 +827,9 @@ try {
             }
             $address = mb_substr(trim((string) ($body['address'] ?? '')), 0, 255);
             $note = trim((string) ($body['note'] ?? ''));
+            $openHours = mb_substr(trim((string) ($body['openHours'] ?? '')), 0, 255);
+            $ticket = mb_substr(trim((string) ($body['ticket'] ?? '')), 0, 255);
+            $bookingUrl = mb_substr(trim((string) ($body['bookingUrl'] ?? '')), 0, 512);
             $plannedTime = mb_substr(trim((string) ($body['plannedTime'] ?? '')), 0, 32);
             $day = max(1, min(60, (int) ($body['day'] ?? 1)));
             $lat = isset($body['latitude']) && $body['latitude'] !== '' ? round((float) $body['latitude'], 6) : null;
@@ -835,16 +841,16 @@ try {
                 $ns = $pdo->prepare('SELECT COALESCE(MAX(sort_order),0)+1 FROM plan_stops WHERE plan_id = ?');
                 $ns->execute([$planId]);
                 $order = (int) $ns->fetchColumn();
-                $pdo->prepare('INSERT INTO plan_stops (plan_id, name, address, latitude, longitude, note, planned_time, day, sort_order) VALUES (?,?,?,?,?,?,?,?,?)')
-                    ->execute([$planId, $name, $address, $lat, $lng, $note, $plannedTime, $day, $order]);
+                $pdo->prepare('INSERT INTO plan_stops (plan_id, name, address, latitude, longitude, note, open_hours, ticket, booking_url, planned_time, day, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)')
+                    ->execute([$planId, $name, $address, $lat, $lng, $note, $openHours, $ticket, $bookingUrl, $plannedTime, $day, $order]);
                 out(['ok' => true, 'id' => (int) $pdo->lastInsertId()]);
             }
             $id = (int) ($body['id'] ?? 0);
             if ($id <= 0) {
                 fail('缺少 id');
             }
-            $pdo->prepare('UPDATE plan_stops SET name=?, address=?, latitude=?, longitude=?, note=?, planned_time=?, day=? WHERE id=?')
-                ->execute([$name, $address, $lat, $lng, $note, $plannedTime, $day, $id]);
+            $pdo->prepare('UPDATE plan_stops SET name=?, address=?, latitude=?, longitude=?, note=?, open_hours=?, ticket=?, booking_url=?, planned_time=?, day=? WHERE id=?')
+                ->execute([$name, $address, $lat, $lng, $note, $openHours, $ticket, $bookingUrl, $plannedTime, $day, $id]);
             out(['ok' => true]);
         }
 
@@ -936,6 +942,53 @@ try {
                 'province' => $province,
                 'city' => $city,
                 'formatted' => (string) ($res['regeocode']['formatted_address'] ?? ''),
+            ]);
+        }
+
+        /* ============ 高德天气（经纬度 → adcode → 4 天预报，行程页按计划日期显示） ============ */
+        case 'weather': {
+            $key = (string) ($config['amap_key'] ?? '');
+            if ($key === '') {
+                fail('未配置高德 key', 503);
+            }
+            $adcode = preg_replace('/\D/', '', (string) ($body['adcode'] ?? ''));
+            if ($adcode === '') {
+                $lng = isset($body['longitude']) ? (float) $body['longitude'] : 0.0;
+                $lat = isset($body['latitude']) ? (float) $body['latitude'] : 0.0;
+                if ($lng === 0.0 || $lat === 0.0) {
+                    fail('缺少经纬度或 adcode');
+                }
+                $re = amap_get('geocode/regeo', ['location' => $lng . ',' . $lat, 'extensions' => 'base'], $key);
+                $adcode = (string) ($re['regeocode']['addressComponent']['adcode'] ?? '');
+                if ($adcode === '') {
+                    fail('未能定位城市', 404);
+                }
+            }
+            $w = amap_get('weather/weatherInfo', ['city' => $adcode, 'extensions' => 'all'], $key);
+            if (!$w || ($w['status'] ?? '0') !== '1' || empty($w['forecasts'][0])) {
+                fail('未能获取天气', 404);
+            }
+            $f = $w['forecasts'][0];
+            $casts = [];
+            foreach (($f['casts'] ?? []) as $c) {
+                $casts[] = [
+                    'date' => (string) ($c['date'] ?? ''),
+                    'week' => (string) ($c['week'] ?? ''),
+                    'dayWeather' => (string) ($c['dayweather'] ?? ''),
+                    'nightWeather' => (string) ($c['nightweather'] ?? ''),
+                    'dayTemp' => (string) ($c['daytemp'] ?? ''),
+                    'nightTemp' => (string) ($c['nighttemp'] ?? ''),
+                    'dayWind' => (string) ($c['daywind'] ?? ''),
+                    'dayPower' => (string) ($c['daypower'] ?? ''),
+                ];
+            }
+            out([
+                'ok' => true,
+                'adcode' => $adcode,
+                'city' => (string) ($f['city'] ?? ''),
+                'province' => (string) ($f['province'] ?? ''),
+                'reportTime' => (string) ($f['reporttime'] ?? ''),
+                'casts' => $casts,
             ]);
         }
 

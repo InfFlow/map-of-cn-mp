@@ -72,7 +72,7 @@ try {
     if ($ids) {
         $ph = implode(',', array_fill(0, count($ids), '?'));
         $ss = $pdo->prepare(
-            "SELECT id, plan_id, name, address, latitude, longitude, note, planned_time, day, sort_order
+            "SELECT id, plan_id, name, address, latitude, longitude, note, open_hours, ticket, booking_url, planned_time, day, sort_order
              FROM plan_stops WHERE plan_id IN ($ph) ORDER BY sort_order ASC, id ASC"
         );
         $ss->execute($ids);
@@ -84,6 +84,9 @@ try {
                 'latitude' => $s['latitude'] === null ? null : (float) $s['latitude'],
                 'longitude' => $s['longitude'] === null ? null : (float) $s['longitude'],
                 'note' => $s['note'],
+                'openHours' => $s['open_hours'] ?? '',
+                'ticket' => $s['ticket'] ?? '',
+                'bookingUrl' => $s['booking_url'] ?? '',
                 'plannedTime' => $s['planned_time'],
                 'day' => (int) ($s['day'] ?? 1),
             ];

@@ -118,6 +118,8 @@
         <view wx:if="{{dayGroups.length}}" class="daystart-list">
           <view wx:for="{{dayGroups}}" wx:key="day" class="daystart-row pressable" hover-class="pressed" catchtap="openDayStart" data-day="{{item.day}}">
             <text class="daystart-day">{{item.label}}</text>
+            <text wx:if="{{item.dateText}}" class="daystart-date">{{item.dateText}}</text>
+            <text wx:if="{{item.weather}}" class="daystart-wx">{{item.weather}}</text>
             <text class="daystart-from {{item.hasStart ? '' : 'muted'}}">出发 · {{item.hasStart ? item.startName : '未设置'}}</text>
             <text wx:if="{{item.startCustom}}" class="daystart-tag">自定义</text>
             <text wx:if="{{canEdit}}" class="daystart-edit serif">›</text>
@@ -198,7 +200,10 @@
         <view wx:for="{{dayGroups}}" wx:key="day" class="day-grp">
           <view class="day-grp-head">
             <text class="day-grp-no serif">DAY {{item.day}}</text>
+            <text wx:if="{{item.dateText}}" class="day-grp-date">{{item.dateText}}</text>
+            <text wx:if="{{item.weather}}" class="day-grp-wx">{{item.weather}}</text>
             <text class="day-grp-cnt">{{item.stops.length}} 站</text>
+            <text wx:if="{{item.stops.length > 1}}" class="day-grp-route" hover-class="pressed" catchtap="openDayRoute" data-day="{{item.day}}">全程·导航 ›</text>
           </view>
           <view wx:for="{{item.stops}}" wx:for-item="st" wx:key="id" class="day-stop pressable" hover-class="pressed" data-id="{{st.id}}" bindtap="openStopSheet">
             <text class="day-stop-no serif">{{st.no}}</text>
@@ -407,8 +412,20 @@
     <text wx:else class="geo-hint dim">点「定位」获取坐标，路线推荐才可用</text>
   </view>
   <view class="field">
+    <text class="field-label">营业时间</text>
+    <input class="field-input {{focusField === 'sopen' ? 'on' : ''}}" value="{{stopEditor.openHours}}" placeholder="如：08:30-17:00（可选）" placeholder-class="field-ph" data-field="openHours" data-k="sopen" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">门票</text>
+    <input class="field-input {{focusField === 'sticket' ? 'on' : ''}}" value="{{stopEditor.ticket}}" placeholder="如：¥60 / 免费 / 需预约（可选）" placeholder-class="field-ph" data-field="ticket" data-k="sticket" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">预约 / 购票链接</text>
+    <input class="field-input {{focusField === 'sbook' ? 'on' : ''}}" value="{{stopEditor.bookingUrl}}" placeholder="粘贴预约或购票网址（可选）" placeholder-class="field-ph" data-field="bookingUrl" data-k="sbook" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
     <text class="field-label">备注</text>
-    <textarea class="field-area {{focusField === 'snote' ? 'on' : ''}}" value="{{stopEditor.note}}" placeholder="想做的事、门票、tips…" placeholder-class="field-ph" data-field="note" data-k="snote" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" auto-height />
+    <textarea class="field-area {{focusField === 'snote' ? 'on' : ''}}" value="{{stopEditor.note}}" placeholder="想做的事、tips…" placeholder-class="field-ph" data-field="note" data-k="snote" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" auto-height />
   </view>
   <view class="sheet-acts">
     <view class="btn ghost" hover-class="pressed" catchtap="closeStopEditor">取消</view>
@@ -428,6 +445,12 @@
     <text wx:if="{{stopSheet.address}}" class="rd-copy" hover-class="pressed" catchtap="copyStopAddr">复制</text>
   </view>
   <view wx:if="{{stopSheet.note}}" class="rd-note">备注 · {{stopSheet.note}}</view>
+
+  <view wx:if="{{stopSheet.openHours || stopSheet.ticket || stopSheet.bookingUrl}}" class="rd-info">
+    <view wx:if="{{stopSheet.openHours}}" class="rd-info-row"><text class="rd-info-k">营业</text><text class="rd-info-v">{{stopSheet.openHours}}</text></view>
+    <view wx:if="{{stopSheet.ticket}}" class="rd-info-row"><text class="rd-info-k">门票</text><text class="rd-info-v">{{stopSheet.ticket}}</text></view>
+    <view wx:if="{{stopSheet.bookingUrl}}" class="rd-info-row"><text class="rd-info-k">预约</text><text class="rd-info-v link">{{stopSheet.bookingUrl}}</text><text class="rd-copy" hover-class="pressed" catchtap="copyBookingUrl">复制</text></view>
+  </view>
 
   <view class="rd-route-head">
     <text class="rd-route-zh">怎么去</text>
@@ -494,4 +517,24 @@
     <view class="btn ghost" hover-class="pressed" catchtap="resetDayStart">恢复默认</view>
     <view class="btn solid" hover-class="pressed" catchtap="saveDayStart">保存</view>
   </view>
+</view>
+
+<!-- 当天全程：串联各段 + 估算总通勤时长 -->
+<view wx:if="{{dayRouteSheet.show}}" class="mask" catchtap="closeDayRoute"></view>
+<view class="sheet {{dayRouteSheet.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeDayRoute">✕</view>
+  <view class="dr-head">
+    <text class="sheet-title">{{dayRouteSheet.label}} · 全程</text>
+    <text wx:if="{{dayRouteSheet.total}}" class="dr-total">总通勤 {{dayRouteSheet.total}}</text>
+  </view>
+  <view wx:if="{{dayRouteSheet.loading}}" class="rd-loading">正在估算各段通勤…</view>
+  <view wx:for="{{dayRouteSheet.legs}}" wx:key="toName" class="dr-leg">
+    <view class="dr-leg-line">
+      <text class="dr-leg-path">{{item.fromName}} → {{item.toName}}</text>
+      <text class="dr-leg-stat">{{item.label}}{{item.dur ? ' · ' + item.dur : ''}}{{item.dist ? ' · ' + item.dist : ''}}</text>
+    </view>
+    <view class="dr-nav {{item.canNav ? '' : 'disabled'}}" hover-class="pressed" catchtap="navLeg" data-lat="{{item.toLat}}" data-lng="{{item.toLng}}" data-name="{{item.toName}}">导航</view>
+  </view>
+  <text class="rd-addr dim">逐段导航：点每段「导航」唤起微信内置地图前往该站</text>
 </view>

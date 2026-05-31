@@ -22,6 +22,24 @@ function toISO(d) {
   if (!d) return ''
   return String(d).slice(0, 10).replace(/\./g, '-')
 }
+const WEEK_CN = ['日', '一', '二', '三', '四', '五', '六']
+// ISO 日期 + n 天 → 'YYYY-MM-DD'
+function addDaysISO(iso, n) {
+  if (!iso) return ''
+  const t = new Date(iso + 'T00:00:00').getTime()
+  if (isNaN(t)) return ''
+  const d = new Date(t + n * 86400000)
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return d.getFullYear() + '-' + mm + '-' + dd
+}
+// 'YYYY-MM-DD' → '6.2 周三'
+function dateLabel(iso) {
+  if (!iso) return ''
+  const d = new Date(iso + 'T00:00:00')
+  if (isNaN(d.getTime())) return ''
+  return (d.getMonth() + 1) + '.' + d.getDate() + ' 周' + WEEK_CN[d.getDay()]
+}
 // 起止日期 → 行程天数（含首尾），无效或缺失返回 0
 function dayCount(start, end) {
   const s = toISO(start)
@@ -45,6 +63,7 @@ Page({
     plans: [],
     activeIndex: 0,
     active: null,
+    weatherByDate: {},
 
     toneList: TONE_LIST,
     toneSwatches: TONE_LIST.map((t) => ({ tone: t, grad: toneGradient(t), name: TONE_NAMES[t] || '' })),
@@ -88,13 +107,17 @@ Page({
     },
     // 点击目的地弹出的「怎么去 + 一键导航」抽屉
     stopSheet: {
-      show: false, id: 0, name: '', address: '', note: '', plannedTime: '', latitude: null, longitude: null,
+      show: false, id: 0, name: '', address: '', note: '', plannedTime: '', openHours: '', ticket: '', bookingUrl: '', latitude: null, longitude: null,
       originName: '', canNav: false, canRoute: false,
       route: { loading: false, error: '', mode: '', modes: [] },
     },
     // 每天出发点编辑器（默认从酒店出发，可自定义）
     dayStartEditor: {
       show: false, day: 1, name: '', address: '', lat: '', lng: '', geoLoading: false, hotelName: '',
+    },
+    // 当天全程路线（串联各段 + 总通勤时长）
+    dayRouteSheet: {
+      show: false, day: 1, label: '', loading: false, total: '', legs: [],
     },
   },
 
@@ -232,6 +255,8 @@ Page({
     const dayStarts = plan.dayStarts || {}
     const dayMap = {}
     stops.forEach((s) => { (dayMap[s.day] = dayMap[s.day] || []).push(s) })
+    const startISO = plan.planDateISO || toISO(plan.planDate)
+    const wmap = this.data.weatherByDate || {}
     const dayGroups = Object.keys(dayMap)
       .map(Number)
       .sort((a, b) => a - b)
@@ -245,7 +270,13 @@ Page({
         } else if (hotel && (hotel.name || hotel.lat != null)) {
           startName = hotel.name || '酒店'
         }
-        return { day: d, label: '第 ' + d + ' 天', stops: dayMap[d], startName, startCustom, hasStart: !!startName }
+        const dateISO = startISO ? addDaysISO(startISO, d - 1) : ''
+        const w = dateISO ? wmap[dateISO] : null
+        return {
+          day: d, label: '第 ' + d + ' 天', stops: dayMap[d], startName, startCustom, hasStart: !!startName,
+          dateISO, dateText: dateLabel(dateISO),
+          weather: w ? (w.dayWeather + ' ' + w.nightTemp + '~' + w.dayTemp + '°') : '',
+        }
       })
 
     this.setData({
@@ -254,6 +285,39 @@ Page({
       multiDay, dayGroups,
     })
     this.loadExpenses()
+    this.loadWeather()
+  },
+
+  // 拉取目的地城市的高德天气（4 天预报），按计划日期映射到每天
+  async loadWeather() {
+    const plan = this.data.active
+    if (!plan || !this.data.openid) return
+    const startISO = plan.planDateISO || toISO(plan.planDate)
+    if (!startISO) return // 无计划日期无法对应天气
+    // 取一个坐标定位城市：酒店优先，否则第一个有坐标的目的地
+    let lat = null
+    let lng = null
+    if (plan.hotel && plan.hotel.lat != null && plan.hotel.lng != null) {
+      lat = plan.hotel.lat; lng = plan.hotel.lng
+    } else {
+      const g = (plan.stops || []).find((s) => s.latitude != null && s.longitude != null)
+      if (g) { lat = g.latitude; lng = g.longitude }
+    }
+    if (lat == null || lng == null) return
+    try {
+      const r = await api.admin({ action: 'weather', openid: this.data.openid, latitude: lat, longitude: lng })
+      const wmap = {}
+      ;(r.casts || []).forEach((c) => { if (c.date) wmap[c.date] = c })
+      this.setData({ weatherByDate: wmap })
+      // 回填到当前 dayGroups
+      const dg = (this.data.dayGroups || []).map((g) => {
+        const w = g.dateISO ? wmap[g.dateISO] : null
+        return { ...g, weather: w ? (w.dayWeather + ' ' + w.nightTemp + '~' + w.dayTemp + '°') : '' }
+      })
+      this.setData({ dayGroups: dg })
+    } catch (e) {
+      // 天气失败不影响主流程
+    }
   },
 
   openStopLocation(e) {
@@ -569,7 +633,7 @@ Page({
     const p = this.data.active
     if (!p) return
     this.setData({
-      stopEditor: { show: true, mode: 'add', id: 0, planId: p.id, name: '', address: '', plannedTime: '', note: '', day: 1, latitude: '', longitude: '', geoLoading: false },
+      stopEditor: { show: true, mode: 'add', id: 0, planId: p.id, name: '', address: '', plannedTime: '', note: '', openHours: '', ticket: '', bookingUrl: '', day: 1, latitude: '', longitude: '', geoLoading: false },
     })
     this.setTabBarHidden(true)
   },
@@ -580,7 +644,8 @@ Page({
     this.setData({
       stopEditor: {
         show: true, mode: 'edit', id: s.id, planId: this.data.active.id,
-        name: s.name || '', address: s.address || '', plannedTime: s.plannedTime || '', note: s.note || '', day: Number(s.day) || 1,
+        name: s.name || '', address: s.address || '', plannedTime: s.plannedTime || '', note: s.note || '',
+        openHours: s.openHours || '', ticket: s.ticket || '', bookingUrl: s.bookingUrl || '', day: Number(s.day) || 1,
         latitude: s.latitude == null ? '' : String(s.latitude), longitude: s.longitude == null ? '' : String(s.longitude),
         geoLoading: false,
       },
@@ -641,6 +706,9 @@ Page({
       address: ed.address || '',
       plannedTime: ed.plannedTime || '',
       note: ed.note || '',
+      openHours: ed.openHours || '',
+      ticket: ed.ticket || '',
+      bookingUrl: ed.bookingUrl || '',
       day: Number(ed.day) || 1,
       latitude: ed.latitude || '',
       longitude: ed.longitude || '',
@@ -794,6 +862,7 @@ Page({
       stopSheet: {
         show: true, id: stop.id, name: stop.name, address: stop.address || '',
         note: stop.note || '', plannedTime: stop.plannedTime || '',
+        openHours: stop.openHours || '', ticket: stop.ticket || '', bookingUrl: stop.bookingUrl || '',
         latitude: hasStopGeo ? Number(stop.latitude) : null,
         longitude: hasStopGeo ? Number(stop.longitude) : null,
         originName: origin ? origin.name : '',
@@ -853,9 +922,74 @@ Page({
     if (!txt) return
     wx.setClipboardData({ data: txt, success: () => wx.showToast({ title: '已复制地址', icon: 'none' }) })
   },
+  copyBookingUrl() {
+    const url = this.data.stopSheet.bookingUrl
+    if (!url) return
+    wx.setClipboardData({ data: url, success: () => wx.showToast({ title: '链接已复制，可粘贴到浏览器打开', icon: 'none' }) })
+  },
   closeStopSheet() {
     this.setData({ 'stopSheet.show': false })
     this.setTabBarHidden(false)
+  },
+  /* ---------------- 当天全程：串联各段 + 估算总通勤时长 + 逐段导航 ---------------- */
+  async openDayRoute(e) {
+    const day = Number(e.currentTarget.dataset.day)
+    const grp = (this.data.dayGroups || []).find((g) => g.day === day)
+    if (!grp || !grp.stops || !grp.stops.length) return
+    const origin = this.originForStop(grp.stops[0])
+    const seq = []
+    if (origin) seq.push({ name: origin.name, lat: origin.lat, lng: origin.lng })
+    grp.stops.forEach((s) => seq.push({
+      name: s.name,
+      lat: s.latitude == null ? null : Number(s.latitude),
+      lng: s.longitude == null ? null : Number(s.longitude),
+    }))
+    const legs = []
+    for (let i = 0; i < seq.length - 1; i++) {
+      const a = seq[i]
+      const b = seq[i + 1]
+      legs.push({
+        fromName: a.name, toName: b.name, toLat: b.lat, toLng: b.lng,
+        canNav: b.lat != null && b.lng != null,
+        hasGeo: a.lat != null && a.lng != null && b.lat != null && b.lng != null,
+        label: '', dur: '', dist: '',
+      })
+    }
+    this.setData({ dayRouteSheet: { show: true, day, label: grp.label, loading: true, total: '', legs } })
+    this.setTabBarHidden(true)
+    let totalMins = 0
+    let anyOk = false
+    for (let i = 0; i < legs.length; i++) {
+      if (!legs[i].hasGeo) {
+        this.setData({ [`dayRouteSheet.legs[${i}].dur`]: '缺坐标' })
+        continue
+      }
+      const a = seq[i]
+      const b = seq[i + 1]
+      try {
+        const r = await api.getRoute({ origin: `${a.lng},${a.lat}`, destination: `${b.lng},${b.lat}` })
+        const opt = (r.options && r.options[r.recommend]) || {}
+        const mins = opt.duration || 0
+        if (mins) { totalMins += mins; anyOk = true }
+        this.setData({
+          [`dayRouteSheet.legs[${i}].label`]: RECO_LABEL[r.recommend] || '',
+          [`dayRouteSheet.legs[${i}].dur`]: mins ? mins + ' 分钟' : '',
+          [`dayRouteSheet.legs[${i}].dist`]: opt.distance ? (opt.distance >= 1000 ? (opt.distance / 1000).toFixed(1) + ' 公里' : opt.distance + ' 米') : '',
+        })
+      } catch (err) {
+        this.setData({ [`dayRouteSheet.legs[${i}].dur`]: '规划失败' })
+      }
+    }
+    this.setData({ 'dayRouteSheet.loading': false, 'dayRouteSheet.total': anyOk ? '约 ' + totalMins + ' 分钟' : '' })
+  },
+  closeDayRoute() {
+    this.setData({ 'dayRouteSheet.show': false })
+    this.setTabBarHidden(false)
+  },
+  navLeg(e) {
+    const d = e.currentTarget.dataset
+    if (d.lat == null || d.lat === '') return
+    wx.openLocation({ latitude: Number(d.lat), longitude: Number(d.lng), name: d.name || '', scale: 16 })
   },
   // 一键导航：唤起微信内置地图（可再跳第三方地图 App）
   navStop() {
