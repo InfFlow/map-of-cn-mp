@@ -10,6 +10,10 @@ page {
   --line: rgba(27, 23, 18, 0.13);
   --line-soft: rgba(27, 23, 18, 0.07);
 
+  /* 层次/阴影系统：纸张般的柔和投影，提升质感（保持单色调性） */
+  --shadow-card: 0 4rpx 22rpx rgba(27, 23, 18, 0.06);
+  --shadow-float: 0 10rpx 40rpx rgba(27, 23, 18, 0.12);
+
   /* 自适应：安全区 + 自定义 tabBar 总高，供底部固定元素避让 */
   --safe-b: env(safe-area-inset-bottom);
   --safe-t: env(safe-area-inset-top);
@@ -118,6 +122,20 @@ page {
 .pressed {
   transform: scale(0.978);
   opacity: 0.7;
+}
+
+/* 弹层遮罩淡入：弹窗/抽屉出现更柔和（全局统一） */
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.mask {
+  animation: maskIn 0.24s ease both;
+}
+
+/* 底部抽屉/弹层：抬升阴影，增强层次与丝滑感（全局统一） */
+.sheet {
+  box-shadow: 0 -10rpx 48rpx rgba(27, 23, 18, 0.16);
 }
 
 /* 行首字母/数字下沉（杂志手记） */

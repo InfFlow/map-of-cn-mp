@@ -173,6 +173,12 @@
   border: 1rpx solid #1b1712;
   border-radius: 999rpx;
   text-align: center;
+  transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1), background 0.18s ease;
+}
+.map-btn.pressed {
+  transform: scale(0.94);
+  background: #1b1712;
+  color: #faf8f3;
 }
 .map-cap {
   margin-top: 14rpx;
@@ -438,8 +444,10 @@
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 22rpx 24rpx;
+  padding: 24rpx 26rpx;
+  background: var(--surface);
   border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
 }
 .otd-badge {
   flex: none;
@@ -483,13 +491,16 @@
 .anniv-card {
   height: 100%;
   box-sizing: border-box;
+  background: var(--surface);
   border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
   padding: 28rpx 30rpx;
   display: flex;
   flex-direction: column;
 }
 .anniv-card.today {
-  background: var(--ink);
+  background: linear-gradient(150deg, #2a2419 0%, #1b1712 64%);
+  border-color: var(--ink);
 }
 .anniv-top {
   display: flex;

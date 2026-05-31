@@ -105,8 +105,8 @@
           bindmarkertap="onMarkerTap"
         >
           <cover-view class="map-ctrl">
-            <cover-view class="map-btn" bindtap="locateMe">◎ 我的位置</cover-view>
-            <cover-view wx:if="{{markers.length}}" class="map-btn" bindtap="fitAllFootprints">全部足迹</cover-view>
+            <cover-view class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="locateMe">◎ 我的位置</cover-view>
+            <cover-view wx:if="{{markers.length}}" class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="fitAllFootprints">全部足迹</cover-view>
           </cover-view>
         </map>
       </view>
