@@ -104,7 +104,19 @@
           <text class="sec-zh">住宿 & 出发</text>
           <text class="sec-en">Stay & Start</text>
         </view>
-        <view wx:if="{{active.hotel}}" class="stay-card pressable" hover-class="pressed" bindtap="openPlanEdit">
+        <!-- 多晚/分段住宿：每段一张卡，标注覆盖第几天 -->
+        <block wx:if="{{active.hotels.length}}">
+          <view wx:for="{{active.hotels}}" wx:key="startDay" class="stay-card pressable" hover-class="pressed" catchtap="openHotelsEditor">
+            <text class="stay-ico">🏨</text>
+            <view class="stay-body">
+              <text class="stay-name">{{item.name || '住宿'}}</text>
+              <text wx:if="{{item.address}}" class="stay-addr">{{item.address}}</text>
+            </view>
+            <text class="stay-range">{{item.startDay === item.endDay ? ('第 ' + item.startDay + ' 天') : ('第 ' + item.startDay + '–' + item.endDay + ' 天')}}</text>
+          </view>
+          <view wx:if="{{canEdit}}" class="stay-manage pressable" hover-class="pressed" catchtap="openHotelsEditor">管理住宿（多晚 / 分段）›</view>
+        </block>
+        <view wx:elif="{{active.hotel}}" class="stay-card pressable" hover-class="pressed" catchtap="openHotelsEditor">
           <text class="stay-ico">🏨</text>
           <view class="stay-body">
             <text class="stay-name">{{active.hotel.name || '住宿'}}</text>
@@ -112,7 +124,7 @@
           </view>
           <text wx:if="{{canEdit}}" class="stay-edit">编辑 ›</text>
         </view>
-        <view wx:elif="{{canEdit}}" class="stay-empty pressable" hover-class="pressed" bindtap="openPlanEdit">＋ 设置住宿酒店（每天默认从这里出发）</view>
+        <view wx:elif="{{canEdit}}" class="stay-empty pressable" hover-class="pressed" catchtap="openHotelsEditor">＋ 设置住宿酒店（支持多晚 / 跨城分段，每天默认从对应酒店出发）</view>
         <view wx:else class="stay-empty-ro">未设置住宿</view>
 
         <view wx:if="{{dayGroups.length}}" class="daystart-list">
@@ -452,6 +464,23 @@
     <view wx:if="{{stopSheet.bookingUrl}}" class="rd-info-row"><text class="rd-info-k">预约</text><text class="rd-info-v link">{{stopSheet.bookingUrl}}</text><text class="rd-copy" hover-class="pressed" catchtap="copyBookingUrl">复制</text></view>
   </view>
 
+  <!-- 直接在抽屉里调整这站属于第几天 / 当天排第几 -->
+  <view wx:if="{{canEdit}}" class="rd-adjust">
+    <view class="rd-adj-row">
+      <text class="rd-adj-k">归属</text>
+      <view class="he-step">
+        <text class="he-step-btn" hover-class="pressed" catchtap="changeStopDay" data-delta="-1">－</text>
+        <text class="he-step-val">第 {{stopSheet.day}} 天</text>
+        <text class="he-step-btn" hover-class="pressed" catchtap="changeStopDay" data-delta="1">＋</text>
+      </view>
+      <text class="rd-adj-k">当天顺序</text>
+      <view class="he-step">
+        <text class="he-step-btn" hover-class="pressed" catchtap="moveStopInDay" data-dir="-1">↑</text>
+        <text class="he-step-btn" hover-class="pressed" catchtap="moveStopInDay" data-dir="1">↓</text>
+      </view>
+    </view>
+  </view>
+
   <view class="rd-route-head">
     <text class="rd-route-zh">怎么去</text>
     <text wx:if="{{stopSheet.originName}}" class="rd-route-from">{{stopSheet.originName}} → {{stopSheet.name}}</text>
@@ -537,4 +566,47 @@
     <view class="dr-nav {{item.canNav ? '' : 'disabled'}}" hover-class="pressed" catchtap="navLeg" data-lat="{{item.toLat}}" data-lng="{{item.toLng}}" data-name="{{item.toName}}">导航</view>
   </view>
   <text class="rd-addr dim">逐段导航：点每段「导航」唤起微信内置地图前往该站</text>
+</view>
+
+<!-- 住宿管理：多晚 / 跨城分段（每段覆盖第几天） -->
+<view wx:if="{{hotelsEditor.show}}" class="mask" catchtap="closeHotelsEditor"></view>
+<view class="sheet tall {{hotelsEditor.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeHotelsEditor">✕</view>
+  <view class="sheet-title">住宿 · 多晚 / 分段</view>
+  <text class="rd-addr">每段填一个酒店并设它覆盖第几天；跨城换酒店时多加一段，行程会自动按当天对应酒店出发{{hotelsEditor.dayMax ? '（本计划共 ' + hotelsEditor.dayMax + ' 天）' : ''}}。</text>
+  <scroll-view scroll-y class="he-scroll">
+    <view wx:for="{{hotelsEditor.list}}" wx:key="key" class="he-seg">
+      <view class="he-seg-top">
+        <text class="he-seg-no serif">住宿 {{index + 1}}</text>
+        <text class="he-seg-del" hover-class="pressed" catchtap="removeHotelSeg" data-i="{{index}}">删除</text>
+      </view>
+      <input class="field-input {{focusField === ('hn'+index) ? 'on' : ''}}" value="{{item.name}}" placeholder="酒店 / 民宿名称" placeholder-class="field-ph" data-i="{{index}}" data-field="name" data-k="hn{{index}}" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onHotelSegField" />
+      <view class="field-row he-row">
+        <input class="field-input grow {{focusField === ('ha'+index) ? 'on' : ''}}" value="{{item.address}}" placeholder="酒店地址，用于定位" placeholder-class="field-ph" data-i="{{index}}" data-field="address" data-k="ha{{index}}" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onHotelSegField" />
+        <view class="geo-btn {{item.geoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeHotelSeg" data-i="{{index}}">{{item.geoLoading ? '定位中' : '定位'}}</view>
+      </view>
+      <text wx:if="{{item.lat}}" class="geo-hint">坐标 {{item.lng}}, {{item.lat}}</text>
+      <text wx:else class="geo-hint dim">点「定位」获取坐标，路线/导航更准确</text>
+      <view class="he-days">
+        <text class="he-days-lab">覆盖</text>
+        <view class="he-step">
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="-1">－</text>
+          <text class="he-step-val">第 {{item.startDay}} 天</text>
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="1">＋</text>
+        </view>
+        <text class="he-days-to">至</text>
+        <view class="he-step">
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="-1">－</text>
+          <text class="he-step-val">第 {{item.endDay}} 天</text>
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="1">＋</text>
+        </view>
+      </view>
+    </view>
+    <view class="he-add pressable" hover-class="pressed" catchtap="addHotelSeg">＋ 添加一段住宿</view>
+  </scroll-view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="closeHotelsEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveHotels">保存</view>
+  </view>
 </view>

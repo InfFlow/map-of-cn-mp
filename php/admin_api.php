@@ -105,7 +105,33 @@ function plan_places_admin(array $p): array
             }
         }
     }
-    return ['hotel' => $hotel, 'dayStarts' => (object) $dayStarts];
+    $hotels = [];
+    $rawH = $p['hotels'] ?? '';
+    if (is_string($rawH) && $rawH !== '') {
+        $decodedH = json_decode($rawH, true);
+        if (is_array($decodedH)) {
+            foreach ($decodedH as $h) {
+                if (!is_array($h)) {
+                    continue;
+                }
+                $name = trim((string) ($h['name'] ?? ''));
+                $sd = (int) ($h['startDay'] ?? 0);
+                $ed = (int) ($h['endDay'] ?? 0);
+                if ($name === '' && !isset($h['lat'])) {
+                    continue;
+                }
+                $hotels[] = [
+                    'name' => $name,
+                    'address' => (string) ($h['address'] ?? ''),
+                    'lat' => isset($h['lat']) && $h['lat'] !== '' && $h['lat'] !== null ? (float) $h['lat'] : null,
+                    'lng' => isset($h['lng']) && $h['lng'] !== '' && $h['lng'] !== null ? (float) $h['lng'] : null,
+                    'startDay' => $sd > 0 ? $sd : 1,
+                    'endDay' => $ed >= $sd && $ed > 0 ? $ed : ($sd > 0 ? $sd : 1),
+                ];
+            }
+        }
+    }
+    return ['hotel' => $hotel, 'hotels' => $hotels, 'dayStarts' => (object) $dayStarts];
 }
 
 /** 高德 Web 服务 GET 调用，返回解码后的数组（失败返回 null） */
@@ -243,7 +269,7 @@ try {
     $coupleEditable = [
         'admin_journeys', 'add_journey', 'update_journey', 'del_journey', 'toggle_journey', 'reorder_journeys',
         'admin_anniversaries', 'add_anniversary', 'update_anniversary', 'del_anniversary', 'reorder_anniversaries',
-        'admin_plans', 'add_plan', 'update_plan', 'del_plan', 'toggle_plan', 'reorder_plans', 'set_day_start',
+        'admin_plans', 'add_plan', 'update_plan', 'del_plan', 'toggle_plan', 'reorder_plans', 'set_day_start', 'set_hotels',
         'add_stop', 'update_stop', 'del_stop', 'reorder_stops',
         'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
         'expenses', 'add_expense', 'del_expense',
@@ -672,7 +698,7 @@ try {
         case 'admin_plans': {
             $plans = $pdo->query(
                 'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note,
-                        hotel_name, hotel_address, hotel_lat, hotel_lng, day_starts, sort_order, is_visible
+                        hotel_name, hotel_address, hotel_lat, hotel_lng, hotels, day_starts, sort_order, is_visible
                  FROM trip_plans ORDER BY sort_order ASC, created_at DESC, id ASC'
             )->fetchAll();
             $ids = array_column($plans, 'id');
@@ -712,6 +738,7 @@ try {
                     'coverImageUrl' => $p['cover_image_url'],
                     'note' => $p['note'],
                     'hotel' => $places['hotel'],
+                    'hotels' => $places['hotels'],
                     'dayStarts' => $places['dayStarts'],
                     'sortOrder' => (int) $p['sort_order'],
                     'visible' => (int) $p['is_visible'] === 1,
@@ -791,6 +818,42 @@ try {
             $json = $map ? json_encode($map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
             $pdo->prepare('UPDATE trip_plans SET day_starts = ? WHERE id = ?')->execute([$json, $id]);
             out(['ok' => true]);
+        }
+
+        /* ============ 多晚/分段住宿：整组覆盖保存 ============ */
+        case 'set_hotels': {
+            $id = (string) ($body['id'] ?? '');
+            if ($id === '') {
+                fail('缺少 id');
+            }
+            $in = $body['hotels'] ?? [];
+            if (!is_array($in)) {
+                $in = [];
+            }
+            $clean = [];
+            foreach ($in as $h) {
+                if (!is_array($h)) {
+                    continue;
+                }
+                $name = mb_substr(trim((string) ($h['name'] ?? '')), 0, 128);
+                $lat = norm_coord($h['lat'] ?? null);
+                if ($name === '' && $lat === null) {
+                    continue;
+                }
+                $sd = max(1, min(60, (int) ($h['startDay'] ?? 1)));
+                $ed = max($sd, min(60, (int) ($h['endDay'] ?? $sd)));
+                $clean[] = [
+                    'name' => $name,
+                    'address' => mb_substr(trim((string) ($h['address'] ?? '')), 0, 256),
+                    'lat' => $lat,
+                    'lng' => norm_coord($h['lng'] ?? null),
+                    'startDay' => $sd,
+                    'endDay' => $ed,
+                ];
+            }
+            $json = $clean ? json_encode($clean, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+            $pdo->prepare('UPDATE trip_plans SET hotels = ? WHERE id = ?')->execute([$json, $id]);
+            out(['ok' => true, 'hotels' => $clean]);
         }
 
         case 'toggle_plan': {

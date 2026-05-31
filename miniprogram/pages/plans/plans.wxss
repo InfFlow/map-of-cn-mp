@@ -389,12 +389,107 @@
   color: var(--ink-2);
   letter-spacing: 1rpx;
 }
+.stay-card + .stay-card {
+  border-top: none;
+}
+.stay-range {
+  flex: none;
+  font-size: 21rpx;
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 3rpx 14rpx;
+}
+.stay-manage {
+  margin-top: 12rpx;
+  padding: 16rpx 24rpx;
+  border: 1rpx dashed var(--line);
+  text-align: center;
+  font-size: 23rpx;
+  color: var(--ink-2);
+  letter-spacing: 1rpx;
+}
 .stay-empty {
   padding: 22rpx 24rpx;
   border: 1rpx dashed var(--line);
   text-align: center;
   font-size: 24rpx;
   color: var(--ink-2);
+}
+/* 住宿管理 sheet */
+.sheet.tall {
+  max-height: 90vh;
+}
+.he-scroll {
+  max-height: 56vh;
+  margin: 8rpx -8rpx 0;
+  padding: 0 8rpx;
+}
+.he-seg {
+  padding: 20rpx;
+  margin-bottom: 18rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  background: var(--surface);
+}
+.he-seg-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+.he-seg-no {
+  font-size: 22rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink-2);
+}
+.he-seg-del {
+  font-size: 22rpx;
+  color: #c0392b;
+}
+.he-row {
+  margin-top: 12rpx;
+}
+.he-days {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 14rpx;
+  flex-wrap: wrap;
+}
+.he-days-lab,
+.he-days-to {
+  font-size: 22rpx;
+  color: var(--muted);
+}
+.he-step {
+  display: flex;
+  align-items: center;
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+.he-step-btn {
+  width: 52rpx;
+  text-align: center;
+  font-size: 30rpx;
+  line-height: 52rpx;
+  color: var(--ink);
+  background: var(--bg);
+}
+.he-step-val {
+  min-width: 96rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--ink);
+}
+.he-add {
+  padding: 18rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-2);
+  border: 1rpx dashed var(--line);
+  border-radius: 12rpx;
 }
 .stay-empty-ro {
   padding: 22rpx 24rpx;
@@ -539,6 +634,23 @@
 .rd-info-v.link {
   color: #2a6db0;
   text-decoration: underline;
+}
+.rd-adjust {
+  margin: 12rpx 0 0;
+  padding: 12rpx 18rpx;
+  background: var(--paper, #f6f3ee);
+  border: 1rpx solid var(--line-soft);
+  border-radius: 14rpx;
+}
+.rd-adj-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  flex-wrap: wrap;
+}
+.rd-adj-k {
+  font-size: 21rpx;
+  color: var(--muted);
 }
 .rd-tabs {
   display: flex;

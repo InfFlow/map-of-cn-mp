@@ -54,7 +54,41 @@ function plan_places(array $p): array
             }
         }
     }
-    return ['hotel' => $hotel, 'dayStarts' => (object) $dayStarts];
+    $hotels = plan_hotels_parse($p['hotels'] ?? '');
+    return ['hotel' => $hotel, 'hotels' => $hotels, 'dayStarts' => (object) $dayStarts];
+}
+
+/**
+ * 解析多晚/分段住宿 JSON 数组。返回 [{name,address,lat,lng,startDay,endDay}, ...]
+ */
+function plan_hotels_parse($raw): array
+{
+    $out = [];
+    if (is_string($raw) && $raw !== '') {
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) {
+            foreach ($decoded as $h) {
+                if (!is_array($h)) {
+                    continue;
+                }
+                $name = trim((string) ($h['name'] ?? ''));
+                $sd = (int) ($h['startDay'] ?? 0);
+                $ed = (int) ($h['endDay'] ?? 0);
+                if ($name === '' && !isset($h['lat'])) {
+                    continue;
+                }
+                $out[] = [
+                    'name' => $name,
+                    'address' => (string) ($h['address'] ?? ''),
+                    'lat' => isset($h['lat']) && $h['lat'] !== '' && $h['lat'] !== null ? (float) $h['lat'] : null,
+                    'lng' => isset($h['lng']) && $h['lng'] !== '' && $h['lng'] !== null ? (float) $h['lng'] : null,
+                    'startDay' => $sd > 0 ? $sd : 1,
+                    'endDay' => $ed >= $sd && $ed > 0 ? $ed : ($sd > 0 ? $sd : 1),
+                ];
+            }
+        }
+    }
+    return $out;
 }
 
 try {
@@ -62,7 +96,7 @@ try {
 
     $plans = $pdo->query(
         'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note,
-                hotel_name, hotel_address, hotel_lat, hotel_lng, day_starts, sort_order
+                hotel_name, hotel_address, hotel_lat, hotel_lng, hotels, day_starts, sort_order
          FROM trip_plans WHERE is_visible = 1
          ORDER BY sort_order ASC, created_at DESC, id ASC'
     )->fetchAll();
@@ -104,6 +138,7 @@ try {
             'coverImageUrl' => $p['cover_image_url'] ?: null,
             'note' => $p['note'],
             'hotel' => $places['hotel'],
+            'hotels' => $places['hotels'],
             'dayStarts' => $places['dayStarts'],
             'stops' => $stopsBy[$p['id']] ?? [],
         ];
