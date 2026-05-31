@@ -1,0 +1,119 @@
+.page {
+  padding: 24rpx 44rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name { font-size: 22rpx; font-weight: 700; letter-spacing: 6rpx; }
+.mast-vol { font-size: 20rpx; font-weight: 700; letter-spacing: 3rpx; color: var(--muted); }
+.mast .rule { margin-top: 12rpx; }
+
+/* 英雄区 */
+.hero { padding: 48rpx 0 6rpx; }
+.hero .h1 { font-size: 116rpx; line-height: 0.96; margin-top: 20rpx; }
+.hero .br { height: 0; }
+.lede {
+  font-size: 29rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 30rpx;
+  max-width: 520rpx;
+}
+
+/* 概览三宫格 */
+.grid3 {
+  display: flex;
+  margin-top: 44rpx;
+  border-top: 1rpx solid var(--line);
+  border-left: 1rpx solid var(--line);
+}
+.cellnum {
+  width: 33.333%;
+  box-sizing: border-box;
+  border-right: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  padding: 30rpx 22rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+}
+.num { font-size: 66rpx; line-height: 1; }
+.lab { font-size: 20rpx; letter-spacing: 1rpx; color: var(--ink-2); margin-top: 12rpx; }
+
+/* 地图 */
+.fp-map-wrap { margin-top: 40rpx; }
+.fp-map {
+  width: 100%;
+  height: 460rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 14rpx;
+}
+.fp-map-cap {
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 21rpx;
+  color: var(--muted);
+  margin-top: 14rpx;
+  text-align: right;
+}
+
+/* 区块 */
+.block { margin-top: 56rpx; }
+
+/* 城市分组 */
+.fp-city {
+  border: 1rpx solid var(--line);
+  border-radius: 14rpx;
+  margin-top: 22rpx;
+  overflow: hidden;
+  background: var(--surface);
+}
+.fp-city.on { border-color: var(--ink); }
+.fp-city-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26rpx 28rpx;
+}
+.fp-city.on .fp-city-head { background: var(--line-soft); }
+.fp-city-l { display: flex; align-items: baseline; gap: 14rpx; min-width: 0; }
+.fp-city-name { font-size: 36rpx; line-height: 1.1; }
+.fp-city-prov { font-size: 22rpx; color: var(--muted); }
+.fp-city-r { display: flex; align-items: baseline; gap: 6rpx; flex: none; }
+.fp-city-count { font-size: 40rpx; line-height: 1; }
+.fp-city-unit { font-size: 21rpx; color: var(--ink-2); }
+
+.fp-spots { border-top: 1rpx dashed var(--line); }
+.fp-spot {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 22rpx 28rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.fp-spot:first-child { border-top: none; }
+.fp-spot-title {
+  flex: 1;
+  font-size: 27rpx;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-spot-meta { flex: none; font-size: 21rpx; color: var(--muted); }
+.fp-spot-arrow { flex: none; font-size: 30rpx; color: var(--muted); }
+
+/* 空 / 错误（.totop 复用全局样式） */
+.fp-empty {
+  margin-top: 60rpx;
+  padding: 60rpx 40rpx;
+  text-align: center;
+  font-size: 26rpx;
+  line-height: 1.8;
+  color: var(--muted);
+  border: 1rpx dashed var(--line);
+  border-radius: 14rpx;
+}

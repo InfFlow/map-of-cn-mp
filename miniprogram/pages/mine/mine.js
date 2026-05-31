@@ -61,6 +61,11 @@ Page({
     wx.navigateTo({ url: '/pages/album/album' })
   },
 
+  openFootprints() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/footprints/footprints' })
+  },
+
   openStats() {
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     wx.navigateTo({ url: '/pages/stats/stats' })
