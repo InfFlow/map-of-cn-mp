@@ -420,6 +420,16 @@
   color: var(--ink);
   min-width: 96rpx;
 }
+.daystart-date {
+  flex: none;
+  font-size: 20rpx;
+  color: var(--muted);
+}
+.daystart-wx {
+  flex: none;
+  font-size: 20rpx;
+  color: var(--ink-2);
+}
 .daystart-from {
   flex: 1;
   min-width: 0;
@@ -465,10 +475,93 @@
 }
 
 /* 目的地抽屉：怎么去 + 一键导航 */
+.rd-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  margin: -6rpx 4rpx 0;
+}
+.rd-time {
+  flex: none;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  letter-spacing: 1rpx;
+}
 .rd-addr {
-  display: block;
-  margin: -6rpx 4rpx 6rpx;
+  flex: 1;
+  min-width: 0;
   font-size: 23rpx;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rd-copy {
+  flex: none;
+  font-size: 21rpx;
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 2rpx 16rpx;
+}
+.rd-note {
+  margin: 10rpx 4rpx 0;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.rd-info {
+  margin: 12rpx 0 0;
+  padding: 14rpx 18rpx;
+  background: var(--paper, #f6f3ee);
+  border: 1rpx solid var(--line-soft);
+  border-radius: 14rpx;
+}
+.rd-info-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14rpx;
+  padding: 4rpx 0;
+}
+.rd-info-k {
+  flex: none;
+  width: 56rpx;
+  font-size: 21rpx;
+  color: var(--muted);
+}
+.rd-info-v {
+  flex: 1;
+  min-width: 0;
+  font-size: 22rpx;
+  color: var(--ink);
+  word-break: break-all;
+}
+.rd-info-v.link {
+  color: #2a6db0;
+  text-decoration: underline;
+}
+.rd-tabs {
+  display: flex;
+  gap: 12rpx;
+  padding: 16rpx 0 6rpx;
+}
+.rd-tab {
+  flex: none;
+  font-size: 23rpx;
+  color: var(--ink-2);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 8rpx 24rpx;
+}
+.rd-tab.on {
+  color: var(--bg);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.rd-extra {
+  display: block;
+  padding: 0 4rpx 6rpx;
+  font-size: 22rpx;
   color: var(--muted);
 }
 .rd-route-head {
@@ -1039,7 +1132,7 @@
 .day-grp-head {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
+  gap: 12rpx;
   padding-bottom: 10rpx;
   border-bottom: 1rpx solid var(--ink);
 }
@@ -1049,10 +1142,77 @@
   letter-spacing: 2rpx;
   color: var(--ink);
 }
+.day-grp-date {
+  font-size: 21rpx;
+  color: var(--muted);
+}
+.day-grp-wx {
+  font-size: 21rpx;
+  color: var(--ink-2);
+}
 .day-grp-cnt {
+  margin-left: auto;
   font-size: 22rpx;
   color: var(--muted);
   letter-spacing: 1rpx;
+}
+.day-grp-route {
+  flex: none;
+  font-size: 21rpx;
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 2rpx 16rpx;
+}
+/* 当天全程路线 sheet */
+.dr-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+.dr-total {
+  flex: none;
+  font-size: 23rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.dr-leg {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 16rpx 4rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.dr-leg-line {
+  flex: 1;
+  min-width: 0;
+}
+.dr-leg-path {
+  display: block;
+  font-size: 23rpx;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dr-leg-stat {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 21rpx;
+  color: var(--muted);
+}
+.dr-nav {
+  flex: none;
+  font-size: 22rpx;
+  color: var(--bg);
+  background: var(--ink);
+  border-radius: 999rpx;
+  padding: 8rpx 26rpx;
+}
+.dr-nav.disabled {
+  color: var(--muted);
+  background: var(--line-soft);
 }
 .day-stop {
   display: flex;
