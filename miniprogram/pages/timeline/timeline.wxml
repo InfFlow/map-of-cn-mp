@@ -23,7 +23,10 @@
     </view>
   </block>
 
-  <view wx:elif="{{error}}" class="empty">{{error}}</view>
+  <view wx:elif="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
 
   <block wx:else>
     <view wx:if="{{anniversaries.length}}" class="block rise d2">
@@ -71,7 +74,7 @@
           </view>
           <view class="tl-body">
             <view class="tl-cover" style="background-image: {{item.coverGrad}};">
-              <image wx:if="{{item.cover}}" class="tl-img" src="{{item.cover}}" mode="aspectFill"></image>
+              <image wx:if="{{item.cover}}" class="tl-img" src="{{item.cover}}" mode="aspectFill" lazy-load="true"></image>
               <text class="tl-figno figno">PLATE {{item.no}}</text>
             </view>
             <view class="tl-meta">

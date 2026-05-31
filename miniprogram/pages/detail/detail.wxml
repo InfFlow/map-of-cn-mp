@@ -8,7 +8,10 @@
   <view class="sk sk-block" style="height:24rpx;width:80%;margin-top:14rpx;"></view>
 </view>
 
-<view wx:elif="{{error}}" class="empty">{{error}}</view>
+<view wx:elif="{{error}}" class="empty">
+  <view>{{error}}</view>
+  <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+</view>
 
 <view wx:else class="wrap">
   <view class="mast rise d1">
@@ -81,7 +84,7 @@
         data-url="{{item.imageUrl}}"
       >
         <view class="photo pressable" hover-class="pressed" hover-stay-time="60" style="background-image: {{item.grad}};">
-          <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="true"></image>
           <text class="photo-fig figno">{{item.fig}}</text>
         </view>
         <view class="photo-cap">{{item.title}}</view>

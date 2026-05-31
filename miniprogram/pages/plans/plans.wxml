@@ -22,7 +22,10 @@
     </view>
   </block>
 
-  <view wx:elif="{{error}}" class="empty">{{error}}</view>
+  <view wx:elif="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
 
   <block wx:else>
     <!-- 计划选择条 -->

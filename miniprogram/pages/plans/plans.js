@@ -272,6 +272,11 @@ Page({
     )
   },
 
+  retry() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.load()
+  },
+
   async refreshAdminThenLoad() {
     const openid = this.data.openid
     if (openid) {

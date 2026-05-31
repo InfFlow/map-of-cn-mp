@@ -30,6 +30,11 @@ Page({
     this.loadMenu().then(() => wx.stopPullDownRefresh())
   },
 
+  retry() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.loadMenu()
+  },
+
   onPageScroll(e) {
     const show = e.scrollTop > 460
     if (show !== this.data.showTop) this.setData({ showTop: show })
