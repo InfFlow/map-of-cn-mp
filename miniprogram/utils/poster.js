@@ -233,4 +233,141 @@ async function buildJourneyPoster(node, trip) {
   })
 }
 
-module.exports = { buildJourneyPoster }
+// 行程单分享长图：封面（可选）+ 标题/日期 + 按天列出目的地（时间表/停留/出发点/节奏）
+// 用法：const tempFilePath = await buildItineraryPoster(node, data)
+// data = { title, meta, coverUrl, days: [{ label, dateText, weather, startName, summary, stops: [{ idx, name, timeText, stayText, note }] }] }
+async function buildItineraryPoster(node, data) {
+  const dpr = (wx.getWindowInfo && wx.getWindowInfo().pixelRatio) || 2
+  const W = 600
+  const pad = 44
+  const innerW = W - pad * 2
+  const ctx = node.getContext('2d')
+
+  const coverPath = await downloadImage(data.coverUrl || '')
+
+  // ---- 量度高度 ----
+  let y = 44 // 顶部留白
+  y += 24 // kicker + 细线
+  const coverH = coverPath ? 300 : 0
+  if (coverH) y += 18 + coverH
+  y += 40
+  ctx.font = '800 48px -apple-system, "PingFang SC", serif'
+  const titleLines = wrapLines(ctx, data.title || '行程单', innerW)
+  y += titleLines.length * 56
+  y += 30 // meta
+  ;(data.days || []).forEach((d) => {
+    y += 34 // 天头
+    if (d.startName) y += 30
+    ;(d.stops || []).forEach((s) => {
+      y += 34 // 名称行
+      if (s.timeText || s.stayText) y += 26
+      ctx.font = '22px "Songti SC", Georgia, serif'
+      if (s.note) y += wrapLines(ctx, s.note, innerW - 40).length * 30
+    })
+    if (d.summary) y += 30
+    y += 14
+  })
+  y += 40 + 60 // footer
+  const H = Math.ceil(y)
+
+  // ---- 画 ----
+  node.width = W * dpr
+  node.height = H * dpr
+  ctx.scale(dpr, dpr)
+  ctx.fillStyle = COL.bg
+  ctx.fillRect(0, 0, W, H)
+  const coverImg = await loadImage(node, coverPath)
+
+  let cy = 44
+  ctx.fillStyle = COL.muted
+  ctx.font = '20px Georgia, serif'
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillText('MAP OF US · 行程单', pad, cy + 16)
+  ctx.strokeStyle = COL.line
+  ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(pad, cy + 30); ctx.lineTo(W - pad, cy + 30); ctx.stroke()
+  cy += 24
+
+  if (coverImg) {
+    cy += 18
+    drawCover(ctx, coverImg, pad, cy, innerW, coverH)
+    ctx.strokeStyle = COL.line
+    ctx.strokeRect(pad, cy, innerW, coverH)
+    cy += coverH
+  }
+
+  cy += 40
+  ctx.fillStyle = COL.ink
+  ctx.font = '800 48px -apple-system, "PingFang SC", serif'
+  titleLines.forEach((ln) => { ctx.fillText(ln, pad, cy + 40); cy += 56 })
+
+  ctx.fillStyle = COL.muted
+  ctx.font = '22px Georgia, serif'
+  ctx.fillText(data.meta || '', pad, cy + 18)
+  cy += 30
+
+  ;(data.days || []).forEach((d) => {
+    // 天头：第N天 + 日期 + 天气
+    ctx.fillStyle = COL.ink
+    ctx.font = '700 26px -apple-system, "PingFang SC", serif'
+    ctx.fillText(d.label || '', pad, cy + 24)
+    const right = [d.dateText, d.weather].filter(Boolean).join('  ')
+    if (right) {
+      ctx.fillStyle = COL.muted
+      ctx.font = '20px Georgia, serif'
+      ctx.textAlign = 'right'
+      ctx.fillText(right, W - pad, cy + 24)
+      ctx.textAlign = 'left'
+    }
+    cy += 34
+    if (d.startName) {
+      ctx.fillStyle = COL.muted
+      ctx.font = '22px "Songti SC", Georgia, serif'
+      ctx.fillText('出发 · ' + d.startName, pad, cy + 20)
+      cy += 30
+    }
+    ;(d.stops || []).forEach((s) => {
+      ctx.fillStyle = COL.ink2
+      ctx.font = '600 25px -apple-system, "PingFang SC", serif'
+      ctx.fillText((s.idx != null ? s.idx + '. ' : '') + (s.name || ''), pad, cy + 24)
+      cy += 34
+      const sub = [s.timeText, s.stayText].filter(Boolean).join('   ')
+      if (sub) {
+        ctx.fillStyle = COL.muted
+        ctx.font = '20px Georgia, serif'
+        ctx.fillText(sub, pad + 8, cy + 16)
+        cy += 26
+      }
+      if (s.note) {
+        ctx.fillStyle = COL.muted
+        ctx.font = '22px "Songti SC", Georgia, serif'
+        wrapLines(ctx, s.note, innerW - 40).forEach((ln) => { ctx.fillText(ln, pad + 8, cy + 22); cy += 30 })
+      }
+    })
+    if (d.summary) {
+      ctx.fillStyle = COL.faint
+      ctx.font = '20px Georgia, serif'
+      ctx.fillText(d.summary, pad, cy + 20)
+      cy += 30
+    }
+    cy += 14
+  })
+
+  cy += 40
+  ctx.strokeStyle = COL.line
+  ctx.beginPath(); ctx.moveTo(pad, cy); ctx.lineTo(W - pad, cy); ctx.stroke()
+  ctx.fillStyle = COL.faint
+  ctx.font = '20px Georgia, serif'
+  ctx.fillText('用 MAP OF US 规划每一次出发', pad, cy + 34)
+
+  return new Promise((resolve, reject) => {
+    wx.canvasToTempFilePath({
+      canvas: node, x: 0, y: 0, width: W, height: H,
+      destWidth: W * dpr, destHeight: H * dpr,
+      success: (r) => resolve(r.tempFilePath),
+      fail: reject,
+    })
+  })
+}
+
+module.exports = { buildJourneyPoster, buildItineraryPoster }
