@@ -244,55 +244,85 @@
   border: 1rpx solid var(--ink);
 }
 
-/* 后台管理入口 */
+/* 功能入口卡：首项为深色「主卡」，其余为浅色卡片 + 图标方框，层次更分明 */
 .admin-entry {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
+  padding: 26rpx 28rpx;
+  margin-bottom: 18rpx;
+}
+.admin-entry:last-child {
+  margin-bottom: 0;
+}
+.admin-entry.featured {
   background: var(--ink);
+  border-color: var(--ink);
   color: var(--bg);
-  padding: 30rpx 34rpx;
+  padding: 32rpx 32rpx;
 }
 .admin-entry .ae-mid {
   display: flex;
   flex-direction: column;
   gap: 6rpx;
+  min-width: 0;
 }
 .admin-entry .ae-zh {
-  font-size: 34rpx;
+  font-size: 30rpx;
   font-weight: 700;
+  color: var(--ink);
+}
+.admin-entry.featured .ae-zh {
+  font-size: 36rpx;
   color: var(--bg);
 }
 .admin-entry .ae-sub {
   font-size: 21rpx;
   letter-spacing: 2rpx;
+  color: var(--muted);
+}
+.admin-entry.featured .ae-sub {
   color: rgba(244, 241, 234, 0.62);
 }
 .admin-entry .ae-arrow {
-  font-size: 44rpx;
+  font-size: 40rpx;
+  color: var(--faint);
+}
+.admin-entry.featured .ae-arrow {
+  font-size: 46rpx;
   color: var(--bg);
 }
 .admin-entry .ae-left {
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: 22rpx;
   min-width: 0;
 }
 .admin-entry .ae-ico {
-  width: 46rpx;
-  height: 46rpx;
+  width: 64rpx;
+  height: 64rpx;
   flex: none;
+  border: 1rpx solid var(--line);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 44rpx 44rpx;
-  opacity: 0.92;
+  background-size: 38rpx 38rpx;
+}
+.admin-entry.featured .ae-ico {
+  width: 68rpx;
+  height: 68rpx;
+  border-color: rgba(244, 241, 234, 0.34);
+  background-size: 40rpx 40rpx;
 }
 .ae-ico-memory { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%2020s-7-4.4-7-9.4A3.6%203.6%200%200%201%2012%208a3.6%203.6%200%200%201%207%202.6C19%2015.6%2012%2020%2012%2020z%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.4%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E"); }
-.ae-ico-wish { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%204l2.3%205.2%205.7.5-4.3%203.7%201.3%205.6L12%2016.7%207%2018.5l1.3-5.6L4%209.7l5.7-.5L12%204z%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.4%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E"); }
-.ae-ico-album { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Crect%20x=%224%22%20y=%225%22%20width=%2216%22%20height=%2214%22%20rx=%222%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.4%22/%3E%3Ccircle%20cx=%229%22%20cy=%2210%22%20r=%221.4%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.1%22/%3E%3Cpath%20d=%22M5%2017l4.5-4%203%202.4L16%2011l3%203.4%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E"); }
-.ae-ico-stats { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M5%2019v-7M12%2019V6M19%2019v-5%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3Cpath%20d=%22M4%2020h16%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.1%22%20stroke-linecap=%22round%22/%3E%3C/svg%3E"); }
-.ae-ico-atlas { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%2021s-6-5.3-6-10a6%206%200%200%201%2012%200c0%204.7-6%2010-6%2010z%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.4%22%20stroke-linejoin=%22round%22/%3E%3Ccircle%20cx=%2212%22%20cy=%2211%22%20r=%222.2%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.3%22/%3E%3C/svg%3E"); }
-.ae-ico-recap { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Ccircle%20cx=%2212%22%20cy=%2212%22%20r=%228%22%20stroke=%22%23f4f1ea%22%20stroke-width=%221.4%22/%3E%3Cpath%20d=%22M10%209.5l4.5%202.5L10%2014.5z%22%20fill=%22%23f4f1ea%22/%3E%3C/svg%3E"); }
+.ae-ico-wish { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%204l2.3%205.2%205.7.5-4.3%203.7%201.3%205.6L12%2016.7%207%2018.5l1.3-5.6L4%209.7l5.7-.5L12%204z%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E"); }
+.ae-ico-album { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Crect%20x=%224%22%20y=%225%22%20width=%2216%22%20height=%2214%22%20rx=%222%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22/%3E%3Ccircle%20cx=%229%22%20cy=%2210%22%20r=%221.4%22%20stroke=%22%231b1712%22%20stroke-width=%221.1%22/%3E%3Cpath%20d=%22M5%2017l4.5-4%203%202.4L16%2011l3%203.4%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E"); }
+.ae-ico-stats { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M5%2019v-7M12%2019V6M19%2019v-5%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3Cpath%20d=%22M4%2020h16%22%20stroke=%22%231b1712%22%20stroke-width=%221.1%22%20stroke-linecap=%22round%22/%3E%3C/svg%3E"); }
+.ae-ico-atlas { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%2021s-6-5.3-6-10a6%206%200%200%201%2012%200c0%204.7-6%2010-6%2010z%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linejoin=%22round%22/%3E%3Ccircle%20cx=%2212%22%20cy=%2211%22%20r=%222.2%22%20stroke=%22%231b1712%22%20stroke-width=%221.3%22/%3E%3C/svg%3E"); }
+.ae-ico-recap { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Ccircle%20cx=%2212%22%20cy=%2212%22%20r=%228%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22/%3E%3Cpath%20d=%22M10%209.5l4.5%202.5L10%2014.5z%22%20fill=%22%231b1712%22/%3E%3C/svg%3E"); }
 .admin-claim {
   text-align: center;
   margin-top: 40rpx;

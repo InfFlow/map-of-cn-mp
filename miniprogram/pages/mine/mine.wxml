@@ -37,7 +37,7 @@
     </view>
 
     <view class="block rise d2">
-      <view class="admin-entry pressable" hover-class="pressed" bindtap="openAdmin">
+      <view class="admin-entry featured pressable" hover-class="pressed" bindtap="openAdmin">
         <view class="ae-left">
           <view class="ae-ico ae-ico-memory"></view>
           <view class="ae-mid">
