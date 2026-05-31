@@ -120,6 +120,20 @@ page {
   opacity: 0.7;
 }
 
+/* 弹层遮罩淡入：弹窗/抽屉出现更柔和（全局统一） */
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.mask {
+  animation: maskIn 0.24s ease both;
+}
+
+/* 底部抽屉/弹层：抬升阴影，增强层次与丝滑感（全局统一） */
+.sheet {
+  box-shadow: 0 -10rpx 48rpx rgba(27, 23, 18, 0.16);
+}
+
 /* 行首字母/数字下沉（杂志手记） */
 .dropcap::first-letter {
   font-family: Georgia, "Songti SC", "STSong", serif;
