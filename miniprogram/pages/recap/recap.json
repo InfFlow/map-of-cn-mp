@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "旅行回顾",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
+}
