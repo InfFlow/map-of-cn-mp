@@ -1,9 +1,13 @@
 const app = getApp()
 const api = require('../../utils/api')
 const { toneGradient, TONE_LIST, TONE_NAMES } = require('../../utils/util')
+const { buildItineraryPoster } = require('../../utils/poster')
 
 const ROW_RPX = 268 // 拖动列表每行槽位高度（含间距、「怎么去」提示，首行还要容纳「第 N 天」小标题）
 const RECO_LABEL = { walking: '步行', transit: '公交 / 地铁', driving: '驾车' }
+// 每天一种颜色，地图上区分不同天的路线
+const DAY_COLORS = ['#1b1712', '#b4423a', '#2f6f4f', '#3a5ba0', '#9a6b2f', '#7a4fa0', '#2f8a8a', '#a03f6b']
+function dayColor(day) { return DAY_COLORS[((Number(day) || 1) - 1) % DAY_COLORS.length] }
 const EXP_CATS = [
   { key: 'food', name: '吃' },
   { key: 'hotel', name: '住' },
@@ -174,6 +178,11 @@ Page({
     mapInclude: [],
     mapCenter: { latitude: 34.5, longitude: 110 },
     geoStopCount: 0,
+    mapDayChips: [], // 多天时的「全部 / 第N天」筛选
+    mapDayFilter: 0, // 0=全部
+    posterMaking: false, // 导出长图生成中
+    posterW: 300,
+    posterH: 100,
     // 按天分组
     multiDay: false,
     dayGroups: [],
@@ -321,33 +330,7 @@ Page({
     this.markDayFirst(stops, multiDay, plan)
     const active = { ...plan, stops }
 
-    // 地图：编号标记 + 按顺序连成墨色虚线路线
     const geo = stops.filter((s) => s.latitude != null && s.longitude != null)
-    const mapMarkers = geo.map((s) => ({
-      id: s.id,
-      latitude: s.latitude,
-      longitude: s.longitude,
-      iconPath: '/assets/pin.png',
-      width: 26,
-      height: 32,
-      anchor: { x: 0.5, y: 1 },
-      label: {
-        content: s.no,
-        color: '#1b1712', fontSize: 10,
-        anchorX: -8, anchorY: -34,
-        bgColor: '#faf8f3', borderColor: '#1b1712', borderWidth: 1, borderRadius: 8, padding: 3,
-      },
-      callout: {
-        content: `${s.no} · ${s.name}`,
-        color: '#1f1d1b', fontSize: 12, borderRadius: 10, borderWidth: 1,
-        borderColor: '#00000014', padding: 8, bgColor: '#ffffff', display: 'BYCLICK',
-      },
-    }))
-    const mapPolyline = geo.length > 1
-      ? [{ points: geo.map((s) => ({ latitude: s.latitude, longitude: s.longitude })), color: '#1b1712B3', width: 2, dottedLine: true, arrowLine: true }]
-      : []
-    const mapInclude = geo.map((s) => ({ latitude: s.latitude, longitude: s.longitude }))
-    const mapCenter = geo.length ? { latitude: geo[0].latitude, longitude: geo[0].longitude } : this.data.mapCenter
 
     // 按天分组（每天显示出发点：默认对应当晚酒店，可自定义）
     const dayStarts = plan.dayStarts || {}
@@ -379,6 +362,7 @@ Page({
         const stopsWithSched = dayMap[d].map((s, i) => ({ ...s, sched: sched.rows[i] }))
         return {
           day: d, label: '第 ' + d + ' 天', stops: stopsWithSched, startName, startCustom, hasStart: !!startName,
+          startCoord,
           dateISO, dateText: dateLabel(dateISO),
           weather: w ? (w.dayWeather + ' ' + w.nightTemp + '~' + w.dayTemp + '°') : '',
           commuteText: sched.commuteMin > 0 ? minHuman(sched.commuteMin) : '',
@@ -389,13 +373,138 @@ Page({
         }
       })
 
+    // 地图：按天着色的编号标记 + 路线（支持「全部 / 第N天」筛选）
+    const dayChips = multiDay
+      ? [{ day: 0, label: '全部', color: '#1b1712' }].concat(
+          dayGroups.filter((g) => g.stops.some((s) => s.latitude != null)).map((g) => ({ day: g.day, label: '第' + g.day + '天', color: dayColor(g.day) })))
+      : []
+    if (this.data.mapDayFilter && !dayChips.some((c) => c.day === this.data.mapDayFilter)) this.data.mapDayFilter = 0
+    const md = this.buildMapData(dayGroups, multiDay, this.data.mapDayFilter || 0)
+
     this.setData({
       active, areaH: stops.length * this.data.rowH,
-      mapMarkers, mapPolyline, mapPolylineBase: mapPolyline, mapInclude, mapCenter, geoStopCount: geo.length,
+      mapMarkers: md.markers, mapPolyline: md.polylines, mapPolylineBase: md.polylines,
+      mapInclude: md.include, mapCenter: md.center || this.data.mapCenter, geoStopCount: geo.length,
+      mapDayChips: dayChips, mapDayFilter: this.data.mapDayFilter || 0,
       multiDay, dayGroups,
     })
     this.loadExpenses()
     this.loadWeather()
+  },
+
+  // 构建地图标记 + 路线：按天着色，filterDay=0 显示全部，否则只显示该天
+  buildMapData(dayGroups, multiDay, filterDay) {
+    const markers = []
+    const polylines = []
+    const include = []
+    let center = null
+    const groups = (filterDay && filterDay !== 0)
+      ? dayGroups.filter((g) => g.day === filterDay)
+      : dayGroups
+    groups.forEach((g) => {
+      const color = multiDay ? dayColor(g.day) : '#1b1712'
+      const geo = (g.stops || []).filter((s) => s.latitude != null && s.longitude != null)
+      geo.forEach((s, i) => {
+        markers.push({
+          id: s.id,
+          latitude: s.latitude,
+          longitude: s.longitude,
+          iconPath: '/assets/pin.png',
+          width: 26, height: 32, anchor: { x: 0.5, y: 1 },
+          label: {
+            content: multiDay ? (g.day + '-' + (i + 1)) : s.no,
+            color, fontSize: 10, anchorX: -8, anchorY: -34,
+            bgColor: '#faf8f3', borderColor: color, borderWidth: 1, borderRadius: 8, padding: 3,
+          },
+          callout: {
+            content: (multiDay ? ('第' + g.day + '天 · ') : '') + s.name,
+            color: '#1f1d1b', fontSize: 12, borderRadius: 10, borderWidth: 1,
+            borderColor: '#00000014', padding: 8, bgColor: '#ffffff', display: 'BYCLICK',
+          },
+        })
+        include.push({ latitude: s.latitude, longitude: s.longitude })
+      })
+      // 连线：当天出发点（若有坐标）→ 各站
+      const pts = []
+      if (g.startCoord && g.startCoord.lat != null) pts.push({ latitude: g.startCoord.lat, longitude: g.startCoord.lng })
+      geo.forEach((s) => pts.push({ latitude: s.latitude, longitude: s.longitude }))
+      if (pts.length > 1) polylines.push({ points: pts, color: color + 'B3', width: multiDay ? 3 : 2, dottedLine: !multiDay, arrowLine: true })
+    })
+    if (include.length) center = { latitude: include[0].latitude, longitude: include[0].longitude }
+    return { markers, polylines, include, center }
+  },
+
+  // 切换地图「全部 / 第N天」
+  setMapDay(e) {
+    const day = Number(e.currentTarget.dataset.day) || 0
+    if (day === this.data.mapDayFilter) return
+    const md = this.buildMapData(this.data.dayGroups || [], this.data.multiDay, day)
+    this.setData({
+      mapDayFilter: day,
+      mapMarkers: md.markers,
+      mapPolyline: md.polylines,
+      mapPolylineBase: md.polylines,
+      mapInclude: md.include,
+      mapCenter: md.center || this.data.mapCenter,
+    })
+  },
+
+  // 点地图标记 → 打开该站抽屉
+  onMarkerTap(e) {
+    const id = e.detail.markerId
+    if (id != null) this.openStopSheet({ currentTarget: { dataset: { id } } })
+  },
+
+  // 导出行程长图：按天列出目的地/时间表/出发点，生成可保存/转发的长图
+  exportItinerary() {
+    const plan = this.data.active
+    if (this.data.posterMaking || !plan) return
+    const groups = this.data.dayGroups || []
+    if (!groups.length) { wx.showToast({ title: '先添加目的地', icon: 'none' }); return }
+    // 组织海报数据
+    const total = (plan.stops || []).length
+    const meta = [
+      (plan.planDateText ? plan.planDateText + (plan.planDateEndText ? ' – ' + plan.planDateEndText : '') : ''),
+      plan.dayCountText,
+      total ? ('共 ' + total + ' 个目的地') : '',
+    ].filter(Boolean).join('  ·  ')
+    const days = groups.map((g) => ({
+      label: g.label,
+      dateText: g.dateText || '',
+      weather: g.weather || '',
+      startName: g.startName || '',
+      summary: g.spanText ? ('约 ' + g.spanText + (g.commuteText ? ' · 通勤 ' + g.commuteText : '') + (g.stayText ? ' · 游玩 ' + g.stayText : '')) : '',
+      stops: (g.stops || []).map((s, i) => ({
+        idx: i + 1,
+        name: s.name || '',
+        timeText: s.sched ? ('🕘 ' + s.sched.arrive + '–' + s.sched.leave) : (s.plannedTime ? ('🕘 ' + s.plannedTime) : ''),
+        stayText: (s.sched && s.sched.stayText) ? ('停 ' + s.sched.stayText) : '',
+        note: s.note || '',
+      })),
+    }))
+    const data = { title: plan.title || '行程单', meta, coverUrl: plan.cover || '', days }
+
+    this.setData({ posterMaking: true })
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.showLoading({ title: '生成中…', mask: true })
+    wx.createSelectorQuery().in(this)
+      .select('#itinPoster')
+      .fields({ node: true, size: true })
+      .exec(async (res) => {
+        const node = res && res[0] && res[0].node
+        if (!node) {
+          wx.hideLoading(); this.setData({ posterMaking: false })
+          wx.showToast({ title: '生成失败', icon: 'none' }); return
+        }
+        try {
+          const tempFilePath = await buildItineraryPoster(node, data)
+          wx.hideLoading(); this.setData({ posterMaking: false })
+          wx.previewImage({ urls: [tempFilePath], current: tempFilePath })
+        } catch (e) {
+          wx.hideLoading(); this.setData({ posterMaking: false })
+          wx.showToast({ title: '生成失败，请重试', icon: 'none' })
+        }
+      })
   },
 
   // 拉取目的地城市的高德天气（4 天预报），按计划日期映射到每天

@@ -66,8 +66,13 @@
         </view>
         <view wx:if="{{active.note}}" class="plan-note">{{active.note}}</view>
 
-        <!-- 地图可视化：编号点位 + 墨色虚线路线 -->
+        <!-- 地图可视化：编号点位 + 路线（多天按色区分，可切换看某天，点标记弹该站） -->
         <view wx:if="{{geoStopCount > 0}}" class="plan-map-wrap">
+          <scroll-view wx:if="{{mapDayChips.length > 1}}" class="map-days" scroll-x>
+            <view wx:for="{{mapDayChips}}" wx:key="day" class="map-day {{mapDayFilter === item.day ? 'on' : ''}}" hover-class="pressed" data-day="{{item.day}}" catchtap="setMapDay">
+              <text wx:if="{{item.day !== 0}}" class="map-day-dot" style="background:{{item.color}}"></text>{{item.label}}
+            </view>
+          </scroll-view>
           <map
             class="plan-map"
             latitude="{{mapCenter.latitude}}"
@@ -78,10 +83,12 @@
             show-location="{{false}}"
             enable-rotate="{{false}}"
             enable-overlooking="{{false}}"
+            bindmarkertap="onMarkerTap"
+            bindcallouttap="onMarkerTap"
           ></map>
           <view class="plan-map-legend">
             <text class="pm-no serif">{{geoStopCount}}</text>
-            <text class="pm-txt">个地点已在地图上连成路线</text>
+            <text class="pm-txt">个地点已连成路线 · 点标记可看详情</text>
           </view>
         </view>
         <view wx:elif="{{active.stops.length}}" class="plan-map-empty">给目的地点「定位」后，路线会出现在地图上</view>
@@ -95,6 +102,7 @@
         <view wx:if="{{active}}" class="plan-share">
           <button class="chip-btn share-btn" open-type="share" hover-class="pressed">分享给 TA</button>
           <view class="chip-btn" hover-class="pressed" bindtap="copyPlan">复制行程</view>
+          <view class="chip-btn {{posterMaking ? 'busy' : ''}}" hover-class="pressed" bindtap="exportItinerary">{{posterMaking ? '生成中…' : '导出长图'}}</view>
         </view>
       </view>
 
@@ -634,3 +642,6 @@
     <view class="btn solid" hover-class="pressed" catchtap="saveHotels">保存</view>
   </view>
 </view>
+
+<!-- 离屏画布：用于绘制行程分享长图 -->
+<canvas type="2d" id="itinPoster" class="itin-poster-canvas" style="width:{{posterW}}px;height:{{posterH}}px;"></canvas>

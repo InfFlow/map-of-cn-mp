@@ -1241,6 +1241,31 @@
   height: 380rpx;
   display: block;
 }
+.map-days {
+  white-space: nowrap;
+  border-bottom: 1rpx solid var(--line-soft);
+  padding: 12rpx 14rpx;
+}
+.map-day {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 22rpx;
+  color: var(--muted);
+  background: var(--line-soft);
+  border-radius: 999rpx;
+  padding: 6rpx 20rpx;
+  margin-right: 12rpx;
+}
+.map-day.on {
+  color: var(--bg);
+  background: var(--ink);
+}
+.map-day-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+}
 .plan-map-legend {
   display: flex;
   align-items: baseline;
@@ -1526,4 +1551,12 @@
   color: var(--ink);
   min-width: 120rpx;
   text-align: center;
+}
+.itin-poster-canvas {
+  position: fixed;
+  left: -2000px;
+  top: 0;
+}
+.chip-btn.busy {
+  opacity: .55;
 }
