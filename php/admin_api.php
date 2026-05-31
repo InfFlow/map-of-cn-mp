@@ -63,6 +63,51 @@ function is_date(string $s): bool
     return (bool) preg_match('/^\d{4}-\d{2}-\d{2}$/', $s);
 }
 
+/** 经纬度规整：合法的数字字符串/数字返回 float，否则返回 null */
+function norm_coord($v): ?float
+{
+    if ($v === '' || $v === null) {
+        return null;
+    }
+    return is_numeric($v) ? (float) $v : null;
+}
+
+/** 把 trip_plans 行里的住宿/出发点字段解析为结构化输出（与 plans.php 保持一致） */
+function plan_places_admin(array $p): array
+{
+    $hotel = null;
+    $hname = trim((string) ($p['hotel_name'] ?? ''));
+    $hlat = $p['hotel_lat'];
+    $hlng = $p['hotel_lng'];
+    if ($hname !== '' || $hlat !== null) {
+        $hotel = [
+            'name' => $hname,
+            'address' => (string) ($p['hotel_address'] ?? ''),
+            'lat' => $hlat === null ? null : (float) $hlat,
+            'lng' => $hlng === null ? null : (float) $hlng,
+        ];
+    }
+    $dayStarts = [];
+    $raw = $p['day_starts'] ?? '';
+    if (is_string($raw) && $raw !== '') {
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) {
+            foreach ($decoded as $day => $ds) {
+                if (!is_array($ds)) {
+                    continue;
+                }
+                $dayStarts[(string) $day] = [
+                    'name' => (string) ($ds['name'] ?? ''),
+                    'address' => (string) ($ds['address'] ?? ''),
+                    'lat' => isset($ds['lat']) && $ds['lat'] !== '' && $ds['lat'] !== null ? (float) $ds['lat'] : null,
+                    'lng' => isset($ds['lng']) && $ds['lng'] !== '' && $ds['lng'] !== null ? (float) $ds['lng'] : null,
+                ];
+            }
+        }
+    }
+    return ['hotel' => $hotel, 'dayStarts' => (object) $dayStarts];
+}
+
 /** 高德 Web 服务 GET 调用，返回解码后的数组（失败返回 null） */
 function amap_get(string $endpoint, array $params, string $key): ?array
 {
@@ -198,7 +243,7 @@ try {
     $coupleEditable = [
         'admin_journeys', 'add_journey', 'update_journey', 'del_journey', 'toggle_journey', 'reorder_journeys',
         'admin_anniversaries', 'add_anniversary', 'update_anniversary', 'del_anniversary', 'reorder_anniversaries',
-        'admin_plans', 'add_plan', 'update_plan', 'del_plan', 'toggle_plan', 'reorder_plans',
+        'admin_plans', 'add_plan', 'update_plan', 'del_plan', 'toggle_plan', 'reorder_plans', 'set_day_start',
         'add_stop', 'update_stop', 'del_stop', 'reorder_stops',
         'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
         'expenses', 'add_expense', 'del_expense',
@@ -626,7 +671,8 @@ try {
         /* ============ 旅行计划 / 行程（trip_plans + plan_stops） ============ */
         case 'admin_plans': {
             $plans = $pdo->query(
-                'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, sort_order, is_visible
+                'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note,
+                        hotel_name, hotel_address, hotel_lat, hotel_lng, day_starts, sort_order, is_visible
                  FROM trip_plans ORDER BY sort_order ASC, created_at DESC, id ASC'
             )->fetchAll();
             $ids = array_column($plans, 'id');
@@ -652,18 +698,23 @@ try {
                     ];
                 }
             }
-            $list = array_map(static fn ($p) => [
-                'id' => $p['id'],
-                'title' => $p['title'],
-                'coverTone' => $p['cover_tone'],
-                'planDate' => $p['plan_date'],
-                'planDateEnd' => $p['plan_date_end'],
-                'coverImageUrl' => $p['cover_image_url'],
-                'note' => $p['note'],
-                'sortOrder' => (int) $p['sort_order'],
-                'visible' => (int) $p['is_visible'] === 1,
-                'stops' => $stopsBy[$p['id']] ?? [],
-            ], $plans);
+            $list = array_map(static function ($p) use ($stopsBy) {
+                $places = plan_places_admin($p);
+                return [
+                    'id' => $p['id'],
+                    'title' => $p['title'],
+                    'coverTone' => $p['cover_tone'],
+                    'planDate' => $p['plan_date'],
+                    'planDateEnd' => $p['plan_date_end'],
+                    'coverImageUrl' => $p['cover_image_url'],
+                    'note' => $p['note'],
+                    'hotel' => $places['hotel'],
+                    'dayStarts' => $places['dayStarts'],
+                    'sortOrder' => (int) $p['sort_order'],
+                    'visible' => (int) $p['is_visible'] === 1,
+                    'stops' => $stopsBy[$p['id']] ?? [],
+                ];
+            }, $plans);
             out(['plans' => $list]);
         }
 
@@ -684,19 +735,58 @@ try {
             }
             $coverImage = mb_substr(trim((string) ($body['coverImageUrl'] ?? '')), 0, 512);
             $note = trim((string) ($body['note'] ?? ''));
+            $hotelName = mb_substr(trim((string) ($body['hotelName'] ?? '')), 0, 128);
+            $hotelAddr = mb_substr(trim((string) ($body['hotelAddress'] ?? '')), 0, 256);
+            $hotelLat = norm_coord($body['hotelLat'] ?? null);
+            $hotelLng = norm_coord($body['hotelLng'] ?? null);
             if ($action === 'add_plan') {
                 $id = gen_id('p_');
                 $next = (int) $pdo->query('SELECT COALESCE(MAX(sort_order),0)+1 FROM trip_plans')->fetchColumn();
-                $pdo->prepare('INSERT INTO trip_plans (id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, sort_order) VALUES (?,?,?,?,?,?,?,?)')
-                    ->execute([$id, $title, $tone, $planDate, $planDateEnd, $coverImage, $note, $next]);
+                $pdo->prepare('INSERT INTO trip_plans (id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, hotel_name, hotel_address, hotel_lat, hotel_lng, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)')
+                    ->execute([$id, $title, $tone, $planDate, $planDateEnd, $coverImage, $note, $hotelName, $hotelAddr, $hotelLat, $hotelLng, $next]);
                 out(['ok' => true, 'id' => $id]);
             }
             $id = (string) ($body['id'] ?? '');
             if ($id === '') {
                 fail('缺少 id');
             }
-            $pdo->prepare('UPDATE trip_plans SET title=?, cover_tone=?, plan_date=?, plan_date_end=?, cover_image_url=?, note=? WHERE id=?')
-                ->execute([$title, $tone, $planDate, $planDateEnd, $coverImage, $note, $id]);
+            $pdo->prepare('UPDATE trip_plans SET title=?, cover_tone=?, plan_date=?, plan_date_end=?, cover_image_url=?, note=?, hotel_name=?, hotel_address=?, hotel_lat=?, hotel_lng=? WHERE id=?')
+                ->execute([$title, $tone, $planDate, $planDateEnd, $coverImage, $note, $hotelName, $hotelAddr, $hotelLat, $hotelLng, $id]);
+            out(['ok' => true]);
+        }
+
+        case 'set_day_start': {
+            $id = (string) ($body['id'] ?? '');
+            if ($id === '') {
+                fail('缺少 id');
+            }
+            $day = max(1, min(60, (int) ($body['day'] ?? 0)));
+            if ($day < 1) {
+                fail('无效的天数');
+            }
+            $row = $pdo->prepare('SELECT day_starts FROM trip_plans WHERE id = ?');
+            $row->execute([$id]);
+            $raw = $row->fetchColumn();
+            $map = [];
+            if (is_string($raw) && $raw !== '') {
+                $decoded = json_decode($raw, true);
+                if (is_array($decoded)) {
+                    $map = $decoded;
+                }
+            }
+            if (!empty($body['clear'])) {
+                // 恢复默认：删除该天的自定义出发点（回落到酒店）
+                unset($map[(string) $day]);
+            } else {
+                $map[(string) $day] = [
+                    'name' => mb_substr(trim((string) ($body['name'] ?? '')), 0, 128),
+                    'address' => mb_substr(trim((string) ($body['address'] ?? '')), 0, 256),
+                    'lat' => norm_coord($body['lat'] ?? null),
+                    'lng' => norm_coord($body['lng'] ?? null),
+                ];
+            }
+            $json = $map ? json_encode($map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+            $pdo->prepare('UPDATE trip_plans SET day_starts = ? WHERE id = ?')->execute([$json, $id]);
             out(['ok' => true]);
         }
 
