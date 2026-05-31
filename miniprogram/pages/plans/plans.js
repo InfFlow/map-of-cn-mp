@@ -92,6 +92,20 @@ function minHuman(t) {
   if (h) return h + ' 小时'
   return m + ' 分'
 }
+// 末班车提醒：按当前时刻判断「仅剩 N 分 / 已过」（凌晨末班车做跨日处理）
+function lastBusInfo(lb) {
+  if (!lb || !lb.last) return { text: '', warn: false }
+  const base = (lb.metro ? '🚇 ' : '🚌 ') + (lb.name || '') + ' 末班 ' + lb.last
+  const end = hmToMin(lb.last)
+  if (end == null) return { text: base, warn: false }
+  const now = new Date()
+  const cur = now.getHours() * 60 + now.getMinutes()
+  let diff = end - cur
+  if (diff < -180) diff += 1440 // 末班车在凌晨（如 00:30）时按次日计
+  if (diff < 0) return { text: base + ' · 末班已过，建议打车', warn: true }
+  if (diff <= 90) return { text: base + ' · 仅剩约 ' + minHuman(diff) + '，注意赶车', warn: true }
+  return { text: base, warn: false }
+}
 // 估算某一天的时间表 + 通勤/游玩合计 + 节奏（太满/太松）
 // startCoord {lat,lng}|null；stopsOfDay 含 latitude/longitude/stayMinutes/plannedTime
 function buildDaySchedule(startCoord, stopsOfDay, startMin) {
@@ -1218,6 +1232,7 @@ Page({
     } else if (key === 'driving') {
       m.distance = opt.distance ? distTxt(opt.distance) : ''
       const ex = []
+      if (opt.taxiCost > 0) ex.push('打车约 ¥' + opt.taxiCost)
       if (opt.tolls > 0) ex.push('过路费约 ¥' + opt.tolls)
       if (opt.lights > 0) ex.push('红绿灯 ' + opt.lights + ' 个')
       m.extra = ex.join(' · ')
@@ -1228,6 +1243,9 @@ Page({
       if (opt.cost > 0) ex.push('约 ¥' + opt.cost)
       if (opt.walkingDistance > 0) ex.push('步行 ' + distTxt(opt.walkingDistance))
       m.extra = ex.join(' · ')
+      const lb = lastBusInfo(opt.lastBus)
+      m.lastBusText = lb.text
+      m.lastBusWarn = lb.warn
     }
     return m
   },

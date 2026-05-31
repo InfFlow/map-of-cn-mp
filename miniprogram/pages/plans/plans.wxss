@@ -1552,6 +1552,18 @@
   min-width: 120rpx;
   text-align: center;
 }
+.rd-lastbus {
+  margin: 8rpx 4rpx 0;
+  font-size: 21rpx;
+  color: var(--muted);
+  background: var(--line-soft);
+  border-radius: 10rpx;
+  padding: 10rpx 16rpx;
+}
+.rd-lastbus.warn {
+  color: #b4423a;
+  background: #fbeaea;
+}
 .itin-poster-canvas {
   position: fixed;
   left: -2000px;

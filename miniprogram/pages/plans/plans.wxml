@@ -536,6 +536,7 @@
             <text class="rd-stat">{{item.duration}}{{item.distance ? ' · ' + item.distance : ''}}</text>
           </view>
           <text wx:if="{{item.extra}}" class="rd-extra">{{item.extra}}</text>
+          <view wx:if="{{item.lastBusText}}" class="rd-lastbus {{item.lastBusWarn ? 'warn' : ''}}">{{item.lastBusText}}</view>
           <view wx:for="{{item.steps}}" wx:for-item="step" wx:key="*this" class="rd-step">
             <text class="rd-dot">·</text>
             <text class="rd-step-txt">{{step}}</text>

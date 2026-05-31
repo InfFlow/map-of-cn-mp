@@ -93,15 +93,17 @@ try {
         ];
     }
 
-    // 驾车
-    $drive = amap_get('direction/driving', ['origin' => $origin, 'destination' => $destination, 'extensions' => 'base'], $key);
+    // 驾车（extensions=all 才会返回 taxi_cost 打车预估价）
+    $drive = amap_get('direction/driving', ['origin' => $origin, 'destination' => $destination, 'extensions' => 'all'], $key);
     if ($drive && ($drive['status'] ?? '0') === '1' && !empty($drive['route']['paths'][0])) {
         $p = $drive['route']['paths'][0];
+        $taxi = $drive['route']['taxi_cost'] ?? '';
         $options['driving'] = [
             'distance' => (int) ($p['distance'] ?? 0),
             'duration' => (int) round(((int) ($p['duration'] ?? 0)) / 60),
             'tolls' => (float) ($p['tolls'] ?? 0),
             'lights' => (int) ($p['traffic_lights'] ?? 0),
+            'taxiCost' => is_numeric($taxi) ? (int) round((float) $taxi) : 0,
         ];
     }
 
@@ -148,7 +150,15 @@ try {
         }
         $t = $best ?: $plans[0];
         $usesMetro = $metroSegCount($t) > 0;
+        // 高德返回的运营时间形如 "2300"；规整成 HH:MM
+        $fmtTime = static function (string $hhmm): string {
+            $hhmm = preg_replace('/\D/', '', $hhmm);
+            if (strlen($hhmm) !== 4) return '';
+            return substr($hhmm, 0, 2) . ':' . substr($hhmm, 2, 2);
+        };
         $steps = [];
+        $lines = [];      // 本方案各条线路的末班车
+        $lastBus = null;  // 最早收车的那条（整段行程的瓶颈）
         foreach ($t['segments'] as $seg) {
             $walkDist = (int) ($seg['walking']['distance'] ?? 0);
             if ($walkDist >= 50) {
@@ -160,8 +170,17 @@ try {
                 $dep = (string) ($bl['departure_stop']['name'] ?? '');
                 $arr = (string) ($bl['arrival_stop']['name'] ?? '');
                 $via = (int) ($bl['via_num'] ?? 0);
-                $verb = $isMetroLine($bl) ? '🚇 搭地铁 ' : '🚌 乘 ';
+                $metro = $isMetroLine($bl);
+                $verb = $metro ? '🚇 搭地铁 ' : '🚌 乘 ';
                 $steps[] = $verb . $name . '，' . $dep . ' 上车 → ' . $arr . ' 下车' . ($via > 0 ? '（途经 ' . $via . ' 站）' : '');
+                $rawEnd = $bl['end_time'] ?? '';
+                $end = is_scalar($rawEnd) ? $fmtTime((string) $rawEnd) : '';
+                if ($end !== '') {
+                    $lines[] = ['name' => $name, 'metro' => $metro, 'last' => $end, 'depart' => $dep];
+                    if ($lastBus === null || $end < $lastBus['last']) {
+                        $lastBus = ['name' => $name, 'metro' => $metro, 'last' => $end, 'depart' => $dep];
+                    }
+                }
             } elseif (!empty($seg['railway']['name'])) {
                 $rw = $seg['railway'];
                 $steps[] = '🚄 乘 ' . $rw['name'] . '，' . ($rw['departure_stop']['name'] ?? '') . ' → ' . ($rw['arrival_stop']['name'] ?? '');
@@ -174,6 +193,8 @@ try {
             'cost' => is_numeric($cost) ? (float) $cost : 0,
             'usesMetro' => $usesMetro,
             'steps' => $steps,
+            'lines' => $lines,
+            'lastBus' => $lastBus,
         ];
     }
 
