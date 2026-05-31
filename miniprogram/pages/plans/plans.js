@@ -50,6 +50,19 @@ function dayCount(start, end) {
   const days = Math.round(ms / 86400000) + 1
   return days > 0 ? days : 0
 }
+// 取某一天对应的住宿：优先匹配多段 hotels 的 [startDay,endDay]，否则回退单酒店 plan.hotel
+function hotelForDay(plan, day) {
+  const list = (plan && plan.hotels) || []
+  for (let i = 0; i < list.length; i++) {
+    const h = list[i]
+    const sd = Number(h.startDay) || 1
+    const ed = Number(h.endDay) || sd
+    if (day >= sd && day <= ed && (h.name || h.lat != null)) return h
+  }
+  const single = plan && plan.hotel
+  if (single && (single.name || single.lat != null)) return single
+  return null
+}
 
 Page({
   data: {
@@ -119,6 +132,10 @@ Page({
     // 当天全程路线（串联各段 + 总通勤时长）
     dayRouteSheet: {
       show: false, day: 1, label: '', loading: false, total: '', legs: [],
+    },
+    // 多晚 / 分段住宿编辑器
+    hotelsEditor: {
+      show: false, planId: '', dayMax: 0, list: [],
     },
   },
 
@@ -251,8 +268,7 @@ Page({
     const mapInclude = geo.map((s) => ({ latitude: s.latitude, longitude: s.longitude }))
     const mapCenter = geo.length ? { latitude: geo[0].latitude, longitude: geo[0].longitude } : this.data.mapCenter
 
-    // 按天分组（每天显示出发点：默认酒店，可自定义）
-    const hotel = plan.hotel || null
+    // 按天分组（每天显示出发点：默认对应当晚酒店，可自定义）
     const dayStarts = plan.dayStarts || {}
     const dayMap = {}
     stops.forEach((s) => { (dayMap[s.day] = dayMap[s.day] || []).push(s) })
@@ -263,6 +279,7 @@ Page({
       .sort((a, b) => a - b)
       .map((d) => {
         const ds = dayStarts[d] || dayStarts[String(d)]
+        const hotel = hotelForDay(plan, d)
         let startName = ''
         let startCustom = false
         if (ds && (ds.name || ds.lat != null)) {
@@ -298,8 +315,9 @@ Page({
     // 取一个坐标定位城市：酒店优先，否则第一个有坐标的目的地
     let lat = null
     let lng = null
-    if (plan.hotel && plan.hotel.lat != null && plan.hotel.lng != null) {
-      lat = plan.hotel.lat; lng = plan.hotel.lng
+    const h0 = hotelForDay(plan, 1)
+    if (h0 && h0.lat != null && h0.lng != null) {
+      lat = h0.lat; lng = h0.lng
     } else {
       const g = (plan.stops || []).find((s) => s.latitude != null && s.longitude != null)
       if (g) { lat = g.latitude; lng = g.longitude }
@@ -746,16 +764,16 @@ Page({
   // 用于在该卡片上方渲染「第 N 天」小标题分隔。
   markDayFirst(stops, multiDay, plan) {
     plan = plan || this.data.active || {}
-    const hotel = plan.hotel || null
     const dayStarts = plan.dayStarts || {}
     let prev = null
     stops.forEach((s, i) => {
       const isFirstOfDay = i === 0 || s.day !== prev
       s.dayFirst = !!multiDay && isFirstOfDay
       s.dayLabel = '第 ' + s.day + ' 天'
-      // 每天首站标注出发点（默认酒店，可自定义）
+      // 每天首站标注出发点（默认对应当晚酒店，可自定义）
       if (isFirstOfDay) {
         const ds = dayStarts[s.day] || dayStarts[String(s.day)]
+        const hotel = hotelForDay(plan, s.day)
         if (ds && (ds.name || ds.lat != null)) {
           s.startName = ds.name || '自定义出发点'
           s.startCustom = true
@@ -846,7 +864,7 @@ Page({
     if (ds && (ds.name || ds.lat != null)) {
       return { name: ds.name || '出发点', address: ds.address || '', lat: ds.lat == null ? null : Number(ds.lat), lng: ds.lng == null ? null : Number(ds.lng) }
     }
-    const hotel = plan.hotel
+    const hotel = hotelForDay(plan, stop.day)
     if (hotel && (hotel.name || hotel.lat != null)) {
       return { name: hotel.name || '酒店', address: hotel.address || '', lat: hotel.lat == null ? null : Number(hotel.lat), lng: hotel.lng == null ? null : Number(hotel.lng) }
     }
@@ -862,6 +880,7 @@ Page({
     this.setData({
       stopSheet: {
         show: true, id: stop.id, name: stop.name, address: stop.address || '',
+        day: Number(stop.day) || 1,
         note: stop.note || '', plannedTime: stop.plannedTime || '',
         openHours: stop.openHours || '', ticket: stop.ticket || '', bookingUrl: stop.bookingUrl || '',
         latitude: hasStopGeo ? Number(stop.latitude) : null,
@@ -945,6 +964,67 @@ Page({
   closeStopSheet() {
     this.setData({ 'stopSheet.show': false, mapPolyline: this.data.mapPolylineBase || [] })
     this.setTabBarHidden(false)
+  },
+  // 抽屉里把这站改到第几天（同步更新归属，并按天重排顺序持久化）
+  async changeStopDay(e) {
+    if (!this.data.canEdit) { wx.showToast({ title: '登录后可调整', icon: 'none' }); return }
+    const delta = Number(e.currentTarget.dataset.delta)
+    const plan = this.data.active
+    if (!plan) return
+    const stop = (plan.stops || []).find((s) => s.id === this.data.stopSheet.id)
+    if (!stop) return
+    const dayMax = dayCount(plan.planDate, plan.planDateEnd) || 60
+    const newDay = Math.max(1, Math.min(dayMax, (Number(stop.day) || 1) + delta))
+    if (newDay === Number(stop.day)) return
+    try {
+      await api.admin({
+        action: 'update_stop', openid: this.data.openid, id: stop.id, planId: plan.id,
+        name: stop.name, address: stop.address || '', note: stop.note || '', plannedTime: stop.plannedTime || '',
+        openHours: stop.openHours || '', ticket: stop.ticket || '', bookingUrl: stop.bookingUrl || '',
+        day: newDay,
+        latitude: stop.latitude == null ? '' : stop.latitude,
+        longitude: stop.longitude == null ? '' : stop.longitude,
+      })
+      // 按天稳定重排（同天内保持原相对顺序），持久化全局顺序，避免分组交错
+      const list = (plan.stops || []).map((s) => ({ ...s }))
+      const t = list.find((s) => s.id === stop.id)
+      if (t) t.day = newDay
+      const ordered = list
+        .map((s, i) => ({ s, i }))
+        .sort((a, b) => (Number(a.s.day) - Number(b.s.day)) || (a.i - b.i))
+        .map((x) => x.s)
+      await api.admin({ action: 'reorder_stops', openid: this.data.openid, ids: ordered.map((s) => s.id) })
+      this.setData({ 'stopSheet.day': newDay })
+      await this.load()
+      wx.showToast({ title: '已改到第 ' + newDay + ' 天', icon: 'none' })
+    } catch (err) {
+      wx.showToast({ title: (err && err.data && err.data.message) || '调整失败', icon: 'none' })
+    }
+  },
+  // 抽屉里把这站在「当天」内上移/下移
+  async moveStopInDay(e) {
+    if (!this.data.canEdit) { wx.showToast({ title: '登录后可调整', icon: 'none' }); return }
+    const dir = Number(e.currentTarget.dataset.dir)
+    const plan = this.data.active
+    if (!plan) return
+    const list = (plan.stops || []).map((s) => ({ ...s }))
+    const idx = list.findIndex((s) => s.id === this.data.stopSheet.id)
+    if (idx < 0) return
+    const day = Number(list[idx].day)
+    let j = idx + dir
+    while (j >= 0 && j < list.length && Number(list[j].day) !== day) j += dir
+    if (j < 0 || j >= list.length || Number(list[j].day) !== day) {
+      wx.showToast({ title: dir < 0 ? '已是当天第一个' : '已是当天最后一个', icon: 'none' })
+      return
+    }
+    const tmp = list[idx]; list[idx] = list[j]; list[j] = tmp
+    try {
+      await api.admin({ action: 'reorder_stops', openid: this.data.openid, ids: list.map((s) => s.id) })
+      await this.load()
+      wx.showToast({ title: '已调整顺序', icon: 'none' })
+    } catch (err) {
+      wx.showToast({ title: (err && err.data && err.data.message) || '调整失败', icon: 'none' })
+    }
   },
   /* ---------------- 当天全程：串联各段 + 估算总通勤时长 + 逐段导航 ---------------- */
   async openDayRoute(e) {
@@ -1031,7 +1111,7 @@ Page({
     const plan = this.data.active
     const dayStarts = (plan && plan.dayStarts) || {}
     const ds = dayStarts[day] || dayStarts[String(day)] || {}
-    const hotel = (plan && plan.hotel) || {}
+    const hotel = hotelForDay(plan, day) || {}
     this.setData({
       dayStartEditor: {
         show: true, day,
@@ -1111,6 +1191,124 @@ Page({
       wx.showToast({ title: '已恢复默认', icon: 'success' })
     } catch (err) {
       wx.showToast({ title: (err && err.data && err.data.message) || '操作失败', icon: 'none' })
+    }
+  },
+
+  /* ---------------- 多晚 / 分段住宿 ---------------- */
+  openHotelsEditor() {
+    if (!this.data.canEdit) {
+      wx.showToast({ title: '登录后可设置', icon: 'none' })
+      return
+    }
+    const plan = this.data.active
+    if (!plan) return
+    const dayMax = dayCount(plan.planDate, plan.planDateEnd) || 1
+    let key = 0
+    let list = (plan.hotels || []).map((h) => ({
+      key: key++, name: h.name || '', address: h.address || '',
+      lat: h.lat == null ? '' : String(h.lat), lng: h.lng == null ? '' : String(h.lng),
+      startDay: Number(h.startDay) || 1, endDay: Number(h.endDay) || Number(h.startDay) || 1,
+      geoLoading: false,
+    }))
+    // 没有多段数据时，用旧单酒店或一条空白覆盖全程作为起点
+    if (!list.length) {
+      const h = plan.hotel || {}
+      list = [{
+        key: key++, name: h.name || '', address: h.address || '',
+        lat: h.lat == null ? '' : String(h.lat), lng: h.lng == null ? '' : String(h.lng),
+        startDay: 1, endDay: dayMax, geoLoading: false,
+      }]
+    }
+    this.setData({ hotelsEditor: { show: true, planId: plan.id, dayMax, list, _key: key } })
+    this.setTabBarHidden(true)
+  },
+  closeHotelsEditor() {
+    this.setData({ 'hotelsEditor.show': false })
+    this.setTabBarHidden(false)
+  },
+  addHotelSeg() {
+    const ed = this.data.hotelsEditor
+    const key = ed._key || ed.list.length
+    const last = ed.list[ed.list.length - 1]
+    const sd = last ? Math.min((Number(last.endDay) || 1) + 1, ed.dayMax || 1) : 1
+    const list = ed.list.concat([{
+      key, name: '', address: '', lat: '', lng: '', startDay: sd, endDay: Math.max(sd, ed.dayMax || sd), geoLoading: false,
+    }])
+    this.setData({ 'hotelsEditor.list': list, 'hotelsEditor._key': key + 1 })
+  },
+  removeHotelSeg(e) {
+    const i = Number(e.currentTarget.dataset.i)
+    const list = this.data.hotelsEditor.list.slice()
+    list.splice(i, 1)
+    this.setData({ 'hotelsEditor.list': list })
+  },
+  onHotelSegField(e) {
+    const i = Number(e.currentTarget.dataset.i)
+    const field = e.currentTarget.dataset.field
+    this.setData({ [`hotelsEditor.list[${i}].${field}`]: e.detail.value })
+  },
+  adjustHotelSegDay(e) {
+    const i = Number(e.currentTarget.dataset.i)
+    const field = e.currentTarget.dataset.field
+    const delta = Number(e.currentTarget.dataset.delta)
+    const seg = this.data.hotelsEditor.list[i]
+    if (!seg) return
+    const max = this.data.hotelsEditor.dayMax || 60
+    let v = (Number(seg[field]) || 1) + delta
+    v = Math.max(1, Math.min(max, v))
+    const patch = { [`hotelsEditor.list[${i}].${field}`]: v }
+    // 保持 start ≤ end
+    if (field === 'startDay' && v > (Number(seg.endDay) || 1)) patch[`hotelsEditor.list[${i}].endDay`] = v
+    if (field === 'endDay' && v < (Number(seg.startDay) || 1)) patch[`hotelsEditor.list[${i}].startDay`] = v
+    this.setData(patch)
+  },
+  async geocodeHotelSeg(e) {
+    const i = Number(e.currentTarget.dataset.i)
+    const seg = this.data.hotelsEditor.list[i]
+    if (!seg) return
+    const addr = (seg.address || seg.name || '').trim()
+    if (!addr) {
+      wx.showToast({ title: '先填地址或名称', icon: 'none' })
+      return
+    }
+    this.setData({ [`hotelsEditor.list[${i}].geoLoading`]: true })
+    try {
+      const r = await api.admin({ action: 'geo', openid: this.data.openid, address: addr })
+      if (r && r.longitude != null && r.latitude != null) {
+        this.setData({
+          [`hotelsEditor.list[${i}].lng`]: String(r.longitude),
+          [`hotelsEditor.list[${i}].lat`]: String(r.latitude),
+          [`hotelsEditor.list[${i}].address`]: r.formatted || seg.address,
+          [`hotelsEditor.list[${i}].geoLoading`]: false,
+        })
+      } else {
+        this.setData({ [`hotelsEditor.list[${i}].geoLoading`]: false })
+        wx.showToast({ title: '未找到坐标', icon: 'none' })
+      }
+    } catch (err) {
+      this.setData({ [`hotelsEditor.list[${i}].geoLoading`]: false })
+      wx.showToast({ title: (err && err.data && err.data.message) || '定位失败', icon: 'none' })
+    }
+  },
+  async saveHotels() {
+    const ed = this.data.hotelsEditor
+    const plan = this.data.active
+    if (!plan) return
+    const hotels = (ed.list || [])
+      .filter((h) => (h.name || '').trim() || h.lat)
+      .map((h) => ({
+        name: (h.name || '').trim(), address: (h.address || '').trim(),
+        lat: h.lat || '', lng: h.lng || '',
+        startDay: Number(h.startDay) || 1, endDay: Number(h.endDay) || Number(h.startDay) || 1,
+      }))
+    try {
+      await api.admin({ action: 'set_hotels', openid: this.data.openid, id: plan.id, hotels })
+      this.setData({ 'hotelsEditor.show': false })
+      this.setTabBarHidden(false)
+      await this.load()
+      wx.showToast({ title: '已保存', icon: 'success' })
+    } catch (err) {
+      wx.showToast({ title: (err && err.data && err.data.message) || '保存失败', icon: 'none' })
     }
   },
 
