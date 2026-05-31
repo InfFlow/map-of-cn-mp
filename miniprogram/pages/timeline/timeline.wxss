@@ -49,7 +49,8 @@
   margin-right: 22rpx;
   padding: 26rpx 28rpx 30rpx;
   border: 1rpx solid var(--line);
-  background: var(--paper);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
   white-space: normal;
 }
 .anni-tag {
@@ -162,6 +163,7 @@
   background-position: center;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 .tl-img {
   width: 100%;

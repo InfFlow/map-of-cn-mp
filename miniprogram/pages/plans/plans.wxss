@@ -242,6 +242,7 @@
   margin-bottom: 16rpx;
   background: var(--surface);
   border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
   transition: box-shadow 0.18s, transform 0.18s;
 }
 .stop-rail {
@@ -356,6 +357,7 @@
   padding: 22rpx 24rpx;
   border: 1rpx solid var(--line);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .stay-ico {
   flex: none;
@@ -874,6 +876,7 @@
   max-height: 86vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  box-shadow: var(--shadow-float);
   transform: translateY(110%);
   transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
 }

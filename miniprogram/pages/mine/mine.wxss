@@ -180,6 +180,7 @@
   padding: 28rpx 26rpx;
   margin-bottom: 22rpx;
   background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .ocard-top {
   display: flex;
