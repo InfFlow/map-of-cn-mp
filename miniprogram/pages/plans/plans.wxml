@@ -217,11 +217,21 @@
             <text class="day-grp-cnt">{{item.stops.length}} 站</text>
             <text wx:if="{{item.stops.length > 1}}" class="day-grp-route" hover-class="pressed" catchtap="openDayRoute" data-day="{{item.day}}">全程·导航 ›</text>
           </view>
+          <!-- 节奏 + 通勤/游玩合计 + 一键最优 -->
+          <view wx:if="{{item.spanText}}" class="day-meta">
+            <text wx:if="{{item.loadText}}" class="day-load {{item.loadKey}}">{{item.loadText}}</text>
+            <text class="day-meta-sum">约 {{item.spanText}}<text wx:if="{{item.commuteText}}"> · 通勤 {{item.commuteText}}</text><text wx:if="{{item.stayText}}"> · 游玩 {{item.stayText}}</text></text>
+            <text wx:if="{{canEdit && item.canOptimize}}" class="day-opt" hover-class="pressed" catchtap="optimizeDay" data-day="{{item.day}}">⤳ 最优顺序</text>
+          </view>
           <view wx:for="{{item.stops}}" wx:for-item="st" wx:key="id" class="day-stop pressable" hover-class="pressed" data-id="{{st.id}}" bindtap="openStopSheet">
             <text class="day-stop-no serif">{{st.no}}</text>
             <view class="day-stop-mid">
               <text class="day-stop-name">{{st.name}}</text>
-              <text wx:if="{{st.plannedTime}}" class="day-stop-time">{{st.plannedTime}}</text>
+              <view class="day-stop-sub">
+                <text wx:if="{{st.sched}}" class="day-stop-sched">🕘 {{st.sched.arrive}}–{{st.sched.leave}}</text>
+                <text wx:if="{{st.sched.stayText}}" class="day-stop-stay {{st.sched.staySet ? '' : 'sug'}}">停 {{st.sched.stayText}}</text>
+                <text wx:if="{{st.plannedTime}}" class="day-stop-time">指定 {{st.plannedTime}}</text>
+              </view>
             </view>
             <text class="day-stop-go">›</text>
           </view>
@@ -412,7 +422,17 @@
   </view>
   <view class="field">
     <text class="field-label">时间</text>
-    <input class="field-input {{focusField === 'stime' ? 'on' : ''}}" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选）" placeholder-class="field-ph" data-field="plannedTime" data-k="stime" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+    <input class="field-input {{focusField === 'stime' ? 'on' : ''}}" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选，指定到达时间）" placeholder-class="field-ph" data-field="plannedTime" data-k="stime" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">建议游玩时长</text>
+    <view class="stay-chips">
+      <view wx:for="{{stayPresets}}" wx:key="v" class="stay-chip {{stopEditor.stayMinutes === item.v ? 'on' : ''}}" hover-class="pressed" catchtap="pickStay" data-v="{{item.v}}">{{item.t}}</view>
+    </view>
+    <view class="field-row stay-custom">
+      <input class="field-input grow {{focusField === 'sstay' ? 'on' : ''}}" type="number" value="{{stopEditor.stayMinutes ? stopEditor.stayMinutes : ''}}" placeholder="自定义分钟（可选）" placeholder-class="field-ph" data-k="sstay" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStayInput" />
+      <text class="stay-unit">分钟</text>
+    </view>
   </view>
   <view class="field">
     <text class="field-label">地址</text>
@@ -455,6 +475,10 @@
     <text wx:if="{{stopSheet.plannedTime}}" class="rd-time">{{stopSheet.plannedTime}}</text>
     <text wx:if="{{stopSheet.address}}" class="rd-addr">{{stopSheet.address}}</text>
     <text wx:if="{{stopSheet.address}}" class="rd-copy" hover-class="pressed" catchtap="copyStopAddr">复制</text>
+  </view>
+  <view wx:if="{{stopSheet.schedText || stopSheet.stayText}}" class="rd-sched">
+    <text wx:if="{{stopSheet.schedText}}" class="rd-sched-time">🕘 预计 {{stopSheet.schedText}}</text>
+    <text wx:if="{{stopSheet.stayText}}" class="rd-sched-stay">游玩约 {{stopSheet.stayText}}</text>
   </view>
   <view wx:if="{{stopSheet.note}}" class="rd-note">备注 · {{stopSheet.note}}</view>
 

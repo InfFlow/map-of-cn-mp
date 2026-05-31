@@ -706,7 +706,7 @@ try {
             if ($ids) {
                 $ph = implode(',', array_fill(0, count($ids), '?'));
                 $ss = $pdo->prepare(
-                    "SELECT id, plan_id, name, address, latitude, longitude, note, open_hours, ticket, booking_url, planned_time, day, sort_order
+                    "SELECT id, plan_id, name, address, latitude, longitude, note, open_hours, ticket, booking_url, planned_time, stay_minutes, day, sort_order
                      FROM plan_stops WHERE plan_id IN ($ph) ORDER BY sort_order ASC, id ASC"
                 );
                 $ss->execute($ids);
@@ -722,6 +722,7 @@ try {
                         'ticket' => $s['ticket'] ?? '',
                         'bookingUrl' => $s['booking_url'] ?? '',
                         'plannedTime' => $s['planned_time'],
+                        'stayMinutes' => (int) ($s['stay_minutes'] ?? 0),
                         'day' => (int) ($s['day'] ?? 1),
                         'sortOrder' => (int) $s['sort_order'],
                     ];
@@ -894,6 +895,7 @@ try {
             $ticket = mb_substr(trim((string) ($body['ticket'] ?? '')), 0, 255);
             $bookingUrl = mb_substr(trim((string) ($body['bookingUrl'] ?? '')), 0, 512);
             $plannedTime = mb_substr(trim((string) ($body['plannedTime'] ?? '')), 0, 32);
+            $stayMinutes = max(0, min(1440, (int) ($body['stayMinutes'] ?? 0)));
             $day = max(1, min(60, (int) ($body['day'] ?? 1)));
             $lat = isset($body['latitude']) && $body['latitude'] !== '' ? round((float) $body['latitude'], 6) : null;
             $lng = isset($body['longitude']) && $body['longitude'] !== '' ? round((float) $body['longitude'], 6) : null;
@@ -904,16 +906,16 @@ try {
                 $ns = $pdo->prepare('SELECT COALESCE(MAX(sort_order),0)+1 FROM plan_stops WHERE plan_id = ?');
                 $ns->execute([$planId]);
                 $order = (int) $ns->fetchColumn();
-                $pdo->prepare('INSERT INTO plan_stops (plan_id, name, address, latitude, longitude, note, open_hours, ticket, booking_url, planned_time, day, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)')
-                    ->execute([$planId, $name, $address, $lat, $lng, $note, $openHours, $ticket, $bookingUrl, $plannedTime, $day, $order]);
+                $pdo->prepare('INSERT INTO plan_stops (plan_id, name, address, latitude, longitude, note, open_hours, ticket, booking_url, planned_time, stay_minutes, day, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)')
+                    ->execute([$planId, $name, $address, $lat, $lng, $note, $openHours, $ticket, $bookingUrl, $plannedTime, $stayMinutes, $day, $order]);
                 out(['ok' => true, 'id' => (int) $pdo->lastInsertId()]);
             }
             $id = (int) ($body['id'] ?? 0);
             if ($id <= 0) {
                 fail('缺少 id');
             }
-            $pdo->prepare('UPDATE plan_stops SET name=?, address=?, latitude=?, longitude=?, note=?, open_hours=?, ticket=?, booking_url=?, planned_time=?, day=? WHERE id=?')
-                ->execute([$name, $address, $lat, $lng, $note, $openHours, $ticket, $bookingUrl, $plannedTime, $day, $id]);
+            $pdo->prepare('UPDATE plan_stops SET name=?, address=?, latitude=?, longitude=?, note=?, open_hours=?, ticket=?, booking_url=?, planned_time=?, stay_minutes=?, day=? WHERE id=?')
+                ->execute([$name, $address, $lat, $lng, $note, $openHours, $ticket, $bookingUrl, $plannedTime, $stayMinutes, $day, $id]);
             out(['ok' => true]);
         }
 
