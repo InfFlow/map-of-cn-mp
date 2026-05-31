@@ -114,7 +114,40 @@ try {
         'strategy' => 0,
     ], $key);
     if ($transit && ($transit['status'] ?? '0') === '1' && !empty($transit['route']['transits'][0])) {
-        $t = $transit['route']['transits'][0];
+        // 判断一条公交线路是否为地铁/轨道
+        $isMetroLine = static function (array $bl): bool {
+            $type = (string) ($bl['type'] ?? '');
+            $name = (string) ($bl['name'] ?? '');
+            foreach (['地铁', '轨道', '号线', '磁悬浮', '轻轨', 'subway', 'metro'] as $kw) {
+                if ($kw !== '' && (mb_stripos($type, $kw) !== false || mb_stripos($name, $kw) !== false)) return true;
+            }
+            return false;
+        };
+        // 统计某方案里的地铁段数（用于"有地铁优先地铁"）
+        $metroSegCount = static function (array $plan) use ($isMetroLine): int {
+            $n = 0;
+            foreach (($plan['segments'] ?? []) as $seg) {
+                if (!empty($seg['bus']['buslines'][0]) && $isMetroLine($seg['bus']['buslines'][0])) $n++;
+            }
+            return $n;
+        };
+        // 从所有候选里挑：优先含地铁的方案，其次同类里耗时最短；都没地铁则用高德推荐的第一条
+        $plans = $transit['route']['transits'];
+        $best = null; $bestScore = null;
+        foreach ($plans as $idx => $plan) {
+            $metro = $metroSegCount($plan);
+            $dur = (int) ($plan['duration'] ?? 0);
+            // 评分元组：地铁优先(降序) → 耗时(升序) → 原始顺序(升序)
+            $score = [-$metro, $dur, $idx];
+            if ($bestScore === null
+                || $score[0] < $bestScore[0]
+                || ($score[0] === $bestScore[0] && $score[1] < $bestScore[1])
+                || ($score[0] === $bestScore[0] && $score[1] === $bestScore[1] && $score[2] < $bestScore[2])) {
+                $bestScore = $score; $best = $plan;
+            }
+        }
+        $t = $best ?: $plans[0];
+        $usesMetro = $metroSegCount($t) > 0;
         $steps = [];
         foreach ($t['segments'] as $seg) {
             $walkDist = (int) ($seg['walking']['distance'] ?? 0);
@@ -127,10 +160,11 @@ try {
                 $dep = (string) ($bl['departure_stop']['name'] ?? '');
                 $arr = (string) ($bl['arrival_stop']['name'] ?? '');
                 $via = (int) ($bl['via_num'] ?? 0);
-                $steps[] = '乘 ' . $name . '，' . $dep . ' 上车 → ' . $arr . ' 下车' . ($via > 0 ? '（途经 ' . $via . ' 站）' : '');
+                $verb = $isMetroLine($bl) ? '🚇 搭地铁 ' : '🚌 乘 ';
+                $steps[] = $verb . $name . '，' . $dep . ' 上车 → ' . $arr . ' 下车' . ($via > 0 ? '（途经 ' . $via . ' 站）' : '');
             } elseif (!empty($seg['railway']['name'])) {
                 $rw = $seg['railway'];
-                $steps[] = '乘 ' . $rw['name'] . '，' . ($rw['departure_stop']['name'] ?? '') . ' → ' . ($rw['arrival_stop']['name'] ?? '');
+                $steps[] = '🚄 乘 ' . $rw['name'] . '，' . ($rw['departure_stop']['name'] ?? '') . ' → ' . ($rw['arrival_stop']['name'] ?? '');
             }
         }
         $cost = $t['cost'] ?? ($t['cost']['transit_fee'] ?? 0);
@@ -138,6 +172,7 @@ try {
             'duration' => (int) round(((int) ($t['duration'] ?? 0)) / 60),
             'walkingDistance' => (int) ($t['walking_distance'] ?? 0),
             'cost' => is_numeric($cost) ? (float) $cost : 0,
+            'usesMetro' => $usesMetro,
             'steps' => $steps,
         ];
     }

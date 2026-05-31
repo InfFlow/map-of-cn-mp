@@ -921,7 +921,9 @@ Page({
       if (opt.lights > 0) ex.push('红绿灯 ' + opt.lights + ' 个')
       m.extra = ex.join(' · ')
     } else if (key === 'transit') {
+      if (opt.usesMetro) m.label = '地铁 / 公交'
       const ex = []
+      if (opt.usesMetro) ex.push('🚇 地铁优先')
       if (opt.cost > 0) ex.push('约 ¥' + opt.cost)
       if (opt.walkingDistance > 0) ex.push('步行 ' + distTxt(opt.walkingDistance))
       m.extra = ex.join(' · ')
