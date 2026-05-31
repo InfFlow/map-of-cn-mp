@@ -70,6 +70,7 @@
   margin-top: 22rpx;
   overflow: hidden;
   background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .fp-city.on { border-color: var(--ink); }
 .fp-city-head {

@@ -128,6 +128,7 @@
   padding: 20rpx 22rpx 20rpx 30rpx;
   background: var(--surface);
   border: 1rpx solid var(--ink);
+  box-shadow: var(--shadow-float);
 }
 .sb-total {
   font-size: 32rpx;

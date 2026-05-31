@@ -108,7 +108,7 @@
   background: var(--surface);
   opacity: 0.55;
 }
-.rc-badge.on { opacity: 1; border-color: var(--ink); }
+.rc-badge.on { opacity: 1; border-color: var(--ink); box-shadow: var(--shadow-card); }
 .rc-badge-name { display: block; font-size: 28rpx; color: var(--ink); }
 .rc-badge-need { display: block; font-size: 20rpx; color: var(--muted); margin-top: 8rpx; }
 

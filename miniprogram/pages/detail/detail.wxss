@@ -44,6 +44,7 @@
   background-position: center;
   overflow: hidden;
   position: relative;
+  box-shadow: var(--shadow-float);
 }
 .d-cover.mag {
   display: flex;
@@ -169,6 +170,7 @@
   overflow: hidden;
   border: 1rpx solid var(--line);
   position: relative;
+  box-shadow: var(--shadow-card);
 }
 .photo-img {
   width: 100%;
