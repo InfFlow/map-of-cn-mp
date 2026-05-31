@@ -97,6 +97,7 @@
   background-size: cover;
   background-position: center;
   border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
   margin-right: 26rpx;
 }
 .dish-thumb.ph {
@@ -213,6 +214,7 @@
   padding: 22rpx 28rpx;
   background: var(--ink);
   color: var(--bg);
+  box-shadow: var(--shadow-float);
   opacity: 0;
   transform: translateY(40rpx);
   pointer-events: none;
@@ -253,6 +255,7 @@
   padding: 22rpx 24rpx;
   border: 1rpx solid var(--ink);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .ai-entry .ai-zh {
   font-size: 26rpx;

@@ -241,6 +241,7 @@
   padding: 22rpx 24rpx;
   border: 1rpx solid var(--ink);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .ask-ai .aa-zh {
   font-size: 26rpx;
@@ -259,6 +260,7 @@
   padding: 22rpx 24rpx;
   border: 1rpx solid var(--ink);
   background: var(--ink);
+  box-shadow: var(--shadow-card);
 }
 .poster-btn .pb-zh {
   font-size: 26rpx;

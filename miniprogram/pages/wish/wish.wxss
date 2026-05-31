@@ -165,6 +165,7 @@
   max-height: 88vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  box-shadow: var(--shadow-float);
   transform: translateY(102%);
   transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
