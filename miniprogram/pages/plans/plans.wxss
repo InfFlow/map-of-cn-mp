@@ -599,11 +599,57 @@
   border-radius: 999rpx;
   padding: 2rpx 16rpx;
 }
+.rd-sched {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8rpx 18rpx;
+  margin: 10rpx 4rpx 0;
+}
+.rd-sched-time {
+  font-size: 23rpx;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: .5rpx;
+}
+.rd-sched-stay {
+  font-size: 21rpx;
+  color: var(--muted);
+}
 .rd-note {
   margin: 10rpx 4rpx 0;
   font-size: 22rpx;
   line-height: 1.6;
   color: var(--ink-2);
+}
+/* 建议游玩时长选择 */
+.stay-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+.stay-chip {
+  font-size: 23rpx;
+  color: var(--ink-2);
+  background: var(--line-soft);
+  border: 1rpx solid transparent;
+  border-radius: 999rpx;
+  padding: 8rpx 24rpx;
+}
+.stay-chip.on {
+  color: var(--bg);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.stay-custom {
+  align-items: center;
+  gap: 12rpx;
+}
+.stay-unit {
+  flex: none;
+  font-size: 23rpx;
+  color: var(--muted);
 }
 .rd-info {
   margin: 12rpx 0 0;
@@ -1359,10 +1405,69 @@
   color: var(--muted);
   letter-spacing: 1rpx;
 }
+.day-stop-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6rpx 14rpx;
+}
+.day-stop-sched {
+  font-size: 21rpx;
+  color: var(--ink);
+  letter-spacing: .5rpx;
+}
+.day-stop-stay {
+  font-size: 20rpx;
+  color: var(--muted);
+}
+.day-stop-stay.sug {
+  color: var(--faint);
+}
 .day-stop-go {
   flex: none;
   font-size: 32rpx;
   color: var(--faint);
+}
+/* 节奏 + 通勤/游玩合计 + 一键最优 */
+.day-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10rpx 14rpx;
+  padding: 6rpx 4rpx 14rpx;
+}
+.day-load {
+  font-size: 20rpx;
+  padding: 3rpx 14rpx;
+  border-radius: 999rpx;
+  background: var(--line-soft);
+  color: var(--muted);
+}
+.day-load.full {
+  background: #fbeaea;
+  color: #b4423a;
+}
+.day-load.light {
+  background: #eef3ea;
+  color: #5b7a4b;
+}
+.day-load.ok {
+  background: #eef0f3;
+  color: #5a6472;
+}
+.day-meta-sum {
+  flex: 1;
+  min-width: 0;
+  font-size: 21rpx;
+  color: var(--muted);
+}
+.day-opt {
+  flex: none;
+  font-size: 21rpx;
+  color: var(--bg);
+  background: var(--ink);
+  border-radius: 999rpx;
+  padding: 5rpx 18rpx;
 }
 
 /* ---------------- 预算汇总（按分类条形） ---------------- */

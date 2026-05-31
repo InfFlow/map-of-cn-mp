@@ -50,6 +50,83 @@ function dayCount(start, end) {
   const days = Math.round(ms / 86400000) + 1
   return days > 0 ? days : 0
 }
+// 两坐标球面距离（米）
+function haversineM(aLat, aLng, bLat, bLng) {
+  if (aLat == null || aLng == null || bLat == null || bLng == null) return null
+  const R = 6371000
+  const toRad = (x) => (x * Math.PI) / 180
+  const dLat = toRad(bLat - aLat)
+  const dLng = toRad(bLng - aLng)
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLng / 2) ** 2
+  return Math.round(2 * R * Math.asin(Math.sqrt(s)))
+}
+// 直线距离估算「通勤分钟」：近距离按步行，远距离按城市公交/驾车均速 + 固定开销
+function estimateCommuteMin(distM) {
+  if (distM == null) return 0
+  if (distM <= 250) return 0
+  if (distM <= 1500) return Math.max(3, Math.round((distM / 1000 / 5) * 60)) // 步行 5km/h
+  return Math.round((distM / 1000 / 22) * 60) + 5 // 公交/驾车均速 22km/h + 5min 开销
+}
+// 'HH:MM' → 分钟；非法返回 null
+function hmToMin(s) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || '').trim())
+  if (!m) return null
+  const h = +m[1]; const mi = +m[2]
+  if (h > 23 || mi > 59) return null
+  return h * 60 + mi
+}
+// 分钟 → 'HH:MM'（跨天取模）
+function minToHm(t) {
+  t = ((Math.round(t) % 1440) + 1440) % 1440
+  return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0')
+}
+// 分钟 → '1 小时 20 分' / '40 分'
+function minHuman(t) {
+  t = Math.max(0, Math.round(t))
+  const h = Math.floor(t / 60); const m = t % 60
+  if (h && m) return h + ' 小时 ' + m + ' 分'
+  if (h) return h + ' 小时'
+  return m + ' 分'
+}
+// 估算某一天的时间表 + 通勤/游玩合计 + 节奏（太满/太松）
+// startCoord {lat,lng}|null；stopsOfDay 含 latitude/longitude/stayMinutes/plannedTime
+function buildDaySchedule(startCoord, stopsOfDay, startMin) {
+  const DEFAULT_STAY = 60
+  let t = startMin
+  let prev = startCoord && startCoord.lat != null ? { lat: startCoord.lat, lng: startCoord.lng } : null
+  let commuteMin = 0
+  let stayMin = 0
+  const rows = []
+  stopsOfDay.forEach((s) => {
+    const here = s.latitude != null && s.longitude != null ? { lat: s.latitude, lng: s.longitude } : null
+    let legMin = 0
+    if (prev && here) legMin = estimateCommuteMin(haversineM(prev.lat, prev.lng, here.lat, here.lng))
+    t += legMin
+    commuteMin += legMin
+    const pt = hmToMin(s.plannedTime)
+    if (pt != null && pt > t) t = pt // 设了计划时间且更晚则等待
+    const arrive = t
+    const stay = Number(s.stayMinutes) > 0 ? Number(s.stayMinutes) : DEFAULT_STAY
+    stayMin += stay
+    t += stay
+    rows.push({
+      id: s.id,
+      arrive: minToHm(arrive),
+      leave: minToHm(t),
+      legText: legMin > 0 ? ('约 ' + minHuman(legMin)) : '',
+      stayText: Number(s.stayMinutes) > 0 ? minHuman(Number(s.stayMinutes)) : '建议 ' + minHuman(DEFAULT_STAY),
+      staySet: Number(s.stayMinutes) > 0,
+    })
+  })
+  const spanMin = rows.length ? (t - startMin) : 0
+  let loadKey = ''; let loadText = ''
+  if (rows.length) {
+    if (spanMin > 660) { loadKey = 'full'; loadText = '今天偏满，注意留出余量' }
+    else if (spanMin < 240) { loadKey = 'light'; loadText = '今天较松，可再加一两个点' }
+    else { loadKey = 'ok'; loadText = '节奏适中' }
+  }
+  return { rows, commuteMin, stayMin, spanMin, loadKey, loadText }
+}
 // 取某一天对应的住宿：优先匹配多段 hotels 的 [startDay,endDay]，否则回退单酒店 plan.hotel
 function hotelForDay(plan, day) {
   const list = (plan && plan.hotels) || []
@@ -116,9 +193,13 @@ Page({
     },
     stopEditor: {
       show: false, mode: 'add', id: 0, planId: '',
-      name: '', address: '', plannedTime: '', note: '', day: 1,
+      name: '', address: '', plannedTime: '', stayMinutes: 0, note: '', day: 1,
       latitude: '', longitude: '', geoLoading: false,
     },
+    stayPresets: [
+      { v: 30, t: '30 分' }, { v: 60, t: '1 小时' }, { v: 90, t: '1.5 小时' },
+      { v: 120, t: '2 小时' }, { v: 180, t: '3 小时' }, { v: 240, t: '半天' },
+    ],
     // 点击目的地弹出的「怎么去 + 一键导航」抽屉
     stopSheet: {
       show: false, id: 0, name: '', address: '', note: '', plannedTime: '', openHours: '', ticket: '', bookingUrl: '', latitude: null, longitude: null,
@@ -282,18 +363,29 @@ Page({
         const hotel = hotelForDay(plan, d)
         let startName = ''
         let startCustom = false
+        let startCoord = null
         if (ds && (ds.name || ds.lat != null)) {
           startName = ds.name || '自定义出发点'
           startCustom = true
+          if (ds.lat != null) startCoord = { lat: Number(ds.lat), lng: Number(ds.lng) }
         } else if (hotel && (hotel.name || hotel.lat != null)) {
           startName = hotel.name || '酒店'
+          if (hotel.lat != null) startCoord = { lat: Number(hotel.lat), lng: Number(hotel.lng) }
         }
         const dateISO = startISO ? addDaysISO(startISO, d - 1) : ''
         const w = dateISO ? wmap[dateISO] : null
+        const firstPt = hmToMin((dayMap[d][0] || {}).plannedTime)
+        const sched = buildDaySchedule(startCoord, dayMap[d], firstPt != null ? firstPt : 9 * 60)
+        const stopsWithSched = dayMap[d].map((s, i) => ({ ...s, sched: sched.rows[i] }))
         return {
-          day: d, label: '第 ' + d + ' 天', stops: dayMap[d], startName, startCustom, hasStart: !!startName,
+          day: d, label: '第 ' + d + ' 天', stops: stopsWithSched, startName, startCustom, hasStart: !!startName,
           dateISO, dateText: dateLabel(dateISO),
           weather: w ? (w.dayWeather + ' ' + w.nightTemp + '~' + w.dayTemp + '°') : '',
+          commuteText: sched.commuteMin > 0 ? minHuman(sched.commuteMin) : '',
+          stayText: sched.stayMin > 0 ? minHuman(sched.stayMin) : '',
+          spanText: sched.spanMin > 0 ? minHuman(sched.spanMin) : '',
+          loadKey: sched.loadKey, loadText: sched.loadText,
+          canOptimize: dayMap[d].filter((s) => s.latitude != null && s.longitude != null).length >= 3,
         }
       })
 
@@ -652,7 +744,7 @@ Page({
     const p = this.data.active
     if (!p) return
     this.setData({
-      stopEditor: { show: true, mode: 'add', id: 0, planId: p.id, name: '', address: '', plannedTime: '', note: '', openHours: '', ticket: '', bookingUrl: '', day: 1, latitude: '', longitude: '', geoLoading: false },
+      stopEditor: { show: true, mode: 'add', id: 0, planId: p.id, name: '', address: '', plannedTime: '', stayMinutes: 0, note: '', openHours: '', ticket: '', bookingUrl: '', day: 1, latitude: '', longitude: '', geoLoading: false },
     })
     this.setTabBarHidden(true)
   },
@@ -663,7 +755,7 @@ Page({
     this.setData({
       stopEditor: {
         show: true, mode: 'edit', id: s.id, planId: this.data.active.id,
-        name: s.name || '', address: s.address || '', plannedTime: s.plannedTime || '', note: s.note || '',
+        name: s.name || '', address: s.address || '', plannedTime: s.plannedTime || '', stayMinutes: Number(s.stayMinutes) || 0, note: s.note || '',
         openHours: s.openHours || '', ticket: s.ticket || '', bookingUrl: s.bookingUrl || '', day: Number(s.day) || 1,
         latitude: s.latitude == null ? '' : String(s.latitude), longitude: s.longitude == null ? '' : String(s.longitude),
         geoLoading: false,
@@ -683,6 +775,16 @@ Page({
     const d = Number(e.currentTarget.dataset.d) || 0
     const cur = Number(this.data.stopEditor.day) || 1
     this.setData({ 'stopEditor.day': Math.max(1, Math.min(60, cur + d)) })
+  },
+  // 选择建议游玩时长（点同一个再次点击=取消）
+  pickStay(e) {
+    const v = Number(e.currentTarget.dataset.v) || 0
+    const cur = Number(this.data.stopEditor.stayMinutes) || 0
+    this.setData({ 'stopEditor.stayMinutes': cur === v ? 0 : v })
+  },
+  onStayInput(e) {
+    const v = Math.max(0, Math.min(1440, Number(e.detail.value) || 0))
+    this.setData({ 'stopEditor.stayMinutes': v })
   },
   async geocodeStop() {
     const ed = this.data.stopEditor
@@ -724,6 +826,7 @@ Page({
       name: ed.name.trim(),
       address: ed.address || '',
       plannedTime: ed.plannedTime || '',
+      stayMinutes: Number(ed.stayMinutes) || 0,
       note: ed.note || '',
       openHours: ed.openHours || '',
       ticket: ed.ticket || '',
@@ -829,19 +932,100 @@ Page({
   },
   onStopTouchEnd() {
     if (!this.data.dragId) return
+    const draggedId = this.data.dragId
     const stops = this.data.active.stops.slice()
     stops.forEach((s, i) => {
       s._y = i * this.data.rowH
     })
+    // 跨天拖动：拖动项归属 = 落点上一项的天（落在最前则取下一项的天）
+    let dayChanged = false
+    if (this.data.multiDay) {
+      const di = stops.findIndex((s) => s.id === draggedId)
+      if (di >= 0) {
+        const neighborDay = di > 0 ? Number(stops[di - 1].day) : (stops[di + 1] ? Number(stops[di + 1].day) : Number(stops[di].day))
+        if (neighborDay && neighborDay !== Number(stops[di].day)) {
+          stops[di].day = neighborDay
+          stops[di].dayTag = 'D' + neighborDay
+          dayChanged = true
+        }
+      }
+    }
     this.markDayFirst(stops, this.data.multiDay)
     this.setData({ 'active.stops': stops, dragId: 0 })
     // 同步本地 plans 缓存并持久化排序
     const plans = this.data.plans.slice()
     plans[this.data.activeIndex] = { ...plans[this.data.activeIndex], stops: stops.map((s) => ({ ...s })) }
     this.setData({ plans })
-    api.admin({ action: 'reorder_stops', openid: this.data.openid, ids: stops.map((s) => s.id) }).catch(() => {
-      wx.showToast({ title: '排序未保存', icon: 'none' })
-    })
+    const persist = async () => {
+      try {
+        if (dayChanged) {
+          const s = stops.find((x) => x.id === draggedId)
+          await api.admin({
+            action: 'update_stop', openid: this.data.openid, id: s.id, planId: this.data.active.id,
+            name: s.name, address: s.address || '', note: s.note || '', plannedTime: s.plannedTime || '',
+            openHours: s.openHours || '', ticket: s.ticket || '', bookingUrl: s.bookingUrl || '',
+            stayMinutes: s.stayMinutes || 0, day: Number(s.day),
+            latitude: s.latitude == null ? '' : s.latitude, longitude: s.longitude == null ? '' : s.longitude,
+          })
+        }
+        await api.admin({ action: 'reorder_stops', openid: this.data.openid, ids: stops.map((s) => s.id) })
+        if (dayChanged) await this.load()
+        else this.applyActive()
+      } catch (err) {
+        wx.showToast({ title: '排序未保存', icon: 'none' })
+      }
+    }
+    persist()
+  },
+  // ③ 一键路线最优排序：当天各点按最近邻从出发点起重排（仅排当天，保留其余天顺序）
+  async optimizeDay(e) {
+    if (!this.data.canEdit) { wx.showToast({ title: '登录后可调整', icon: 'none' }); return }
+    const day = Number(e.currentTarget.dataset.day)
+    const plan = this.data.active
+    if (!plan) return
+    const grp = (this.data.dayGroups || []).find((g) => g.day === day)
+    if (!grp) return
+    const dayStops = (plan.stops || []).filter((s) => Number(s.day) === day)
+    const geo = dayStops.filter((s) => s.latitude != null && s.longitude != null)
+    if (geo.length < 3) { wx.showToast({ title: '需 3 个以上带坐标的点', icon: 'none' }); return }
+    // 起点坐标
+    let cur = null
+    if (grp.startCustom) {
+      const ds = (plan.dayStarts || {})[day] || (plan.dayStarts || {})[String(day)]
+      if (ds && ds.lat != null) cur = { lat: Number(ds.lat), lng: Number(ds.lng) }
+    }
+    if (!cur) { const h = hotelForDay(plan, day); if (h && h.lat != null) cur = { lat: Number(h.lat), lng: Number(h.lng) } }
+    if (!cur) cur = { lat: geo[0].latitude, lng: geo[0].longitude }
+    // 最近邻贪心
+    const pool = geo.slice()
+    const ordered = []
+    while (pool.length) {
+      let bi = 0; let bd = Infinity
+      for (let i = 0; i < pool.length; i++) {
+        const dd = haversineM(cur.lat, cur.lng, pool[i].latitude, pool[i].longitude)
+        if (dd != null && dd < bd) { bd = dd; bi = i }
+      }
+      const nx = pool.splice(bi, 1)[0]
+      ordered.push(nx)
+      cur = { lat: nx.latitude, lng: nx.longitude }
+    }
+    // 无坐标的点保持原相对顺序，接在当天末尾
+    const noGeo = dayStops.filter((s) => s.latitude == null || s.longitude == null)
+    const newDayOrder = ordered.concat(noGeo)
+    // 拼回全局顺序：其它天保持原序，本天替换为新序
+    const full = (plan.stops || []).map((s) => ({ ...s }))
+    let k = 0
+    const newFull = full.map((s) => (Number(s.day) === day ? newDayOrder[k++] : s))
+    try {
+      wx.showLoading({ title: '优化中…', mask: true })
+      await api.admin({ action: 'reorder_stops', openid: this.data.openid, ids: newFull.map((s) => s.id) })
+      await this.load()
+      wx.hideLoading()
+      wx.showToast({ title: '已按最短路程重排', icon: 'none' })
+    } catch (err) {
+      wx.hideLoading()
+      wx.showToast({ title: '优化失败', icon: 'none' })
+    }
   },
 
   /* ---------------- 目的地抽屉：怎么去 + 一键导航 ---------------- */
@@ -877,11 +1061,19 @@ Page({
     const origin = this.originForStop(stop)
     const hasStopGeo = stop.latitude != null && stop.longitude != null
     const canRoute = !!(origin && origin.lat != null && origin.lng != null && hasStopGeo)
+    // 从分组里取该站时间表（到达-离开）
+    let sched = null
+    for (const g of (this.data.dayGroups || [])) {
+      const hit = (g.stops || []).find((x) => x.id === id)
+      if (hit && hit.sched) { sched = hit.sched; break }
+    }
     this.setData({
       stopSheet: {
         show: true, id: stop.id, name: stop.name, address: stop.address || '',
         day: Number(stop.day) || 1,
         note: stop.note || '', plannedTime: stop.plannedTime || '',
+        stayText: Number(stop.stayMinutes) > 0 ? minHuman(Number(stop.stayMinutes)) : '',
+        schedText: sched ? (sched.arrive + ' – ' + sched.leave) : '',
         openHours: stop.openHours || '', ticket: stop.ticket || '', bookingUrl: stop.bookingUrl || '',
         latitude: hasStopGeo ? Number(stop.latitude) : null,
         longitude: hasStopGeo ? Number(stop.longitude) : null,
