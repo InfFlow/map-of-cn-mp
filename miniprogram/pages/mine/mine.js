@@ -71,6 +71,11 @@ Page({
     wx.navigateTo({ url: '/pages/stats/stats' })
   },
 
+  openRecap() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/recap/recap' })
+  },
+
   claimAdmin() {
     const user = this.data.user
     if (!user || !user.openid) return

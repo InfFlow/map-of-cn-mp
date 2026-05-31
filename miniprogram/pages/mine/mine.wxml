@@ -87,6 +87,16 @@
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openRecap">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-recap"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">旅行回顾</text>
+            <text class="ae-sub">年度回顾 · 集章 · 回忆放映</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
     </view>
 
     <view class="block rise d2">

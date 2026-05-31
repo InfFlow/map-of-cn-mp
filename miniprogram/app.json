@@ -12,6 +12,7 @@
     "pages/album/album",
     "pages/stats/stats",
     "pages/footprints/footprints",
+    "pages/recap/recap",
     "pages/ai/ai"
   ],
   "window": {

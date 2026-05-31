@@ -1,0 +1,143 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">RECAP</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">写给我们的回顾</view>
+    <view class="h1 display">旅行<view class="br"></view>回顾</view>
+    <view class="lede">把走过的城、拍过的照片，收成一份纪念。</view>
+  </view>
+
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:120rpx;margin-top:24rpx;"></view>
+      <view class="sk sk-block" style="height:300rpx;margin-top:24rpx;"></view>
+    </view>
+  </block>
+
+  <view wx:elif="{{error}}" class="rc-empty">{{error}}</view>
+
+  <block wx:elif="{{nums.spotCount === 0 && !selectedYear}}">
+    <view class="rc-empty">还没有足迹可回顾。去时间线记录第一段回忆吧。</view>
+  </block>
+
+  <block wx:else>
+    <!-- 年份切换 -->
+    <scroll-view class="rc-years rise d2" scroll-x enable-flex>
+      <view class="rc-year {{selectedYear === '' ? 'on' : ''}}" data-year="" bindtap="selectYear">全部</view>
+      <view wx:for="{{years}}" wx:key="value" class="rc-year {{selectedYear === item.value ? 'on' : ''}}" data-year="{{item.value}}" bindtap="selectYear">{{item.label}}</view>
+    </scroll-view>
+
+    <!-- 大标题句 -->
+    <view class="rc-headline serif rise d2">{{headline}}</view>
+
+    <!-- 四宫格 -->
+    <view class="grid4 rise d2">
+      <view class="cellnum">
+        <text class="num display">{{nums.cityCount}}</text>
+        <text class="lab">城市 Cities</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{nums.spotCount}}</text>
+        <text class="lab">地点 Spots</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{nums.provinceCount}}</text>
+        <text class="lab">省份 Provinces</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{nums.totalKm}}</text>
+        <text class="lab">公里 Kilometres</text>
+      </view>
+    </view>
+
+    <!-- 操作 -->
+    <view class="rc-acts rise d3">
+      <view class="rc-btn primary pressable {{!hasPhotos ? 'disabled' : ''}}" hover-class="pressed" bindtap="playMemories">▶ 回忆放映</view>
+      <view class="rc-btn pressable {{posterMaking ? 'disabled' : ''}}" hover-class="pressed" bindtap="exportRecap">生成回顾海报</view>
+    </view>
+
+    <!-- 常去城市 -->
+    <view wx:if="{{topCities.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">常去城市</text>
+        <text class="sec-en">Top Cities</text>
+      </view>
+      <view class="bars">
+        <view wx:for="{{topCities}}" wx:key="city" class="bar-row">
+          <text class="bar-lab">{{item.city}}</text>
+          <view class="bar-track"><view class="bar-fill" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 季节 -->
+    <view wx:if="{{seasonBars.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">季节分布</text>
+        <text class="sec-en">By Season</text>
+      </view>
+      <view class="bars">
+        <view wx:for="{{seasonBars}}" wx:key="label" class="bar-row">
+          <text class="bar-lab">{{item.label}}</text>
+          <view class="bar-track"><view class="bar-fill" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.value}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 城市集章 -->
+    <view wx:if="{{stamps.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">城市集章</text>
+        <text class="sec-en">Stamps · {{stamps.length}}</text>
+      </view>
+      <view class="rc-stamps">
+        <view wx:for="{{stamps}}" wx:key="city" class="rc-stamp">
+          <text class="rc-stamp-city serif">{{item.city}}</text>
+          <text wx:if="{{item.count > 1}}" class="rc-stamp-x">×{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 成就（终身） -->
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">成就</text>
+        <text class="sec-en">Badges · {{unlocked}}/{{badges.length}}</text>
+      </view>
+      <view class="rc-badges">
+        <view wx:for="{{badges}}" wx:key="name" class="rc-badge {{item.on ? 'on' : ''}}">
+          <text class="rc-badge-name serif">{{item.name}}</text>
+          <text class="rc-badge-need">{{item.on ? '已解锁' : '需 ' + item.need + ' ' + item.unit}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+
+  <!-- 回忆放映 overlay -->
+  <view wx:if="{{showShow}}" class="rc-show" catchtap="closeShow">
+    <swiper class="rc-show-swiper" autoplay interval="2600" circular catchtap="noop">
+      <swiper-item wx:for="{{slides}}" wx:key="url">
+        <image class="rc-show-img" src="{{item.url}}" mode="aspectFill"></image>
+        <view class="rc-show-cap">
+          <text class="rc-show-city serif">{{item.city}}</text>
+          <text class="rc-show-date">{{item.date}}</text>
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="rc-show-close" catchtap="closeShow">✕</view>
+    <view class="rc-show-tip">轻触空白处关闭</view>
+  </view>
+
+  <!-- 海报离屏画布 -->
+  <canvas type="2d" id="recapPoster" class="poster-canvas" style="width:{{posterW}}px;height:{{posterH}}px;"></canvas>
+</view>

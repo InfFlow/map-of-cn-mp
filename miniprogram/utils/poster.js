@@ -370,4 +370,153 @@ async function buildItineraryPoster(node, data) {
   })
 }
 
-module.exports = { buildJourneyPoster, buildItineraryPoster }
+// 年度回顾海报：大数字 + 常去城市 + 城市集章
+// data = { title, headline, nums:{cityCount,spotCount,provinceCount,totalKm}, topCities:[{city,count,pct}], stamps:[{city,count}] }
+async function buildRecapPoster(node, data) {
+  const dpr = (wx.getWindowInfo && wx.getWindowInfo().pixelRatio) || 2
+  const W = 600
+  const pad = 48
+  const innerW = W - pad * 2
+  const ctx = node.getContext('2d')
+  const nums = data.nums || {}
+
+  // ---- 量度高度 ----
+  let y = 56 // 顶部留白 + kicker
+  y += 40 // 标题
+  ctx.font = '28px "Songti SC", Georgia, serif'
+  const headLines = wrapLines(ctx, data.headline || '', innerW)
+  y += 20 + headLines.length * 42
+  y += 36 + 150 // 四宫格
+  const topCities = data.topCities || []
+  if (topCities.length) y += 50 + topCities.length * 46
+  const stamps = (data.stamps || []).slice(0, 18)
+  if (stamps.length) {
+    ctx.font = '24px "Songti SC", Georgia, serif'
+    let line = 0, x = pad
+    stamps.forEach((s) => {
+      const w = ctx.measureText(s.city).width + 44
+      if (x + w > W - pad) { line += 1; x = pad }
+      x += w + 12
+    })
+    y += 50 + (line + 1) * 56
+  }
+  y += 50 + 60 // footer
+  const H = Math.ceil(y)
+
+  // ---- 画 ----
+  node.width = W * dpr
+  node.height = H * dpr
+  ctx.scale(dpr, dpr)
+  ctx.fillStyle = COL.bg
+  ctx.fillRect(0, 0, W, H)
+  ctx.textBaseline = 'alphabetic'
+
+  let cy = 56
+  ctx.fillStyle = COL.muted
+  ctx.font = '20px Georgia, serif'
+  ctx.fillText('MAP OF US · 旅行回顾', pad, cy)
+  ctx.strokeStyle = COL.line
+  ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(pad, cy + 14); ctx.lineTo(W - pad, cy + 14); ctx.stroke()
+  cy += 40
+
+  // 标题
+  ctx.fillStyle = COL.ink
+  ctx.font = '800 44px -apple-system, "PingFang SC", serif'
+  ctx.fillText(data.title || '旅行回顾', pad, cy + 36)
+  cy += 40
+
+  // headline
+  ctx.fillStyle = COL.ink2
+  ctx.font = '28px "Songti SC", Georgia, serif'
+  cy += 20
+  headLines.forEach((ln) => { ctx.fillText(ln, pad, cy + 28); cy += 42 })
+
+  // 四宫格
+  cy += 36
+  const cells = [
+    { n: nums.cityCount, l: '城市 Cities' },
+    { n: nums.spotCount, l: '地点 Spots' },
+    { n: nums.provinceCount, l: '省份 Provinces' },
+    { n: nums.totalKm, l: '公里 Kilometres' },
+  ]
+  const cw = innerW / 2
+  const ch = 75
+  ctx.strokeStyle = COL.line
+  cells.forEach((c, i) => {
+    const cx = pad + (i % 2) * cw
+    const cyy = cy + Math.floor(i / 2) * ch
+    ctx.strokeRect(cx, cyy, cw, ch)
+    ctx.fillStyle = COL.ink
+    ctx.font = '800 46px -apple-system, "PingFang SC", serif'
+    ctx.fillText(String(c.n || 0), cx + 20, cyy + 48)
+    ctx.fillStyle = COL.muted
+    ctx.font = '18px Georgia, serif'
+    ctx.fillText(c.l, cx + 20, cyy + 66)
+  })
+  cy += 150
+
+  // 常去城市
+  if (topCities.length) {
+    cy += 50
+    ctx.fillStyle = COL.ink
+    ctx.font = '700 24px -apple-system, "PingFang SC", serif'
+    ctx.fillText('常去城市', pad, cy - 14)
+    const maxBarW = innerW - 180
+    topCities.forEach((c) => {
+      ctx.fillStyle = COL.ink2
+      ctx.font = '22px "Songti SC", Georgia, serif'
+      ctx.fillText(c.city, pad, cy + 22)
+      ctx.fillStyle = COL.line
+      ctx.fillRect(pad + 120, cy + 8, maxBarW, 16)
+      ctx.fillStyle = COL.ink
+      ctx.fillRect(pad + 120, cy + 8, Math.max(6, (maxBarW * (c.pct || 0)) / 100), 16)
+      ctx.fillStyle = COL.muted
+      ctx.font = '20px Georgia, serif'
+      ctx.textAlign = 'right'
+      ctx.fillText(String(c.count), W - pad, cy + 22)
+      ctx.textAlign = 'left'
+      cy += 46
+    })
+  }
+
+  // 城市集章
+  if (stamps.length) {
+    cy += 50
+    ctx.fillStyle = COL.ink
+    ctx.font = '700 24px -apple-system, "PingFang SC", serif'
+    ctx.fillText('城市集章', pad, cy - 14)
+    let x = pad
+    ctx.font = '24px "Songti SC", Georgia, serif'
+    stamps.forEach((s) => {
+      const w = ctx.measureText(s.city).width + 44
+      if (x + w > W - pad) { x = pad; cy += 56 }
+      ctx.strokeStyle = COL.ink
+      ctx.lineWidth = 1
+      ctx.strokeRect(x, cy, w, 44)
+      ctx.fillStyle = COL.ink2
+      ctx.fillText(s.city, x + 22, cy + 30)
+      x += w + 12
+    })
+    cy += 56
+  }
+
+  // footer
+  cy += 50
+  ctx.strokeStyle = COL.line
+  ctx.beginPath(); ctx.moveTo(pad, cy); ctx.lineTo(W - pad, cy); ctx.stroke()
+  ctx.fillStyle = COL.faint
+  ctx.font = '20px Georgia, serif'
+  ctx.fillText('用 MAP OF US 记录每一次出发', pad, cy + 34)
+
+  return new Promise((resolve, reject) => {
+    wx.canvasToTempFilePath({
+      canvas: node, x: 0, y: 0, width: W, height: H,
+      destWidth: W * dpr, destHeight: H * dpr,
+      success: (r) => resolve(r.tempFilePath),
+      fail: reject,
+    })
+  })
+}
+
+module.exports = { buildJourneyPoster, buildItineraryPoster, buildRecapPoster }

@@ -1,0 +1,168 @@
+.page {
+  padding: 24rpx 44rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row { display: flex; justify-content: space-between; align-items: baseline; }
+.mast-name { font-size: 22rpx; font-weight: 700; letter-spacing: 6rpx; }
+.mast-vol { font-size: 20rpx; font-weight: 700; letter-spacing: 3rpx; color: var(--muted); }
+.mast .rule { margin-top: 12rpx; }
+
+/* 英雄区 */
+.hero { padding: 48rpx 0 6rpx; }
+.hero .h1 { font-size: 116rpx; line-height: 0.96; margin-top: 20rpx; }
+.hero .br { height: 0; }
+.lede { font-size: 29rpx; line-height: 1.8; color: var(--ink-2); margin-top: 30rpx; max-width: 520rpx; }
+
+/* 年份切换 */
+.rc-years { white-space: nowrap; margin-top: 44rpx; }
+.rc-year {
+  display: inline-block;
+  padding: 12rpx 30rpx;
+  margin-right: 14rpx;
+  font-size: 25rpx;
+  color: var(--ink-2);
+  border: 1rpx solid var(--line);
+  border-radius: 999rpx;
+  background: var(--surface);
+}
+.rc-year.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* 大标题句 */
+.rc-headline {
+  margin-top: 30rpx;
+  font-size: 38rpx;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* 四宫格 */
+.grid4 {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 34rpx;
+  border-top: 1rpx solid var(--line);
+  border-left: 1rpx solid var(--line);
+}
+.cellnum {
+  width: 50%;
+  box-sizing: border-box;
+  border-right: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  padding: 30rpx 28rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+}
+.num { font-size: 70rpx; line-height: 1; }
+.lab { font-size: 21rpx; letter-spacing: 1rpx; color: var(--ink-2); margin-top: 12rpx; }
+
+/* 操作按钮 */
+.rc-acts { display: flex; gap: 18rpx; margin-top: 36rpx; }
+.rc-btn {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 27rpx;
+  border: 1rpx solid var(--ink);
+  border-radius: 12rpx;
+  color: var(--ink);
+  background: var(--surface);
+}
+.rc-btn.primary { background: var(--ink); color: var(--bg); }
+.rc-btn.disabled { opacity: 0.45; }
+
+/* 区块 */
+.block { margin-top: 56rpx; }
+.bars { margin-top: 26rpx; display: flex; flex-direction: column; gap: 22rpx; }
+.bar-row { display: flex; align-items: center; gap: 18rpx; }
+.bar-lab {
+  flex: none; width: 120rpx; font-size: 24rpx; color: var(--ink);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.bar-track { flex: 1; height: 18rpx; background: var(--surface); border: 1rpx solid var(--line); position: relative; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--ink); transition: width 0.5s ease; }
+.bar-val { flex: none; min-width: 48rpx; text-align: right; font-size: 24rpx; }
+
+/* 城市集章 */
+.rc-stamps { margin-top: 24rpx; display: flex; flex-wrap: wrap; gap: 16rpx; }
+.rc-stamp {
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+  padding: 14rpx 22rpx;
+  border: 1rpx dashed var(--ink);
+  border-radius: 12rpx;
+  background: var(--line-soft);
+}
+.rc-stamp-city { font-size: 27rpx; color: var(--ink); }
+.rc-stamp-x { font-size: 20rpx; color: var(--muted); }
+
+/* 成就 */
+.rc-badges { margin-top: 24rpx; display: flex; flex-wrap: wrap; gap: 16rpx; }
+.rc-badge {
+  width: calc(50% - 8rpx);
+  box-sizing: border-box;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  background: var(--surface);
+  opacity: 0.55;
+}
+.rc-badge.on { opacity: 1; border-color: var(--ink); }
+.rc-badge-name { display: block; font-size: 28rpx; color: var(--ink); }
+.rc-badge-need { display: block; font-size: 20rpx; color: var(--muted); margin-top: 8rpx; }
+
+/* 空 / 错误 */
+.rc-empty {
+  margin-top: 60rpx;
+  padding: 60rpx 40rpx;
+  text-align: center;
+  font-size: 26rpx;
+  line-height: 1.8;
+  color: var(--muted);
+  border: 1rpx dashed var(--line);
+  border-radius: 14rpx;
+}
+
+/* 回忆放映 */
+.rc-show {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+}
+.rc-show-swiper { width: 100%; height: 100%; }
+.rc-show-img { width: 100%; height: 100%; }
+.rc-show-cap {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 60rpx 48rpx calc(60rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(0,0,0,0.72), rgba(0,0,0,0));
+  display: flex;
+  align-items: baseline;
+  gap: 18rpx;
+}
+.rc-show-city { color: #fff; font-size: 44rpx; }
+.rc-show-date { color: rgba(255,255,255,0.8); font-size: 24rpx; }
+.rc-show-close {
+  position: absolute;
+  top: calc(24rpx + env(safe-area-inset-top));
+  right: 36rpx;
+  width: 64rpx; height: 64rpx;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  font-size: 34rpx;
+  display: flex; align-items: center; justify-content: center;
+}
+.rc-show-tip {
+  position: absolute;
+  top: calc(40rpx + env(safe-area-inset-top));
+  left: 0; right: 0;
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+  font-size: 22rpx;
+}
+
+/* 海报离屏画布 */
+.poster-canvas { position: fixed; left: -2000px; top: 0; }
