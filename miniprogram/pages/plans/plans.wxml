@@ -112,44 +112,57 @@
           <view wx:else class="empty-hint">登录后即可添加目的地</view>
         </view>
 
-        <movable-area wx:else class="drag-area" style="height: {{areaH}}px;">
-          <movable-view
-            wx:for="{{active.stops}}"
-            wx:key="id"
-            class="mv-stop {{dragId === item.id ? 'drag' : ''}}"
-            direction="vertical"
-            y="{{item._y}}"
-            inertia="{{false}}"
-            damping="50"
-            out-of-bounds="{{false}}"
-            disabled="{{!canEdit}}"
-            data-id="{{item.id}}"
-            bindtouchstart="onStopTouchStart"
-            bindchange="onStopChange"
-            bindtouchend="onStopTouchEnd"
-            style="height: {{rowH}}px;"
-          >
-            <view class="stop-card">
-              <view class="stop-rail">
-                <text class="stop-no serif">{{item.no}}</text>
-              </view>
-              <view class="stop-main pressable" hover-class="pressed" bindtap="openStopEdit" data-id="{{item.id}}">
-                <view class="stop-top">
-                  <text wx:if="{{item.dayTag}}" class="stop-day">{{item.dayTag}}</text>
-                  <text wx:if="{{item.plannedTime}}" class="stop-time">{{item.plannedTime}}</text>
-                  <text class="stop-name">{{item.name}}</text>
-                  <text wx:if="{{item.latitude == null}}" class="stop-nogeo">未定位</text>
+        <view wx:else class="drag-wrap" style="height: {{areaH}}px;">
+          <movable-area class="drag-area" style="height: {{areaH}}px;">
+            <movable-view
+              wx:for="{{active.stops}}"
+              wx:key="id"
+              class="mv-stop {{dragId === item.id ? 'drag' : ''}}"
+              direction="vertical"
+              y="{{item._y}}"
+              inertia="{{false}}"
+              damping="50"
+              out-of-bounds="{{false}}"
+              disabled="{{!canEdit}}"
+              data-id="{{item.id}}"
+              bindtouchstart="onStopTouchStart"
+              bindchange="onStopChange"
+              bindtouchend="onStopTouchEnd"
+              style="height: {{rowH}}px;"
+            >
+              <view class="stop-card">
+                <view class="stop-rail">
+                  <text class="stop-no serif">{{item.no}}</text>
                 </view>
-                <text wx:if="{{item.address}}" class="stop-addr">{{item.address}}</text>
-                <text wx:if="{{item.note}}" class="stop-note">{{item.note}}</text>
+                <view class="stop-main pressable" hover-class="pressed" bindtap="openStopEdit" data-id="{{item.id}}">
+                  <view class="stop-top">
+                    <text wx:if="{{item.dayTag}}" class="stop-day">{{item.dayTag}}</text>
+                    <text wx:if="{{item.plannedTime}}" class="stop-time">{{item.plannedTime}}</text>
+                    <text class="stop-name">{{item.name}}</text>
+                    <text wx:if="{{item.latitude == null}}" class="stop-nogeo">未定位</text>
+                  </view>
+                  <text wx:if="{{item.address}}" class="stop-addr">{{item.address}}</text>
+                  <text wx:if="{{item.note}}" class="stop-note">{{item.note}}</text>
+                  <view class="stop-ai pressable" hover-class="pressed" catchtap="aiPlace" data-name="{{item.name}}">AI · 怎么玩 / 怎么逛 / 附近美食 ›</view>
+                </view>
+                <view wx:if="{{canEdit}}" class="stop-ops">
+                  <view class="stop-del" catchtap="delStop" data-id="{{item.id}}">删</view>
+                  <view class="stop-handle">≡</view>
+                </view>
               </view>
-              <view wx:if="{{canEdit}}" class="stop-ops">
-                <view class="stop-del" catchtap="delStop" data-id="{{item.id}}">删</view>
-                <view class="stop-handle">≡</view>
-              </view>
-            </view>
-          </movable-view>
-        </movable-area>
+            </movable-view>
+          </movable-area>
+          <view
+            wx:if="{{multiDay && !dragId}}"
+            wx:for="{{daySeps}}"
+            wx:for-item="sep"
+            wx:key="day"
+            class="day-sep"
+            style="top: {{sep.y}}px;"
+          >
+            <text class="day-sep-txt">{{sep.label}}</text>
+          </view>
+        </view>
 
         <view wx:if="{{canEdit && active.stops.length}}" class="btn-line" bindtap="openStopAdd">＋ 添加目的地</view>
       </view>
