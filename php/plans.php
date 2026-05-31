@@ -18,11 +18,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+/**
+ * 把一行 trip_plans 记录里的住宿/出发点字段解析成结构化输出。
+ * 返回 ['hotel' => {name,address,lat,lng}|null, 'dayStarts' => { "1": {name,address,lat,lng}, ... }]
+ */
+function plan_places(array $p): array
+{
+    $hotel = null;
+    $hname = trim((string) ($p['hotel_name'] ?? ''));
+    $hlat = $p['hotel_lat'];
+    $hlng = $p['hotel_lng'];
+    if ($hname !== '' || $hlat !== null) {
+        $hotel = [
+            'name' => $hname,
+            'address' => (string) ($p['hotel_address'] ?? ''),
+            'lat' => $hlat === null ? null : (float) $hlat,
+            'lng' => $hlng === null ? null : (float) $hlng,
+        ];
+    }
+    $dayStarts = [];
+    $raw = $p['day_starts'] ?? '';
+    if (is_string($raw) && $raw !== '') {
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) {
+            foreach ($decoded as $day => $ds) {
+                if (!is_array($ds)) {
+                    continue;
+                }
+                $dayStarts[(string) $day] = [
+                    'name' => (string) ($ds['name'] ?? ''),
+                    'address' => (string) ($ds['address'] ?? ''),
+                    'lat' => isset($ds['lat']) && $ds['lat'] !== '' && $ds['lat'] !== null ? (float) $ds['lat'] : null,
+                    'lng' => isset($ds['lng']) && $ds['lng'] !== '' && $ds['lng'] !== null ? (float) $ds['lng'] : null,
+                ];
+            }
+        }
+    }
+    return ['hotel' => $hotel, 'dayStarts' => (object) $dayStarts];
+}
+
 try {
     $pdo = db();
 
     $plans = $pdo->query(
-        'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note, sort_order
+        'SELECT id, title, cover_tone, plan_date, plan_date_end, cover_image_url, note,
+                hotel_name, hotel_address, hotel_lat, hotel_lng, day_starts, sort_order
          FROM trip_plans WHERE is_visible = 1
          ORDER BY sort_order ASC, created_at DESC, id ASC'
     )->fetchAll();
@@ -51,6 +91,7 @@ try {
     }
 
     $list = array_map(static function (array $p) use ($stopsBy): array {
+        $places = plan_places($p);
         return [
             'id' => $p['id'],
             'title' => $p['title'],
@@ -59,6 +100,8 @@ try {
             'planDateEnd' => $p['plan_date_end'] ? date('Y.m.d', strtotime((string) $p['plan_date_end'])) : null,
             'coverImageUrl' => $p['cover_image_url'] ?: null,
             'note' => $p['note'],
+            'hotel' => $places['hotel'],
+            'dayStarts' => $places['dayStarts'],
             'stops' => $stopsBy[$p['id']] ?? [],
         ];
     }, $plans);
