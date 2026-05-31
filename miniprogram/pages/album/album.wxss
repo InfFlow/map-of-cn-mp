@@ -111,6 +111,7 @@
   overflow: hidden;
   border: 1rpx solid var(--line);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .ph-img {
   width: 100%;

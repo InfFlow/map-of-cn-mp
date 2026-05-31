@@ -56,6 +56,7 @@
   margin-right: 18rpx;
   border: 1rpx solid var(--line);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
   white-space: normal;
 }
 .ptab.on {
@@ -93,6 +94,7 @@
   align-items: center;
   border-style: dashed;
   background: transparent;
+  box-shadow: none;
 }
 
 /* 计划封面卡 */
@@ -103,6 +105,7 @@
   background-position: center;
   display: flex;
   align-items: flex-end;
+  box-shadow: var(--shadow-float);
 }
 .plan-cover::after {
   content: '';
@@ -1238,6 +1241,7 @@
   margin-top: 26rpx;
   border: 1rpx solid var(--ink);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .plan-map {
   width: 100%;

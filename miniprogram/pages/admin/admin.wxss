@@ -333,6 +333,7 @@
   max-height: 92vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  box-shadow: var(--shadow-float);
   animation: sheetup 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 @keyframes sheetup {

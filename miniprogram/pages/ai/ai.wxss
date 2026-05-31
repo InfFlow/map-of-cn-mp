@@ -113,6 +113,7 @@
   margin-top: 34rpx;
   border: 1rpx solid var(--line);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
   padding: 28rpx 26rpx;
 }
 .answer-head {
