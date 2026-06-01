@@ -1,97 +1,152 @@
-# Map of Us · 微信小程序
+# Map of Us - 微信小程序情侣回忆地图
 
-记录两个人去过的地方的情侣回忆地图。微信原生小程序，直接对接 **你服务器上已有的 PHP + MySQL 后端**（ql.hlat.xyz）。
+微信原生小程序版情侣回忆地图，用来记录两个人去过的城市、纪念日、照片、手记和行程计划。项目包含小程序前端，以及可部署到 PHP + MySQL 环境的后端接口示例。
 
-- 地图首页：小程序 `<map>` 组件高亮「点亮」的省份，城市用爱心标记，点开进详情
-- 时间线：纪念日 + 每段旅程（按时间排列，tone 渐变封面、标签）
-- 城市详情：标题、引语、季节/天气/地标、标签、照片（tone 占位）、手记
-- 顶部「在一起第 N 天」：从「第 100 天」纪念日自动反推起点
+## 功能
 
-## 后端（已存在，无需重新部署）
+- 中国地图首页：用小程序 `<map>` 组件显示城市标记和点亮省份。
+- 时间线：按日期展示纪念日和旅程卡片。
+- 城市详情：展示标题、引语、天气、地标、标签、照片占位和手记。
+- 行程计划：维护旅行计划、停靠点、住宿和路线信息。
+- 点单模块：菜品分类、购物车、下单、历史订单。
+- 后台管理：PHP 单文件后台，用于管理数据、菜品、订单和上传图片。
+- 微信登录：小程序端 `wx.login()` 换取 openid，后端保存用户记录。
 
-线上接口（已配 HTTPS 证书）：
+## 目录结构
 
-| 方法 | 路径 | 说明 | 状态 |
-| --- | --- | --- | --- |
-| GET | https://ql.hlat.xyz/api/journeys.php | 全部旅程 + 纪念日 | 你原有 |
-| GET | https://ql.hlat.xyz/api/provinces.php | 已点亮省份的多边形（地图高亮用） | 本次新增 |
-
-数据库 `ql_hlat_xyz` 已有表：`journeys` / `journey_photos` / `journey_notes` / `journey_tags` / `anniversaries`（结构见 `php/schema.reference.sql`），并已有 5 段旅程示例数据。
-
-### 本次对服务器做的改动
-
-仅新增了地图高亮所需的省份多边形接口，**没有改动你已有的任何文件 / 数据**：
-
-- 新增 `/www/wwwroot/ql.hlat.xyz/api/provinces.php`
-- 新增 `/www/wwwroot/ql.hlat.xyz_private/china-provinces.json`（中国省份 GeoJSON，放在网站私有目录，不对外暴露）
-
-`provinces.php` 复用了已有的 `_private/db.php` 连接，从 `journeys` 表取出去过的省份，
-在 GeoJSON 里匹配对应省份的轮廓（数据库省名不带「省/市/自治区」后缀，用前缀匹配），
-抽稀到每环 ≤160 点、过滤掉细碎岛屿后返回，整包约 25KB。
-
-## 小程序端
-
-```
+```text
 miniprogram/
-├── app.js/json/wxss        全局配置（apiBase = https://ql.hlat.xyz/api）
-├── pages/
-│   ├── index/   地图首页：省份高亮 + 城市爱心标记 + 统计 + 在一起天数
-│   ├── timeline/ 时间线：纪念日 + 旅程卡片
-│   ├── detail/   城市详情：照片/手记/标签/天气/地标
-│   ├── menu/    菜单：分类导航 + 菜品 + 数量加减 + 购物车结算条
-│   ├── order/   确认点单：逐项备注 + 给大厨留言 + 提交
-│   └── mine/    我的：微信快捷登录 + 昵称 + 历史订单
-├── utils/
-│   ├── api.js   接口封装（journeys/provinces/menu/auth/order）
-│   └── util.js  tone→渐变、日期格式化
-└── assets/      爱心 marker 图标（脚本生成，见 tools/gen-heart.js）
+  app.js/json/wxss          小程序全局配置
+  pages/                    首页、时间线、详情、菜单、订单、我的等页面
+  utils/api.js              后端接口封装
+php/
+  *.php                     可部署到站点 /api/ 目录的接口文件
+  admin/index.php           管理后台入口，可部署到 /admin/
+  *.sql                     数据库结构与迁移脚本
+  config.example.php        私有配置示例，不要直接部署为公开文件
+  db.example.php            数据库连接示例，不要直接部署为公开文件
+tools/
+  *.js                      本地预览和图标生成脚本
 ```
 
-### 在微信开发者工具里运行
+## 后端部署
 
-1. 打开微信开发者工具 → 导入项目 → 选择本目录 `map-of-us-mp/`。
-2. AppID 已填好：`wx41376fd7ee080d4f`（`project.config.json`）。
-3. 开发阶段：详情 → 本地设置 → 勾选「不校验合法域名、TLS 版本以及 HTTPS 证书」，即可直接联网调试。
-4. 正式发布前：登录小程序管理后台 → 开发管理 → 开发设置 → 服务器域名，把
-   `https://ql.hlat.xyz` 加入 **request 合法域名**（域名需已 ICP 备案）。
+后端假设站点公开目录和私有配置目录是相邻目录，例如：
 
-## 菜单点单 + 微信快捷登录（本次新增）
+```text
+/www/wwwroot/example.com/
+  api/
+    journeys.php
+    provinces.php
+    menu.php
+    auth.php
+    order.php
+    plans.php
+    route.php
+    admin_api.php
+  admin/
+    index.php
+  uploads/
+/www/wwwroot/example.com_private/
+  db.php
+  config.php
+  china-provinces.json
+```
 
-为「她」做的点菜功能：后台维护菜品、她在小程序里挑菜填备注下单、订单回到后台查看。
-**完全独立于旅程数据，只新增表，不动你已有的任何表。**
+代码里的私有文件读取路径使用 `dirname(__DIR__) . '_private/...'`，所以如果你的接口部署在 `/www/wwwroot/example.com/api/`，私有目录应为 `/www/wwwroot/example.com_private/`。
 
-### 新增接口（`php/`，部署到 `/www/wwwroot/ql.hlat.xyz/api/`）
+### 1. 复制接口文件
 
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| GET | `/api/menu.php` | 按分类返回可见菜品（`is_visible` / `is_available` 过滤，按 `sort_order`） |
-| POST | `/api/auth.php` | 微信快捷登录：`{ code }` → `code2session` 换 openid → upsert 用户 |
-| POST | `/api/order.php` | 下单：`{ openid, remark, items:[{id,qty,remark}] }`（**价格以服务器为准，防篡改**） |
-| GET | `/api/order.php?openid=` | 该用户的历史订单 + 明细 |
+把 `php/` 下的接口文件复制到你的站点 `/api/` 目录：
 
-接口沿用已有的 `_private/db.php`，AppSecret/管理员口令等放在 `_private/config.php`（不入库、不进仓库）。
+```text
+auth.php
+journeys.php
+menu.php
+order.php
+plans.php
+provinces.php
+route.php
+admin_api.php
+```
 
-### 新增数据表（见 `php/menu.schema.sql`）
+把 `php/admin/index.php` 放到站点 `/admin/index.php`，作为网页后台入口。
 
-`app_users` / `dish_categories` / `dishes` / `orders` / `order_items`，均为 `utf8mb4`。
+### 2. 创建私有配置
 
-### 网页后台 `ql.hlat.xyz/admin`（见 `php/admin/index.php`）
+在站点旁边创建私有目录，例如 `/www/wwwroot/example.com_private/`。
 
-单文件 PHP 管理台，账号口令登录、CSRF 保护，黑白杂志风：
-- 分类：增 / 改排序 / 显隐 / 删
-- 菜品：增改、上传图片（校验 MIME + 大小，存 `/uploads/dishes/`）、显隐、删
-- 订单：列表查看、改状态（待处理 / 已接单 / 已完成 / 已取消）
+然后把示例文件复制为真实配置：
 
-### 微信快捷登录
+```text
+php/config.example.php -> /www/wwwroot/example.com_private/config.php
+php/db.example.php     -> /www/wwwroot/example.com_private/db.php
+php/china-provinces.json -> /www/wwwroot/example.com_private/china-provinces.json
+```
 
-`app.js` 的 `login()`：`wx.login()` 取 `code` → `POST /api/auth.php` 换 `openid` → 存本地缓存。
-下单时若未登录会自动触发一次登录，订单即归属到人。
+编辑 `config.php` 和 `db.php`，填入你自己的数据库、微信小程序 AppID/AppSecret、高德 Key 和管理员账号信息。
 
-> 发布前在小程序后台「服务器域名」里把 `https://ql.hlat.xyz` 加入 request 合法域名；
-> 并在 mp.weixin.qq.com 把服务器 IP 加入 IP 白名单（`code2session` 需要）。
+不要把真实的 `config.php`、`db.php`、`.env`、上传图片、数据库备份提交到仓库。
 
-## 关于照片
+### 3. 导入数据库
 
-`journey_photos.image_url` 目前为空，小程序会用每张照片的 `tone` 渐变作占位。
-等你把照片传到服务器（例如 `https://ql.hlat.xyz/uploads/xxx.jpg`）并写进
-`image_url`，小程序会自动显示真实图片，无需改代码。
+按需导入 `php/` 目录下的 SQL：
+
+1. `schema.reference.sql`：旅程、照片、手记、标签、纪念日等基础表结构参考。
+2. `menu.schema.sql`：点单、菜品、订单、用户表。
+3. `plans.migration.sql`、`plans.hotel.migration.sql`、`plans.hotels.migration.sql`、`plans.stay.migration.sql`、`plans.stopinfo.migration.sql`：行程计划相关表结构。
+4. `wish.migration.sql`：心愿相关表结构。
+
+如果你已经有线上数据库，先备份再导入迁移脚本。
+
+## 小程序配置
+
+### 1. 导入项目
+
+1. 打开微信开发者工具。
+2. 选择「导入项目」。
+3. 项目目录选择仓库根目录。
+4. AppID 使用你自己的微信小程序 AppID。
+
+仓库里的 `project.config.json` 默认使用 `touristappid`，方便开源项目导入预览。正式开发和发布时，请在微信开发者工具里改成你自己的 AppID。
+
+### 2. 配置接口域名
+
+编辑 `miniprogram/app.js`，把 `apiBase` 改为你的接口地址：
+
+```js
+globalData: {
+  apiBase: 'https://your-domain.com/api'
+}
+```
+
+开发阶段可以在微信开发者工具中勾选「不校验合法域名、TLS 版本以及 HTTPS 证书」。
+
+正式发布前，需要在微信小程序管理后台把你的域名加入 request 合法域名，例如：
+
+```text
+https://your-domain.com
+```
+
+微信登录接口会调用 `code2session`，请确保服务器可以访问微信接口，并在微信公众平台配置正确的 AppSecret 和 IP 白名单。
+
+## 私有配置示例
+
+`php/config.example.php` 和 `php/db.example.php` 只提供字段结构。真实部署时，私有目录中的文件应类似：
+
+```php
+<?php
+return [
+    'wx_appid' => 'your-wechat-mini-program-appid',
+    'wx_secret' => 'your-wechat-mini-program-secret',
+    'amap_key' => 'your-amap-web-service-key',
+    'admin_user' => 'admin',
+    'admin_pass_hash' => password_hash('change-this-password', PASSWORD_DEFAULT),
+    'upload_dir' => '/www/wwwroot/example.com/uploads',
+    'upload_base' => '/uploads',
+];
+```
+
+## 开源协议
+
+本项目使用 Apache License 2.0。你可以自由使用、修改、分发和商用，但需要保留版权和许可证声明；该协议同时包含专利授权条款。

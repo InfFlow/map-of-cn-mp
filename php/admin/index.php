@@ -4,12 +4,12 @@ declare(strict_types=1);
 /**
  * Map of Us · 运营后台
  * 单文件管理后台：总览 / 足迹 / 纪念日 / 心愿 / 行程 / 菜品 / 分类 / 订单。
- * 依赖 _private/db.php 与 _private/config.php（含 admin_user / admin_pass_hash）。
+ * 依赖相邻私有目录中的 db.php 与 config.php（含 admin_user / admin_pass_hash）。
  */
 
 session_start();
-require_once dirname(__DIR__, 2) . '/ql.hlat.xyz_private/db.php';
-$config = require dirname(__DIR__, 2) . '/ql.hlat.xyz_private/config.php';
+require_once dirname(__DIR__) . '_private/db.php';
+$config = require dirname(__DIR__) . '_private/config.php';
 
 $uploadDir = $config['upload_dir'] ?? (dirname(__DIR__) . '/uploads');
 $uploadBase = $config['upload_base'] ?? '/uploads';

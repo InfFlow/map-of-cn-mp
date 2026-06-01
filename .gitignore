@@ -2,3 +2,9 @@ node_modules/
 *.log
 .DS_Store
 miniprogram/miniprogram_npm/
+project.private.config.json
+.env
+.env.*
+*_private/
+uploads/
+php/uploads/

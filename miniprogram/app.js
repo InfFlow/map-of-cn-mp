@@ -2,8 +2,8 @@ const api = require('./utils/api')
 
 App({
   globalData: {
-    // 后端 API 根地址（你的服务器，已带 HTTPS 证书）
-    apiBase: 'https://ql.hlat.xyz/api',
+    // 后端 API 根地址，部署后改成你自己的 HTTPS 域名
+    apiBase: 'https://your-domain.com/api',
     title: 'Map of Us',
     subtitle: '我们的地图 · 一起走过的路',
     // 点菜购物车：{ [dishId]: { id, name, price, qty, remark } }

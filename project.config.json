@@ -1,7 +1,7 @@
 {
   "description": "Map of Us 情侣回忆地图小程序",
   "miniprogramRoot": "miniprogram/",
-  "appid": "wx41376fd7ee080d4f",
+  "appid": "touristappid",
   "projectname": "map-of-us",
   "setting": {
     "urlCheck": false,
