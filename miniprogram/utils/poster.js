@@ -138,7 +138,7 @@ async function buildJourneyPoster(node, trip) {
   ctx.fillStyle = COL.muted
   ctx.font = '20px Georgia, serif'
   ctx.textBaseline = 'alphabetic'
-  ctx.fillText('MAP OF US · 我们的地图', pad, cy + 16)
+  ctx.fillText('MAP OF INTL · 我们的地图', pad, cy + 16)
   // 顶部细线
   ctx.strokeStyle = COL.line
   ctx.lineWidth = 1
@@ -282,7 +282,7 @@ async function buildItineraryPoster(node, data) {
   ctx.fillStyle = COL.muted
   ctx.font = '20px Georgia, serif'
   ctx.textBaseline = 'alphabetic'
-  ctx.fillText('MAP OF US · 行程单', pad, cy + 16)
+  ctx.fillText('MAP OF INTL · 行程单', pad, cy + 16)
   ctx.strokeStyle = COL.line
   ctx.lineWidth = 1
   ctx.beginPath(); ctx.moveTo(pad, cy + 30); ctx.lineTo(W - pad, cy + 30); ctx.stroke()
@@ -358,7 +358,7 @@ async function buildItineraryPoster(node, data) {
   ctx.beginPath(); ctx.moveTo(pad, cy); ctx.lineTo(W - pad, cy); ctx.stroke()
   ctx.fillStyle = COL.faint
   ctx.font = '20px Georgia, serif'
-  ctx.fillText('用 MAP OF US 规划每一次出发', pad, cy + 34)
+  ctx.fillText('用 MAP OF INTL 规划每一次出发', pad, cy + 34)
 
   return new Promise((resolve, reject) => {
     wx.canvasToTempFilePath({
@@ -414,7 +414,7 @@ async function buildRecapPoster(node, data) {
   let cy = 56
   ctx.fillStyle = COL.muted
   ctx.font = '20px Georgia, serif'
-  ctx.fillText('MAP OF US · 旅行回顾', pad, cy)
+  ctx.fillText('MAP OF INTL · 旅行回顾', pad, cy)
   ctx.strokeStyle = COL.line
   ctx.lineWidth = 1
   ctx.beginPath(); ctx.moveTo(pad, cy + 14); ctx.lineTo(W - pad, cy + 14); ctx.stroke()
@@ -507,7 +507,7 @@ async function buildRecapPoster(node, data) {
   ctx.beginPath(); ctx.moveTo(pad, cy); ctx.lineTo(W - pad, cy); ctx.stroke()
   ctx.fillStyle = COL.faint
   ctx.font = '20px Georgia, serif'
-  ctx.fillText('用 MAP OF US 记录每一次出发', pad, cy + 34)
+  ctx.fillText('用 MAP OF INTL 记录每一次出发', pad, cy + 34)
 
   return new Promise((resolve, reject) => {
     wx.canvasToTempFilePath({

@@ -1,4 +1,4 @@
--- Map of Us · 点菜功能相关表
+-- Map of intl · 点菜功能相关表
 -- 与现有 journeys/anniversaries 等表互不影响，全部新增。
 -- 字符集与现有表保持一致：utf8mb4 / utf8mb4_unicode_ci
 

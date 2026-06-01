@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Map of Us · 高德路线规划代理
+ * Map of intl · 高德路线规划代理
  * 入参（GET 或 JSON POST）：
  *   origin       "lng,lat"   起点
  *   destination  "lng,lat"   终点

@@ -4,7 +4,7 @@ App({
   globalData: {
     // 后端 API 根地址，部署后改成你自己的 HTTPS 域名
     apiBase: 'https://your-domain.com/api',
-    title: 'Map of Us',
+    title: 'Map of intl',
     subtitle: '我们的地图 · 一起走过的路',
     // 点菜购物车：{ [dishId]: { id, name, price, qty, remark } }
     cart: {},

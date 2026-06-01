@@ -44,7 +44,7 @@ const catBar = cats.map((c, i) => `<span class="catchip ${i === 0 ? 'on' : ''}">
 
 const dishesScreen = `
   <div class="pad">
-    <div class="mast-row"><span class="mast-name">MAP OF US</span><span class="mast-vol">ADMIN</span></div>
+    <div class="mast-row"><span class="mast-name">MAP OF INTL</span><span class="mast-vol">ADMIN</span></div>
     <div class="rule"></div>
     <div class="tabs"><span class="tab on">菜品</span><span class="tab">分类</span><span class="tab">订单</span></div>
     <div class="catbar2">${catBar}</div>
@@ -68,7 +68,7 @@ const catRows = cats
 
 const categoriesScreen = `
   <div class="pad">
-    <div class="mast-row"><span class="mast-name">MAP OF US</span><span class="mast-vol">ADMIN</span></div>
+    <div class="mast-row"><span class="mast-name">MAP OF INTL</span><span class="mast-vol">ADMIN</span></div>
     <div class="rule"></div>
     <div class="tabs"><span class="tab">菜品</span><span class="tab on">分类</span><span class="tab">订单</span></div>
     <div class="cat-list">${catRows}</div>
@@ -95,7 +95,7 @@ const orderCards = orders
 
 const ordersScreen = `
   <div class="pad">
-    <div class="mast-row"><span class="mast-name">MAP OF US</span><span class="mast-vol">ADMIN</span></div>
+    <div class="mast-row"><span class="mast-name">MAP OF INTL</span><span class="mast-vol">ADMIN</span></div>
     <div class="rule"></div>
     <div class="tabs"><span class="tab">菜品</span><span class="tab">分类</span><span class="tab on">订单</span></div>
     <div class="order-list">${orderCards}</div>
@@ -168,7 +168,7 @@ const css = `
   .o-total{font-size:16px;font-weight:700;}
 `
 
-const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>Map of Us · 管理后台预览</title><style>${css}</style></head><body>
+const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>Map of intl · 管理后台预览</title><style>${css}</style></head><body>
   <div class="col"><div class="label">管理 · 菜品</div><div class="phone"><div class="bar">后台管理</div><div class="screen">${dishesScreen}</div></div></div>
   <div class="col"><div class="label">管理 · 分类</div><div class="phone"><div class="bar">后台管理</div><div class="screen">${categoriesScreen}</div></div></div>
   <div class="col"><div class="label">管理 · 订单</div><div class="phone"><div class="bar">后台管理</div><div class="screen">${ordersScreen}</div></div></div>

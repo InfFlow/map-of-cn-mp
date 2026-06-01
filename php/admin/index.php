@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Map of Us · 运营后台
+ * Map of intl · 运营后台
  * 单文件管理后台：总览 / 足迹 / 纪念日 / 心愿 / 行程 / 菜品 / 分类 / 订单。
  * 依赖相邻私有目录中的 db.php 与 config.php（含 admin_user / admin_pass_hash）。
  */
@@ -293,7 +293,7 @@ $statusLabels = ['pending' => '待处理', 'accepted' => '已接单', 'done' => 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Map of Us · 运营后台</title>
+<title>Map of intl · 运营后台</title>
 <style>
   :root{
     --bg:#f4f1ea; --paper:#faf8f3; --surface:#fff; --ink:#1b1712; --ink-2:#5b5447;
@@ -373,7 +373,7 @@ $statusLabels = ['pending' => '待处理', 'accepted' => '已接单', 'done' => 
 <?php if ($view === 'login'): ?>
   <div class="login-wrap">
     <div style="text-align:center;margin-bottom:26px">
-      <div class="serif" style="font-weight:700;letter-spacing:1px;font-size:24px">Map of Us</div>
+      <div class="serif" style="font-weight:700;letter-spacing:1px;font-size:24px">Map of intl</div>
       <div class="eyebrow" style="margin-top:6px">运营后台 · ADMIN</div>
     </div>
     <div class="card">
@@ -397,7 +397,7 @@ $statusLabels = ['pending' => '待处理', 'accepted' => '已接单', 'done' => 
 <?php else: ?>
   <header class="top">
     <div class="masthead">
-      <div class="brand">Map of Us</div>
+      <div class="brand">Map of intl</div>
       <div class="vol">运营后台 · ADMIN</div>
     </div>
     <nav class="tabs">

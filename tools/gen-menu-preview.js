@@ -58,7 +58,7 @@ const catSections = cats
 
 const menuScreen = `
   <div class="pad">
-    <div class="mast-row"><span class="mast-name">MAP OF US</span><span class="mast-vol">MENU</span></div>
+    <div class="mast-row"><span class="mast-name">MAP OF INTL</span><span class="mast-vol">MENU</span></div>
     <div class="rule"></div>
     <div class="hero">
       <div class="kicker">为你下厨</div>
@@ -84,7 +84,7 @@ const orderItems = cart
 
 const orderScreen = `
   <div class="pad">
-    <div class="mast-row"><span class="mast-name">MAP OF US</span><span class="mast-vol">ORDER</span></div>
+    <div class="mast-row"><span class="mast-name">MAP OF INTL</span><span class="mast-vol">ORDER</span></div>
     <div class="rule"></div>
     <div class="hero"><div class="kicker">确认这一桌</div><div class="h1 display">点单</div></div>
     <div class="sec"><span class="sec-zh">已选菜品</span><span class="sec-en">${cart.length} 项</span></div>
@@ -97,7 +97,7 @@ const orderScreen = `
 // ---- 我的页（已登录 + 一条历史订单）----
 const mineScreen = `
   <div class="pad">
-    <div class="mast-row"><span class="mast-name">MAP OF US</span><span class="mast-vol">MINE</span></div>
+    <div class="mast-row"><span class="mast-name">MAP OF INTL</span><span class="mast-vol">MINE</span></div>
     <div class="rule"></div>
     <div class="profile"><div class="avatar serif">念</div><div class="profile-mid"><div class="profile-name serif">念念</div><div class="profile-id">已用微信登录</div></div></div>
     <div class="sec mt"><span class="sec-zh">昵称</span><span class="sec-en">NAME</span></div>
@@ -201,7 +201,7 @@ const css = `
   .ocard-total{font-size:16px;font-weight:700;}
 `
 
-const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>Map of Us · 菜单功能预览</title><style>${css}</style></head><body>
+const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>Map of intl · 菜单功能预览</title><style>${css}</style></head><body>
   <div class="col"><div class="label">菜单 · 点菜</div><div class="phone"><div class="bar">菜单</div><div class="screen">${menuScreen}</div></div></div>
   <div class="col"><div class="label">确认点单</div><div class="phone"><div class="bar">确认点单</div><div class="screen">${orderScreen}</div></div></div>
   <div class="col"><div class="label">我的 · 订单</div><div class="phone"><div class="bar">我的</div><div class="screen">${mineScreen}</div></div></div>

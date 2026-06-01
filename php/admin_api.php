@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Map of Us · 小程序内管理接口
+ * Map of intl · 小程序内管理接口
  * 管理员（owner）在小程序里维护：分类（增/改/排序/显隐/删）、菜品（增改/传图/上下架/删）、订单（列表/改状态）。
  * 鉴权：用 openid 标记 app_users.is_admin；首次用后台口令认领（claim_admin）。
  * 与 menu.php / auth.php / order.php 共用 _private/db.php、_private/config.php。

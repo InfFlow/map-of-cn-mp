@@ -103,7 +103,7 @@
 
   <view class="foot rise d5">
     <view class="hair"></view>
-    <view class="foot-txt">Map of Us · 我们的地图</view>
+    <view class="foot-txt">Map of intl · 我们的地图</view>
   </view>
 
   <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>

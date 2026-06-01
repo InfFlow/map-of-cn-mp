@@ -106,7 +106,7 @@ const idxRows = journeys
 
 const indexScreen = `
   <div class="pad">
-    <div class="mast-row"><span class="mast-name">MAP OF US</span><span class="mast-vol">VOL.01</span></div>
+    <div class="mast-row"><span class="mast-name">MAP OF INTL</span><span class="mast-vol">VOL.01</span></div>
     <div class="rule"></div>
     <div class="hero">
       <div class="kicker">我们走过的中国</div>
@@ -213,13 +213,13 @@ const detailScreen = `
     <div class="sec mt"><span class="sec-zh">手记</span><span class="sec-en">Notes</span></div>
     ${restNotes.map((n) => `<div class="note serif">${n}</div>`).join('')}
     <div class="hair mt2"></div>
-    <div class="foot-txt sp">Map of Us · 我们的地图</div>
+    <div class="foot-txt sp">Map of intl · 我们的地图</div>
     <div class="totop">\u2191</div>
   </div>`
 
 const html = `<!doctype html><html lang="zh"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Map of Us 小程序预览 · 黑白杂志极简</title>
+<title>Map of intl 小程序预览 · 黑白杂志极简</title>
 <style>
   :root{--bg:#f4f1ea;--paper:#faf8f3;--ink:#1b1712;--ink2:#5b5447;--muted:#8c8475;--faint:#b1a892;--line:rgba(27,23,18,.13);}
   *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;}

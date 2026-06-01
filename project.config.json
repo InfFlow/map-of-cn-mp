@@ -1,8 +1,8 @@
 {
-  "description": "Map of Us 情侣回忆地图小程序",
+  "description": "Map of intl 情侣回忆地图小程序",
   "miniprogramRoot": "miniprogram/",
   "appid": "touristappid",
-  "projectname": "map-of-us",
+  "projectname": "map-of-intl",
   "setting": {
     "urlCheck": false,
     "es6": true,

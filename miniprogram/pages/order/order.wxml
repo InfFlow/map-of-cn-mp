@@ -1,7 +1,7 @@
 <view class="page">
   <view class="mast rise d1">
     <view class="mast-row">
-      <text class="mast-name">MAP OF US</text>
+      <text class="mast-name">MAP OF INTL</text>
       <text class="mast-vol">ORDER</text>
     </view>
     <view class="rule"></view>

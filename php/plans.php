@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Map of Us · 旅行计划（行程）公开读取接口
+ * Map of intl · 旅行计划（行程）公开读取接口
  * 返回所有可见的计划及其目的地（按排序）。任何登录用户都可查看；编辑在 admin_api.php。
  */
 
