@@ -2,6 +2,23 @@
 
 微信原生小程序版情侣回忆地图，用来记录两个人去过的城市、纪念日、照片、手记和行程计划。项目包含小程序前端，以及可部署到 PHP + MySQL 环境的后端接口示例。
 
+## 项目预览
+
+<table>
+  <tr>
+    <td><img src="docs/images/promo-map.png" alt="情侣地图首页" /></td>
+    <td><img src="docs/images/promo-timeline.png" alt="时间线" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/promo-plans.png" alt="旅行计划" /></td>
+    <td><img src="docs/images/promo-stats.png" alt="足迹统计" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/promo-recap.png" alt="旅行回顾" /></td>
+    <td><img src="docs/images/promo-menu.png" alt="美食清单" /></td>
+  </tr>
+</table>
+
 ## 功能
 
 - 中国地图首页：用小程序 `<map>` 组件显示城市标记和点亮省份。
