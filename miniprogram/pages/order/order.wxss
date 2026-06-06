@@ -1,0 +1,154 @@
+.page {
+  padding: 24rpx 48rpx calc(220rpx + env(safe-area-inset-bottom));
+}
+
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+.hero {
+  padding: 48rpx 0 6rpx;
+}
+.hero .h1 {
+  font-size: 96rpx;
+  line-height: 1;
+  margin-top: 20rpx;
+}
+
+.block {
+  margin-top: 50rpx;
+}
+
+/* 已选菜品 */
+.oitem {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--line-soft);
+}
+.oitem-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.oitem-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.oitem-sub {
+  display: flex;
+  align-items: center;
+  margin-top: 14rpx;
+  gap: 24rpx;
+}
+.oitem-price {
+  font-size: 28rpx;
+  color: var(--ink);
+  letter-spacing: 1rpx;
+  flex: 0 0 auto;
+}
+.oitem-remark {
+  flex: 1;
+  font-size: 24rpx;
+  color: var(--ink);
+  padding: 12rpx 16rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--line-soft);
+}
+.ph {
+  color: var(--faint);
+}
+
+/* 步进器（与菜单页一致） */
+.stepper {
+  display: flex;
+  align-items: center;
+}
+.step {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx solid var(--ink);
+  font-size: 32rpx;
+  line-height: 1;
+  color: var(--ink);
+  background: var(--surface);
+}
+.step.plus {
+  background: var(--ink);
+  color: var(--bg);
+}
+.step-qty {
+  min-width: 56rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* 备注 */
+.note {
+  width: 100%;
+  min-height: 130rpx;
+  font-size: 28rpx;
+  line-height: 1.75;
+  color: var(--ink);
+  padding: 24rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--line);
+  box-sizing: border-box;
+}
+
+/* 提交条 */
+.submitbar {
+  position: fixed;
+  left: 28rpx;
+  right: 28rpx;
+  bottom: calc(32rpx + env(safe-area-inset-bottom));
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx 20rpx 32rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--ink);
+  box-shadow: var(--shadow-float);
+}
+.sb-total {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.sb-btn {
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 28rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  padding: 16rpx 40rpx;
+}
+.sb-btn.disabled {
+  opacity: 0.5;
+}
+
+@media (max-width: 360px) {
+  .hero .h1 {
+    font-size: 84rpx;
+    line-height: 1;
+  }
+}

@@ -1,0 +1,100 @@
+<view class="page">
+  <!-- 头部 -->
+  <view class="header">
+    <text class="header-title">回忆整理好了</text>
+    <text class="header-subtitle">把这次旅行的照片、地点和片段放在一起</text>
+  </view>
+
+  <!-- Tab切换 -->
+  <view class="tabs">
+    <view class="tab {{activeTab === 'overview' ? 'active' : ''}}" data-tab="overview" bindtap="switchTab">总览</view>
+    <view class="tab {{activeTab === 'places' ? 'active' : ''}}" data-tab="places" bindtap="switchTab">惊艳地点</view>
+    <view class="tab {{activeTab === 'highlights' ? 'active' : ''}}" data-tab="highlights" bindtap="switchTab">高光时刻</view>
+    <view class="tab {{activeTab === 'groups' ? 'active' : ''}}" data-tab="groups" bindtap="switchTab">时间分组</view>
+  </view>
+
+  <!-- 总览 -->
+  <view wx:if="{{activeTab === 'overview'}}" class="content">
+    <view class="card">
+      <view class="card-title">旅行手记</view>
+      <view class="card-body">
+        <rich-text class="note-text md-content" nodes="{{travelNoteHtml}}" user-select="{{true}}"></rich-text>
+        <view class="note-actions">
+          <view class="btn-share" bindtap="shareNote" hover-class="pressed">分享手记</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">这次留下了</view>
+      <view class="card-body">
+        <view class="stat-row">
+          <text class="stat-label">照片分组</text>
+          <text class="stat-value">{{groups.length}} 组</text>
+        </view>
+        <view class="stat-row">
+          <text class="stat-label">高光时刻</text>
+          <text class="stat-value">{{highlights.length}} 张</text>
+        </view>
+        <view class="stat-row">
+          <text class="stat-label">惊艳地点</text>
+          <text class="stat-value">{{amazingPlaces.length}} 个</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 惊艳地点 -->
+  <view wx:if="{{activeTab === 'places'}}" class="content">
+    <view wx:for="{{amazingPlaces}}" wx:key="name" class="place-card">
+      <view class="place-header">
+        <text class="place-rank">{{index + 1}}</text>
+        <view class="place-info">
+          <text class="place-name">{{item.name}}</text>
+          <text class="place-meta">{{item.photoCount}}张照片 · 评分{{item.avgScore}}</text>
+        </view>
+      </view>
+      <view wx:if="{{item.coverPhoto}}" class="place-cover" bindtap="previewPhoto" data-url="{{item.coverPhoto.imageUrl}}">
+        <image class="place-img" src="{{item.coverPhoto.imageUrl}}" mode="aspectFill"></image>
+      </view>
+    </view>
+
+    <view wx:if="{{amazingPlaces.length === 0}}" class="empty">
+      <text class="empty-text">还没找到特别惊艳的地点</text>
+    </view>
+  </view>
+
+  <!-- 高光时刻 -->
+  <view wx:if="{{activeTab === 'highlights'}}" class="content">
+    <view class="photo-grid">
+      <view wx:for="{{highlights}}" wx:key="imageUrl" class="photo-item" bindtap="previewPhoto" data-url="{{item.imageUrl}}">
+        <image class="photo-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+        <view class="photo-score">{{item.score}}分</view>
+        <text wx:if="{{item.title}}" class="photo-title">{{item.title}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{highlights.length === 0}}" class="empty">
+      <text class="empty-text">再多传几张照片，高光会更清楚</text>
+    </view>
+  </view>
+
+  <!-- 时间分组 -->
+  <view wx:if="{{activeTab === 'groups'}}" class="content">
+    <view wx:for="{{groups}}" wx:key="title" class="group-card">
+      <view class="group-header">
+        <text class="group-title">{{item.title}}</text>
+        <text class="group-count">{{item.count}}张</text>
+      </view>
+      <scroll-view class="group-photos" scroll-x enhanced show-scrollbar="{{false}}">
+        <view wx:for="{{item.photos}}" wx:for-item="photo" wx:key="imageUrl" class="group-photo" bindtap="previewPhoto" data-url="{{photo.imageUrl}}">
+          <image class="group-img" src="{{photo.imageUrl}}" mode="aspectFill"></image>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view wx:if="{{groups.length === 0}}" class="empty">
+      <text class="empty-text">照片还不够分组，先把这一刻收好</text>
+    </view>
+  </view>
+</view>

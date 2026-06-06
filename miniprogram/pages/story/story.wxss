@@ -1,0 +1,114 @@
+.page {
+  padding: 24rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row { display: flex; justify-content: space-between; align-items: baseline; }
+.mast-name { font-size: 20rpx; font-weight: 700; letter-spacing: 6rpx; }
+.mast-vol { font-size: 20rpx; font-weight: 700; letter-spacing: 3rpx; color: var(--muted); }
+.mast .rule { margin-top: 12rpx; }
+
+/* 英雄区 */
+.hero { padding: 48rpx 0 6rpx; }
+.hero .h1 { font-size: 96rpx; line-height: 0.96; margin-top: 20rpx; }
+.lede { font-size: 28rpx; line-height: 1.8; color: var(--ink-2); margin-top: 30rpx; max-width: 520rpx; }
+
+/* 年份切换 */
+.years-scroll { margin-top: 44rpx; white-space: nowrap; }
+.years-row { display: flex; gap: 14rpx; padding-bottom: 4rpx; }
+.year-chip {
+  flex: none;
+  padding: 12rpx 32rpx;
+  font-size: 24rpx;
+  color: var(--ink-2);
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+}
+.year-chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* 骨架屏 */
+.skeleton { margin-top: 48rpx; display: flex; flex-direction: column; gap: 18rpx; }
+.sk-line {
+  height: 26rpx;
+  border-radius: var(--radius-sm);
+  background: var(--line);
+  opacity: 0.5;
+}
+.sk-w80 { width: 80%; }
+.sk-w60 { width: 60%; }
+.sk-w90 { width: 90%; }
+.sk-w70 { width: 70%; }
+.sk-w85 { width: 85%; }
+.sk-w65 { width: 65%; }
+.sk-w75 { width: 75%; }
+.sk-w55 { width: 55%; }
+.sk-gap { height: 20rpx; }
+.loading-hint {
+  margin-top: 32rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+
+/* 故事正文 */
+.story-wrap { margin-top: 48rpx; }
+.story-meta {
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--muted);
+  margin-bottom: 28rpx;
+}
+.story-body {
+  padding: 36rpx 32rpx;
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.story-text {
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--ink);
+  display: block;
+  white-space: pre-wrap;
+}
+
+/* 操作按钮 */
+.action-row { display: flex; gap: 18rpx; margin-top: 36rpx; }
+.action-btn {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  border: 1rpx solid var(--ink);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  background: var(--surface);
+}
+.action-btn.primary { background: var(--ink); color: var(--bg); }
+
+/* 空状态 */
+.empty-state {
+  margin-top: 80rpx;
+  padding: 64rpx 40rpx;
+  text-align: center;
+  border: 1rpx dashed var(--line);
+  border-radius: var(--radius-md);
+}
+.empty-text { font-size: 28rpx; color: var(--muted); line-height: 1.8; }
+
+@media (max-width: 360px) {
+  .story-body {
+    padding: 28rpx 24rpx;
+  }
+  .action-row {
+    gap: 12rpx;
+  }
+  .action-btn,
+  .story-btn {
+    font-size: 24rpx;
+    padding: 22rpx 0;
+  }
+}

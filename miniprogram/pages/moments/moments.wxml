@@ -1,0 +1,70 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">MOMENTS</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">随手拍下的</view>
+    <view class="h1 display">旅途<view class="br"></view>剪影</view>
+    <view class="lede">随手拍、即时记录路上的碎片，不用整理归档，先拍下来再说。</view>
+  </view>
+
+  <!-- 上传按钮 -->
+  <view class="upload-bar rise d2">
+    <view class="upload-btn {{uploading ? 'disabled' : ''}} pressable" hover-class="pressed" bindtap="choose">
+      <text>{{uploading ? '上传中…' : '+ 添加剪影'}}</text>
+    </view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view wx:if="{{loading && !moments.length}}" class="waterfall">
+    <view wx:for="{{[1,2,3,4]}}" wx:key="*this" class="card">
+      <view class="sk sk-block" style="height:240rpx;"></view>
+      <view class="card-body">
+        <view class="sk sk-block" style="height:24rpx;margin-bottom:12rpx;width:80%;"></view>
+        <view class="sk sk-block" style="height:20rpx;width:60%;"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误重试态 -->
+  <view wx:if="{{error && !moments.length}}" class="empty">
+    <view class="empty-zh">{{error}}</view>
+    <view class="retry-btn pressable" hover-class="pressed" bindtap="loadMore">重试</view>
+  </view>
+
+  <!-- 瀑布流 -->
+  <view wx:if="{{moments.length}}" class="waterfall rise d3">
+    <view
+      wx:for="{{moments}}"
+      wx:key="id"
+      class="card pressable"
+      hover-class="pressed"
+      data-url="{{item.imageUrl}}"
+      data-id="{{item.id}}"
+      bindtap="preview"
+      bindlongpress="onHold"
+    >
+      <image class="card-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="true"></image>
+      <view wx:if="{{item.caption || item.tags.length}}" class="card-body">
+        <text wx:if="{{item.caption}}" class="card-caption">{{item.caption}}</text>
+        <view wx:if="{{item.tags.length}}" class="card-tags">
+          <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="tag">#{{tag}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{!loading && !error}}" class="empty">
+    <view class="empty-fig empty-fig-moments"></view>
+    <view class="empty-zh">还没有剪影</view>
+    <view class="empty-hint">随手拍下路上的瞬间，先存下来再说</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-tip">正在翻找路上的剪影…</view>
+  <view wx:elif="{{!hasMore && moments.length}}" class="loading-tip">— 已经到底了 —</view>
+</view>

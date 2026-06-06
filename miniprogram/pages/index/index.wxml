@@ -1,0 +1,218 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">VOL.01</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们走过的中国</view>
+    <view class="h1 display">我们的<view class="br"></view>地图</view>
+    <view class="lede">
+      <text wx:if="{{stats.cityCount || stats.journeyCount}}">我们去过 <text class="em serif">{{stats.cityCount}}</text> 座城市，留下 <text class="em serif">{{stats.journeyCount}}</text> 段回忆。</text>
+      <text wx:else>两个人，一座座点亮的城。</text>
+      <text wx:if="{{days > 0}}"> 在一起的第 <text class="em serif">{{days}}</text> 天。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{dailyMemory}}" class="daily-memory rise d2 pressable" hover-class="pressed" data-id="{{dailyMemory.id}}" bindtap="openDetail">
+    <image wx:if="{{dailyMemory.imageUrl}}" class="dm-bg" src="{{dailyMemory.imageUrl}}" mode="aspectFill"></image>
+    <view class="dm-scrim"></view>
+    <view class="dm-k">今日回忆</view>
+    <view class="dm-main">
+      <view class="dm-copy">
+        <text class="dm-text">{{dailyMemory.text}}</text>
+        <text class="dm-sub">{{dailyMemory.city}} · {{dailyMemory.title}}</text>
+      </view>
+      <text class="dm-arrow serif">›</text>
+    </view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="stats">
+      <view class="stat" wx:for="{{[1,2,3]}}" wx:key="*this">
+        <view class="sk sk-block" style="width:70rpx;height:60rpx;"></view>
+        <view class="sk" style="width:40rpx;height:18rpx;margin-top:16rpx;"></view>
+      </view>
+    </view>
+    <view class="block">
+      <view class="sk sk-block" style="height:34rpx;width:200rpx;"></view>
+      <view class="sk sk-block" style="height:560rpx;margin-top:24rpx;"></view>
+    </view>
+  </block>
+
+  <block wx:elif="{{!error}}">
+    <view class="block rise d2">
+      <view class="sec">
+        <text class="sec-zh">足迹地图</text>
+        <view class="legend">
+          <view class="lg"><view class="sw sw-area"></view>省份</view>
+          <view class="lg"><view class="sw sw-pin"></view>城市</view>
+          <view class="lg"><view class="sw sw-line"></view>足迹</view>
+        </view>
+      </view>
+      <view class="map-frame">
+        <view class="tick tl"></view><view class="tick tr"></view>
+        <view class="tick bl"></view><view class="tick br"></view>
+        <map
+          class="map"
+          id="map"
+          latitude="{{center.latitude}}"
+          longitude="{{center.longitude}}"
+          scale="{{scale}}"
+          markers="{{markers}}"
+          polygons="{{polygons}}"
+          polyline="{{polyline}}"
+          include-points="{{includePoints}}"
+          show-location
+          bindmarkertap="onMarkerTap"
+        ></map>
+        <view class="map-ctrl {{markerPreview ? 'with-preview' : ''}}">
+          <view class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="locateMe">◎ 我的位置</view>
+          <view wx:if="{{markers.length}}" class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="fitAllFootprints">全部足迹</view>
+        </view>
+        <view wx:if="{{markerPreview}}" class="marker-card rise" catchtap="openMarkerPreview">
+          <image wx:if="{{markerPreview.imageUrl}}" class="marker-img" src="{{markerPreview.imageUrl}}" mode="aspectFill"></image>
+          <view wx:else class="marker-img marker-ph"></view>
+          <view class="marker-mid">
+            <view class="marker-city serif">{{markerPreview.city}}</view>
+            <view class="marker-title">{{markerPreview.title || markerPreview.intro || '打开这段回忆'}}</view>
+            <view class="marker-date">{{markerPreview.date}}</view>
+          </view>
+          <view class="marker-go">回看</view>
+          <view class="marker-close" catchtap="closeMarkerPreview">×</view>
+        </view>
+      </view>
+      <view class="map-cap">{{mapCaption}}</view>
+    </view>
+
+    <view wx:if="{{upcomingPlan}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">近期行程</text>
+        <text class="sec-en tap" bindtap="goPlans">Plans ›</text>
+      </view>
+      <view class="plan-mini pressable" hover-class="pressed" bindtap="goPlans">
+        <view class="plan-mini-main">
+          <text class="plan-mini-title">{{upcomingPlan.title}}</text>
+          <text class="plan-mini-sub">{{upcomingPlan.date || '待定日期'}} · {{upcomingPlan.stops}} 个目的地</text>
+        </view>
+        <text class="plan-mini-arrow serif">›</text>
+      </view>
+    </view>
+
+    <!-- 今天的回忆 -->
+    <view wx:if="{{onThisDay.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">今天的回忆</text>
+        <text class="sec-en">On This Day</text>
+      </view>
+      <view class="otd-list">
+        <view
+          wx:for="{{onThisDay}}"
+          wx:key="dateShort"
+          class="otd {{item.type === 'journey' ? 'pressable' : ''}}"
+          hover-class="{{item.type === 'journey' ? 'pressed' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="{{item.type === 'journey' ? 'openDetail' : ''}}"
+        >
+          <view class="otd-badge serif">{{item.yearsAgo > 0 ? item.yearsAgo + ' 年前' : '今天'}}</view>
+          <view class="otd-mid">
+            <view class="otd-title">{{item.type === 'journey' ? item.city : item.label}}</view>
+            <view class="otd-sub">{{item.type === 'journey' ? item.title : '纪念日'}} · {{item.dateShort}}</view>
+          </view>
+          <text wx:if="{{item.type === 'journey'}}" class="otd-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{recent.length}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">最近的回忆</text>
+        <text class="sec-en tap" bindtap="goTimeline">Timeline ›</text>
+      </view>
+      <view class="index-list">
+        <view
+          wx:for="{{recent}}"
+          wx:key="id"
+          class="idx-row pressable stagger-item"
+          style="animation-delay: {{0.05 + index * 0.08}}s"
+          hover-class="pressed"
+          hover-stay-time="60"
+          bindtap="openDetail"
+          data-id="{{item.id}}"
+        >
+          <text class="idx-no serif">{{item.no}}</text>
+          <view class="idx-mid">
+            <view class="idx-city">{{item.city}}<text class="idx-season">{{item.season}}</text></view>
+            <view class="idx-title">{{item.title}}</view>
+          </view>
+          <text class="idx-date">{{item.dateShort}}</text>
+          <text class="idx-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{days > 0 || nextAnniv}}" class="anv-mini below rise d4">
+      <view wx:if="{{days > 0}}" class="anv-cell">
+        <text class="anv-k">在一起</text>
+        <text class="anv-v serif">{{days}}<text class="anv-u">天</text></text>
+      </view>
+      <view wx:if="{{days > 0 && nextAnniv}}" class="anv-sep"></view>
+      <view wx:if="{{nextAnniv}}" class="anv-cell anv-grow">
+        <text class="anv-k">{{nextAnniv.today ? '今天' : '距 ' + nextAnniv.label}}</text>
+        <text class="anv-v2">{{nextAnniv.today ? nextAnniv.label : nextAnniv.text}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{weather}}" class="wx-strip below rise d4">
+      <view class="wx-l">
+        <text class="wx-temp serif">{{weather.temperature}}°</text>
+        <view class="wx-mid">
+          <text class="wx-cond">{{weather.city}} · {{weather.weather}}</text>
+          <text wx:if="{{weather.dayTemp}}" class="wx-range">{{weather.nightTemp}}° ~ {{weather.dayTemp}}° · 湿度 {{weather.humidity}}%</text>
+          <text wx:else class="wx-range">湿度 {{weather.humidity}}% · {{weather.winddirection}}风 {{weather.windpower}}级</text>
+        </view>
+      </view>
+      <text class="wx-tip">{{weather.tip}}</text>
+    </view>
+    <view wx:elif="{{weatherDenied}}" class="wx-strip wx-off below pressable" hover-class="pressed" bindtap="enableWeather">
+      <text class="wx-off-txt">开启定位，看看今天和你在一起的天气 ›</text>
+    </view>
+
+    <view class="foot rise d5">
+      <view class="hair"></view>
+      <view class="foot-txt">这张地图，跟着我们之后的每一次出发慢慢长大</view>
+    </view>
+  </block>
+
+  <view wx:if="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+
+  <!-- 今日纪念日 -->
+  <view wx:if="{{showAnniversary && todayAnniversary}}" class="ann-toast" catchtap="closeAnniversary">
+    <view class="ann-card">
+      <view class="ann-label">🎉 今天是</view>
+      <view class="ann-title serif">{{todayAnniversary.label}}</view>
+      <view wx:if="{{todayAnniversary.yearsCount > 0}}" class="ann-years">第 {{todayAnniversary.yearsCount}} 年</view>
+      <view class="ann-hint">轻触关闭</view>
+    </view>
+  </view>
+
+  <!-- 今天N年前 -->
+  <view wx:if="{{showMemory && todayMemory}}" class="memory-toast" catchtap="closeMemory">
+    <view class="mt-card" catchtap="openMemoryDetail">
+      <view class="mt-years">{{todayMemory.yearsAgo}} 年前的今天</view>
+      <view class="mt-city serif">{{todayMemory.city}}</view>
+      <view wx:if="{{todayMemory.title}}" class="mt-title">{{todayMemory.title}}</view>
+      <image wx:if="{{todayMemory.imageUrl}}" class="mt-img" src="{{todayMemory.imageUrl}}" mode="aspectFill"></image>
+      <view class="mt-hint">点击查看回忆 · 轻触空白关闭</view>
+    </view>
+  </view>
+</view>

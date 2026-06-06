@@ -1,0 +1,10 @@
+node_modules/
+*.log
+.DS_Store
+miniprogram/miniprogram_npm/
+project.private.config.json
+CUsersnzjunDesktopadmin_server.php
+claude-muyuan.ps1
+upload-ai-files.ps1
+tools/patch_config.py
+tools/patch_admin_api.py

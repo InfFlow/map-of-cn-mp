@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "我的足迹地图",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
+}

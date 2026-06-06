@@ -1,0 +1,931 @@
+.page {
+  padding: var(--page-top) var(--page-x) calc(var(--tabbar-h) + var(--page-bottom));
+}
+
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+/* 英雄区 */
+.hero {
+  padding: var(--hero-top) 0 var(--hero-bottom);
+}
+.hero .h1 {
+  font-size: var(--hero-title);
+  line-height: 1;
+  margin-top: 16rpx;
+  letter-spacing: 0;
+}
+.hero .br {
+  height: 0;
+}
+.lede {
+  font-size: var(--hero-lede);
+  line-height: 1.75;
+  color: var(--ink-2);
+  margin-top: 22rpx;
+  max-width: 560rpx;
+}
+.lede .em {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 32rpx;
+}
+
+/* 数据条 */
+.stats {
+  display: flex;
+  border-top: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  margin-top: 48rpx;
+}
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+  position: relative;
+}
+.stat .vr {
+  position: absolute;
+  left: 0;
+  top: 28rpx;
+  bottom: 28rpx;
+  width: 1rpx;
+  background: var(--line);
+}
+.stat .n {
+  font-size: 72rpx;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.stat .l {
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--ink-2);
+  margin-top: 12rpx;
+}
+.stat .le {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 16rpx;
+  font-style: italic;
+  letter-spacing: 1rpx;
+  color: var(--faint);
+  margin-top: 4rpx;
+}
+
+/* 区块 */
+.block {
+  margin-top: var(--block-gap);
+}
+.sec-en.tap {
+  /* 可点时给一点点击区域 */
+  padding: 6rpx 0 6rpx 16rpx;
+}
+
+/* 图例 */
+.legend {
+  display: flex;
+  gap: 24rpx;
+}
+.lg {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--muted);
+}
+.sw {
+  width: 16rpx;
+  height: 16rpx;
+}
+.sw-area {
+  background: var(--line);
+  border: 1rpx solid var(--ink);
+}
+.sw-pin {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.sw-line {
+  width: 22rpx;
+  height: 0;
+  border-top: 2rpx dashed var(--ink);
+}
+
+/* 地图：单色描边相框 + 四角刻度 + 图注 */
+.map-frame {
+  border: 1rpx solid var(--line);
+  padding: 12rpx;
+  background: var(--paper);
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.tick {
+  position: absolute;
+  width: 16rpx;
+  height: 16rpx;
+  border: 2rpx solid var(--ink);
+}
+.tick.tl { left: -2rpx; top: -2rpx; border-right: 0; border-bottom: 0; }
+.tick.tr { right: -2rpx; top: -2rpx; border-left: 0; border-bottom: 0; }
+.tick.bl { left: -2rpx; bottom: -2rpx; border-right: 0; border-top: 0; }
+.tick.br { right: -2rpx; bottom: -2rpx; border-left: 0; border-top: 0; }
+.map {
+  width: 100%;
+  height: 520rpx;
+  display: block;
+}
+.map-ctrl {
+  position: absolute;
+  right: 20rpx;
+  bottom: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  transition: bottom 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 4;
+}
+.map-ctrl.with-preview {
+  bottom: 178rpx;
+}
+.map-btn {
+  margin-top: 12rpx;
+  padding: 10rpx 24rpx;
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink);
+  background: rgba(250, 248, 243, 0.94);
+  border: 1rpx solid var(--ink);
+  border-radius: var(--radius-full);
+  text-align: center;
+  transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1), background 0.18s ease;
+}
+.map-btn.pressed {
+  transform: scale(0.94);
+  background: var(--ink);
+  color: var(--paper);
+}
+.map-cap {
+  margin-top: 14rpx;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--muted);
+  text-align: center;
+}
+.plan-mini {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 24rpx;
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.plan-mini-main {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.plan-mini-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.plan-mini-sub {
+  font-size: 22rpx;
+  color: var(--muted);
+}
+.plan-mini-arrow {
+  flex: none;
+  font-size: 34rpx;
+  color: var(--muted);
+}
+
+/* 热力图例 + 统计 */
+.heat-cap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 12rpx;
+}
+.heat-scale {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+.heat-sw {
+  width: 34rpx;
+  height: 14rpx;
+  border: 1rpx solid var(--line);
+}
+.heat-lab {
+  font-size: 18rpx;
+  letter-spacing: 1rpx;
+  color: var(--faint);
+  margin: 0 4rpx;
+}
+.heat-txt {
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink-2);
+}
+
+/* 纪念日倒数贴边小组件 */
+.anv-mini {
+  display: flex;
+  align-items: stretch;
+  margin-top: 36rpx;
+  border: 1rpx solid var(--ink);
+  background: linear-gradient(135deg, var(--paper) 0%, #ffffff 100%);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.anv-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 20rpx 24rpx;
+}
+.anv-grow {
+  flex: 1;
+}
+.anv-sep {
+  width: 1rpx;
+  background: var(--line);
+}
+.anv-k {
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.anv-v {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.anv-u {
+  font-size: 20rpx;
+  font-weight: 400;
+  margin-left: 4rpx;
+  color: var(--ink-2);
+}
+.anv-v2 {
+  font-size: 28rpx;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+/* 点亮城市清单 */
+.ledger {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx 28rpx;
+  margin-top: 22rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid var(--line);
+}
+.led {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+  font-size: 24rpx;
+  letter-spacing: 1rpx;
+  color: var(--ink);
+}
+.led-no {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: var(--faint);
+}
+
+/* 编号式回忆列表 */
+.idx-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.idx-row.stagger-item {
+  opacity: 0;
+  animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.idx-row:last-child {
+  border-bottom: 0;
+}
+.idx-no {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--faint);
+  width: 48rpx;
+  flex: 0 0 48rpx;
+}
+.idx-mid {
+  flex: 1;
+  min-width: 0;
+}
+.idx-city {
+  font-size: 32rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 14rpx;
+}
+.idx-season {
+  font-size: 20rpx;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 2rpx;
+}
+.idx-title {
+  font-size: 24rpx;
+  color: var(--ink-2);
+  margin-top: 6rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.idx-date {
+  font-size: 20rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+  flex: 0 0 auto;
+}
+.idx-arrow {
+  flex: 0 0 auto;
+  font-size: 28rpx;
+  color: var(--faint);
+  margin-left: 6rpx;
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 64rpx;
+}
+.foot-txt {
+  margin-top: 30rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+
+/* 足迹成就徽章 */
+.ach-line {
+  font-size: 24rpx;
+  color: var(--ink-2);
+  margin-bottom: 22rpx;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+.badge {
+  font-size: 24rpx;
+  letter-spacing: 0.5rpx;
+  border: 1rpx solid var(--line);
+  color: var(--faint);
+  padding: 10rpx 20rpx;
+  border-radius: var(--radius-full);
+}
+.badge.on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* 今日天气条 */
+.wx-strip {
+  margin-top: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 28rpx 32rpx;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--paper) 100%);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+.wx-strip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 160rpx;
+  height: 160rpx;
+  background: radial-gradient(circle, rgba(27, 23, 18, 0.02) 0%, transparent 70%);
+  pointer-events: none;
+}
+.wx-l {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  min-width: 0;
+}
+.wx-temp {
+  font-size: 64rpx;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.anv-mini.below,
+.wx-strip.below {
+  margin-top: 34rpx;
+}
+.wx-mid {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.wx-cond {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.wx-range {
+  font-size: 20rpx;
+  color: var(--muted);
+  margin-top: 4rpx;
+}
+.wx-tip {
+  flex: 0 1 auto;
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 20rpx;
+  color: var(--ink-2);
+  text-align: right;
+  max-width: 320rpx;
+}
+.wx-off {
+  justify-content: center;
+}
+.wx-off-txt {
+  font-size: 24rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+
+/* 每天打开都有一个情绪入口 */
+.daily-memory {
+  margin-top: 28rpx;
+  padding: 34rpx 32rpx;
+  border: 1rpx solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  min-height: 220rpx;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.dm-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dm-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(27, 23, 18, 0.08) 0%, rgba(27, 23, 18, 0.72) 100%);
+}
+.dm-k {
+  position: relative;
+  z-index: 1;
+  font-size: 20rpx;
+  letter-spacing: 4rpx;
+  color: rgba(250, 248, 243, 0.78);
+  margin-bottom: 14rpx;
+}
+.dm-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+.dm-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.dm-text {
+  font-size: 36rpx;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--paper);
+}
+.dm-sub {
+  font-size: 22rpx;
+  color: rgba(250, 248, 243, 0.76);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dm-arrow {
+  flex: none;
+  font-size: 42rpx;
+  color: rgba(250, 248, 243, 0.72);
+}
+
+/* 地图 marker 预览卡 */
+.marker-card {
+  position: absolute;
+  left: 28rpx;
+  right: 28rpx;
+  bottom: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 20rpx 18rpx;
+  background: rgba(250, 248, 243, 0.96);
+  border: 1rpx solid var(--ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  z-index: 5;
+}
+.marker-img {
+  flex: none;
+  width: 118rpx;
+  height: 118rpx;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+}
+.marker-ph {
+  opacity: 0.12;
+}
+.marker-mid {
+  flex: 1;
+  min-width: 0;
+}
+.marker-city {
+  font-size: 34rpx;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.marker-title {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.marker-date {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: var(--muted);
+}
+.marker-go {
+  flex: none;
+  padding: 10rpx 18rpx;
+  border: 1rpx solid var(--ink);
+  border-radius: var(--radius-full);
+  font-size: 20rpx;
+  color: var(--ink);
+}
+.marker-close {
+  position: absolute;
+  right: 10rpx;
+  top: 4rpx;
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 34rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--muted);
+}
+
+/* 今天的回忆 */
+.otd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.otd {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx 24rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-md);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+.otd.pressable:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 12rpx rgba(27, 23, 18, 0.04);
+}
+.otd-badge {
+  flex: none;
+  font-size: 20rpx;
+  letter-spacing: 1rpx;
+  color: var(--bg);
+  background: var(--ink);
+  padding: 8rpx 14rpx;
+  border-radius: var(--radius-sm);
+}
+.otd-mid {
+  flex: 1;
+  min-width: 0;
+}
+.otd-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.otd-sub {
+  font-size: 20rpx;
+  color: var(--muted);
+  margin-top: 4rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.otd-arrow {
+  flex: none;
+  font-size: 28rpx;
+  color: var(--faint);
+}
+
+/* 纪念日轮播 */
+.anniv-swiper {
+  height: 260rpx;
+}
+.anniv-item {
+  box-sizing: border-box;
+  padding-right: 18rpx;
+}
+.anniv-card {
+  height: 100%;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
+  padding: 28rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+}
+.anniv-card.today {
+  background: linear-gradient(150deg, #2a2419 0%, var(--ink) 64%);
+  border-color: var(--ink);
+}
+.anniv-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.anniv-kicker {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.anniv-card.today .anniv-kicker {
+  color: rgba(244, 241, 234, 0.7);
+}
+.anniv-sub {
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 20rpx;
+  color: var(--faint);
+}
+.anniv-card.today .anniv-sub {
+  color: rgba(244, 241, 234, 0.7);
+}
+.anniv-count {
+  font-size: 56rpx;
+  line-height: 1.1;
+  margin-top: 18rpx;
+  color: var(--ink);
+}
+.anniv-card.today .anniv-count {
+  color: var(--bg);
+}
+.anniv-label {
+  font-size: 28rpx;
+  font-weight: 700;
+  margin-top: auto;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.anniv-card.today .anniv-label {
+  color: var(--bg);
+}
+.anniv-date {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 20rpx;
+  color: var(--muted);
+  margin-top: 6rpx;
+}
+.anniv-card.today .anniv-date {
+  color: rgba(244, 241, 234, 0.6);
+}
+
+/* 今天N年前记忆弹卡 */
+.memory-toast { position: fixed; inset: 0; background: var(--mask-soft); z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding-bottom: calc(120rpx + env(safe-area-inset-bottom)); }
+.mt-card { background: var(--bg); width: 580rpx; padding: 40rpx; border: 1rpx solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-float); }
+.mt-years { font-size: 20rpx; letter-spacing: 3rpx; color: var(--muted); margin-bottom: 10rpx; }
+.mt-city { font-size: 56rpx; line-height: 1; margin-bottom: 8rpx; }
+.mt-title { font-size: 28rpx; color: var(--ink-2); margin-bottom: 16rpx; }
+.mt-img { width: 100%; height: 280rpx; display: block; margin-bottom: 16rpx; }
+.mt-hint { font-size: 20rpx; color: var(--faint); text-align: center; }
+
+.ann-toast { position: fixed; inset: 0; background: var(--mask-soft); z-index: 210; display: flex; align-items: center; justify-content: center; }
+.ann-card { background: var(--bg); width: 520rpx; padding: 60rpx 48rpx; text-align: center; border: 1rpx solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-float); }
+.ann-label { font-size: 20rpx; letter-spacing: 3rpx; color: var(--muted); margin-bottom: 16rpx; }
+.ann-title { font-size: 56rpx; line-height: 1.2; margin-bottom: 20rpx; }
+.ann-years { font-size: 32rpx; color: var(--ink-2); margin-bottom: 24rpx; }
+.ann-hint { font-size: 20rpx; color: var(--faint); }
+
+.daily-quote { margin-top: 20rpx; padding: 20rpx 0; border-top: 1rpx solid var(--line-soft); }
+.dq-text { font-size: 28rpx; color: var(--ink-2); line-height: 1.8; font-style: italic; }
+
+.next-ann { display: flex; align-items: baseline; gap: 12rpx; margin-top: 8rpx; }
+.na-days { font-size: 40rpx; font-family: Georgia, serif; color: var(--ink); line-height: 1; }
+.na-label { font-size: 24rpx; color: var(--muted); }
+
+/* 快捷功能入口 */
+.shortcuts {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+.shortcut-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  padding: 32rpx 16rpx;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--paper) 100%);
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius-lg);
+  transition: all 0.2s ease;
+}
+.shortcut-item:active {
+  transform: translateY(2rpx);
+}
+.shortcut-icon {
+  font-size: 48rpx;
+  line-height: 1;
+}
+.shortcut-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+.shortcut-title {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+.shortcut-hint {
+  font-size: 18rpx;
+  color: var(--muted);
+}
+
+/* 快捷功能入口 */
+
+@media (max-width: 360px) {
+  .map {
+    height: 460rpx;
+  }
+  .daily-memory {
+    min-height: 190rpx;
+    padding: 28rpx 26rpx;
+  }
+  .dm-text {
+    font-size: 32rpx;
+  }
+  .marker-card {
+    left: 18rpx;
+    right: 18rpx;
+    bottom: 18rpx;
+    padding: 16rpx;
+  }
+  .marker-img {
+    width: 96rpx;
+    height: 96rpx;
+  }
+  .map-ctrl.with-preview {
+    bottom: 152rpx;
+  }
+}
+
+/* 日常体验打磨：首屏只让地图、今日回忆和最近足迹成为视觉主角 */
+.block {
+  margin-top: 48rpx;
+}
+.legend {
+  gap: 14rpx;
+  opacity: 0.42;
+}
+.lg {
+  font-size: 18rpx;
+  color: var(--faint);
+}
+.map-cap {
+  margin-top: 10rpx;
+  opacity: 0.58;
+}
+.daily-memory {
+  margin-top: 24rpx;
+  min-height: 204rpx;
+}
+.plan-mini {
+  padding: 22rpx 24rpx;
+  border-color: var(--line-soft);
+  box-shadow: none;
+}
+.plan-mini-title {
+  font-size: 28rpx;
+}
+.plan-mini-sub {
+  color: var(--faint);
+}
+.marker-card {
+  border-color: rgba(27, 23, 18, 0.16);
+  box-shadow: 0 14rpx 40rpx rgba(27, 23, 18, 0.14);
+}
+.anv-mini,
+.wx-strip {
+  border-color: var(--line-soft);
+  box-shadow: none;
+}
+.wx-strip::before {
+  display: none;
+}
+.anv-mini.below,
+.wx-strip.below {
+  margin-top: 26rpx;
+}
+
+@media (max-width: 360px) {
+  .block {
+    margin-top: 42rpx;
+  }
+  .legend {
+    display: none;
+  }
+  .daily-memory {
+    min-height: 184rpx;
+  }
+  .map-cap {
+    font-size: 18rpx;
+  }
+}

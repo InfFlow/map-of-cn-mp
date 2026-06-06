@@ -1,0 +1,16 @@
+{
+  "description": "Map of Us 情侣回忆地图小程序",
+  "miniprogramRoot": "miniprogram/",
+  "appid": "wx41376fd7ee080d4f",
+  "projectname": "map-of-us",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "latest"
+}

@@ -1,0 +1,24 @@
+<view wx:if="{{show}}" class="pv-mask pv-enter" catchtouchmove="noop" bindtap="close">
+  <swiper
+    class="pv-swiper"
+    current="{{idx}}"
+    bindchange="onChange"
+    duration="220"
+    catchtap="noop"
+  >
+    <swiper-item wx:for="{{urls}}" wx:key="*this" class="pv-item">
+      <image class="pv-img" src="{{item}}" mode="aspectFit" bindtap="close"></image>
+    </swiper-item>
+  </swiper>
+
+  <view class="pv-top" catchtap="noop">
+    <text class="pv-count">{{idx + 1}} / {{urls.length}}</text>
+    <view class="pv-x" catchtap="close">✕</view>
+  </view>
+
+  <view class="pv-bar" catchtap="noop">
+    <view class="pv-save {{saving ? 'on' : ''}}" catchtap="save">
+      {{saving ? '保存中…' : '保存到相册'}}
+    </view>
+  </view>
+</view>

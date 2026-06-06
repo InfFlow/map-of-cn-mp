@@ -1,0 +1,699 @@
+<view class="wrap">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">ITINERARY</text>
+      <text class="mast-vol">{{plans.length ? plans.length + ' PLANS' : '出发之前'}}</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">出发之前</view>
+    <view class="h1 display">我们的<view class="br"></view>旅行计划</view>
+    <view wx:if="{{!loading && plans.length}}" class="hero-sub">共 {{plans.length}} 个计划 · {{totalStops}} 个目的地</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:64rpx;width:60%;"></view>
+      <view class="sk sk-block" style="height:300rpx;margin-top:30rpx;"></view>
+      <view class="sk sk-block" style="height:120rpx;margin-top:20rpx;"></view>
+    </view>
+  </block>
+
+  <view wx:elif="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
+
+  <block wx:else>
+    <!-- 计划选择条 -->
+    <view class="block rise d2">
+      <scroll-view scroll-x class="tab-scroll" show-scrollbar="{{false}}" enhanced>
+        <view wx:if="{{canEdit}}" class="ptab add" bindtap="openPlanAdd">＋ 计划下一次出发</view>
+        <view
+          wx:for="{{plans}}"
+          wx:key="id"
+          class="ptab {{index === activeIndex ? 'on' : ''}}"
+          data-index="{{index}}"
+          bindtap="selectPlan"
+        >
+          <text class="ptab-title">{{item.title}}</text>
+          <text class="ptab-meta">{{item.stops.length}} 站{{item.planDateText ? ' · ' + item.planDateText : ''}}</text>
+          <text wx:if="{{!item.visible}}" class="ptab-hidden">私密</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{!active}}" class="empty">
+      <view class="empty-fig empty-fig-plans"></view>
+      <view class="empty-zh">先把想去的地方放进计划里</view>
+      <view class="empty-en">No itineraries yet</view>
+      <view wx:if="{{canEdit}}" class="btn-line" bindtap="openPlanAdd">＋ 计划下一次出发</view>
+      <view wx:else class="empty-hint">登录后就能和 TA 一起补计划</view>
+    </view>
+
+    <block wx:else>
+      <!-- 计划封面卡 -->
+      <view class="block rise d3">
+        <view class="plan-cover {{active.coverImageUrl ? 'has-img' : ''}}" style="background-image: {{active.coverGrad}};">
+          <image wx:if="{{active.coverImageUrl}}" class="plan-cover-img" src="{{active.coverImageUrl}}" mode="aspectFill"></image>
+          <text class="plan-figno figno">PLAN</text>
+          <text wx:if="{{active.dayCountText}}" class="plan-days">{{active.dayCountText}}</text>
+          <view class="plan-cover-foot">
+            <text class="plan-cover-city display">{{active.title}}</text>
+            <text wx:if="{{active.planDateText}}" class="plan-cover-date">{{active.planDateText}}{{active.planDateEndText ? ' – ' + active.planDateEndText : ''}}</text>
+          </view>
+        </view>
+        <view wx:if="{{active.note}}" class="plan-note">{{active.note}}</view>
+        <view wx:if="{{active.softSummary}}" class="plan-soft-summary">{{active.softSummary}}</view>
+
+        <!-- 路线预览 -->
+        <view wx:if="{{geoStopCount > 0}}" class="plan-map-wrap">
+          <view class="map-title-row">
+            <text class="map-title serif">{{mapDayFilter ? '当天路线预览' : '整段路线预览'}}</text>
+            <text class="map-sub">{{active.mapSummary}}</text>
+          </view>
+          <scroll-view wx:if="{{mapDayChips.length > 1}}" class="map-days" scroll-x>
+            <view wx:for="{{mapDayChips}}" wx:key="day" class="map-day {{mapDayFilter === item.day ? 'on' : ''}}" hover-class="pressed" data-day="{{item.day}}" catchtap="setMapDay">
+              <text wx:if="{{item.day !== 0}}" class="map-day-dot" style="background:{{item.color}}"></text>{{item.label}}
+            </view>
+          </scroll-view>
+          <map
+            id="planMap"
+            class="plan-map"
+            latitude="{{mapCenter.latitude}}"
+            longitude="{{mapCenter.longitude}}"
+            scale="{{mapScale}}"
+            markers="{{mapMarkers}}"
+            polyline="{{mapPolyline}}"
+            include-points="{{mapInclude}}"
+            show-location="{{false}}"
+            enable-rotate="{{false}}"
+            enable-overlooking="{{false}}"
+            bindmarkertap="onMarkerTap"
+            bindcallouttap="onMarkerTap"
+          ></map>
+          <view class="plan-map-legend">
+            <text class="pm-no serif">{{geoStopCount}}</text>
+            <text class="pm-txt">个地点已连成路线</text>
+            <text class="pm-hint">点标记看详情</text>
+          </view>
+        </view>
+        <view wx:elif="{{active.stops.length}}" class="plan-map-empty">给目的地点「定位」后，路线会出现在地图上</view>
+
+        <view wx:if="{{canEdit}}" class="plan-acts">
+          <view class="chip-btn" hover-class="pressed" bindtap="openPlanEdit">调整计划</view>
+          <view class="chip-btn" hover-class="pressed" bindtap="togglePlan">{{active.visible ? '仅自己可见' : '重新展示'}}</view>
+          <view class="chip-btn danger" hover-class="pressed" bindtap="delPlan">移除</view>
+        </view>
+
+        <view wx:if="{{active}}" class="plan-share">
+          <button class="chip-btn share-btn" open-type="share" hover-class="pressed">分享给 TA</button>
+          <view class="chip-btn" hover-class="pressed" bindtap="copyPlan">带走这份计划</view>
+          <view class="chip-btn {{posterMaking ? 'busy' : ''}}" hover-class="pressed" bindtap="exportItinerary">{{posterMaking ? '生成中…' : '导出长图'}}</view>
+        </view>
+      </view>
+
+      <!-- 住宿 & 每天出发点 -->
+      <view wx:if="{{active}}" class="block rise d2b">
+        <view class="sec">
+          <text class="sec-zh">住宿 & 出发</text>
+          <text class="sec-en">Stay & Start</text>
+        </view>
+        <!-- 多晚/分段住宿：每段一张卡，标注覆盖第几天 -->
+        <block wx:if="{{active.hotels.length}}">
+          <view wx:for="{{active.hotels}}" wx:key="startDay" class="stay-card pressable" hover-class="pressed" catchtap="openHotelsEditor">
+            <text class="stay-ico">住</text>
+            <view class="stay-body">
+              <text class="stay-name">{{item.name || '住宿'}}</text>
+              <text wx:if="{{item.address}}" class="stay-addr">{{item.address}}</text>
+            </view>
+            <text class="stay-range">{{item.startDay === item.endDay ? ('第 ' + item.startDay + ' 天') : ('第 ' + item.startDay + '–' + item.endDay + ' 天')}}</text>
+          </view>
+          <view wx:if="{{canEdit}}" class="stay-manage pressable" hover-class="pressed" catchtap="openHotelsEditor">调整住宿（多晚 / 分段）›</view>
+        </block>
+        <view wx:elif="{{active.hotel}}" class="stay-card pressable" hover-class="pressed" catchtap="openHotelsEditor">
+          <text class="stay-ico">住</text>
+          <view class="stay-body">
+            <text class="stay-name">{{active.hotel.name || '住宿'}}</text>
+            <text wx:if="{{active.hotel.address}}" class="stay-addr">{{active.hotel.address}}</text>
+          </view>
+          <text wx:if="{{canEdit}}" class="stay-edit">调整 ›</text>
+        </view>
+        <view wx:elif="{{canEdit}}" class="stay-empty pressable" hover-class="pressed" catchtap="openHotelsEditor">＋ 设置住宿酒店（支持多晚 / 跨城分段，每天默认从对应酒店出发）</view>
+        <view wx:else class="stay-empty-ro">未设置住宿</view>
+
+        <view wx:if="{{dayGroups.length}}" class="daystart-list">
+          <view wx:for="{{dayGroups}}" wx:key="day" class="daystart-row pressable" hover-class="pressed" catchtap="openDayStart" data-day="{{item.day}}">
+            <text class="daystart-day">{{item.label}}</text>
+            <text wx:if="{{item.dateText}}" class="daystart-date">{{item.dateText}}</text>
+            <text wx:if="{{item.weather}}" class="daystart-wx">{{item.weather}}</text>
+            <text class="daystart-from {{item.hasStart ? '' : 'muted'}}">出发 · {{item.hasStart ? item.startName : '未设置'}}</text>
+            <text wx:if="{{item.startCustom}}" class="daystart-tag">自定义</text>
+            <text wx:if="{{canEdit}}" class="daystart-edit serif">›</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 目的地（按天分组 + 可拖动排序） -->
+      <view class="block rise d3">
+        <view class="sec">
+          <text class="sec-zh">行程安排</text>
+          <text class="sec-en">{{multiDay ? ('Itinerary · ' + dayGroups.length + ' Days') : 'Destinations'}}</text>
+        </view>
+        <view wx:if="{{active.stops.length && canEdit}}" class="complete-bar quiet">
+          <view class="complete-main">
+            <text class="complete-k">细节完善</text>
+            <text class="complete-v serif">{{active.completeness.text}}</text>
+            <text class="complete-p">{{active.completeness.percent}}%</text>
+          </view>
+          <view class="complete-track"><view class="complete-fill" style="width: {{active.completeness.percent}}%;"></view></view>
+          <view wx:if="{{canEdit}}" class="complete-btn {{completingStops ? 'busy' : ''}}" hover-class="pressed" bindtap="completePlanStops">{{completingStops ? ('正在整理 ' + completionStatus) : '补上缺的细节'}}</view>
+        </view>
+        <view wx:if="{{canEdit}}" class="drag-tip">长按右侧手柄调整当天顺序</view>
+
+        <view wx:if="{{!active.stops.length}}" class="empty sm">
+          <view class="empty-zh">这趟还没放入想去的地方</view>
+          <view wx:if="{{canEdit}}" class="btn-line" bindtap="openStopAdd">＋ 记下一个想去的地方</view>
+          <view wx:else class="empty-hint">登录后就能一起补上想去的地方</view>
+        </view>
+
+        <view wx:else class="drag-wrap" style="height: {{areaH}}px;">
+          <movable-area class="drag-area" style="height: {{areaH}}px;">
+            <movable-view
+              wx:for="{{active.stops}}"
+              wx:key="id"
+              class="mv-stop {{dragId === item.id ? 'drag' : ''}}"
+              direction="vertical"
+              y="{{item._y}}"
+              inertia="{{false}}"
+              damping="50"
+              out-of-bounds="{{false}}"
+              disabled="{{!canEdit || dragId !== item.id}}"
+              data-id="{{item.id}}"
+              bindchange="onStopChange"
+              bindtouchend="onStopTouchEnd"
+              style="height: {{item._h}}px;"
+            >
+              <view wx:if="{{item.dayFirst && !dragId}}" class="day-head">
+                <view class="day-head-row">
+                  <text class="day-head-txt">{{item.dayLabel}}</text>
+                  <text wx:if="{{item.dayInfo.dateText}}" class="day-head-date">{{item.dayInfo.dateText}}</text>
+                  <text wx:if="{{item.dayInfo.weather}}" class="day-head-wx">{{item.dayInfo.weather}}</text>
+                  <text wx:if="{{item.dayInfo.stopCount}}" class="day-head-cnt">{{item.dayInfo.stopCount}}站</text>
+                  <text wx:if="{{item.dayInfo.stopCount > 1}}" class="day-head-route" hover-class="pressed" catchtap="openDayRoute" data-day="{{item.day}}">全程·导航 ›</text>
+                </view>
+                <view wx:if="{{item.dayInfo.spanText}}" class="day-head-meta">
+                  <text wx:if="{{item.dayInfo.loadText}}" class="day-load {{item.dayInfo.loadKey}}">{{item.dayInfo.loadText}}</text>
+                  <text class="day-meta-sum">约 {{item.dayInfo.spanText}}<text wx:if="{{item.dayInfo.commuteText}}"> · 通勤 {{item.dayInfo.commuteText}}</text><text wx:if="{{item.dayInfo.stayText}}"> · 游玩 {{item.dayInfo.stayText}}</text></text>
+                  <text wx:if="{{canEdit && item.dayInfo.canOptimize}}" class="day-opt" hover-class="pressed" catchtap="optimizeDay" data-day="{{item.day}}">⤳ 最优顺序</text>
+                </view>
+                <view wx:if="{{item.dayInfo.routeOptHint}}" class="route-opt-hint">
+                  <text class="roh-ico">✦</text>
+                  <text class="roh-text">{{item.dayInfo.routeOptHint}}</text>
+                </view>
+              </view>
+              <view class="stop-card">
+                <view class="stop-rail">
+                  <text class="stop-no serif">{{item.no}}</text>
+                </view>
+                <view class="stop-main pressable" hover-class="pressed" bindtap="openStopSheet" data-id="{{item.id}}">
+                  <view class="stop-top">
+                    <text wx:if="{{item.dayTag && !item.dayFirst}}" class="stop-day">{{item.dayTag}}</text>
+                    <text class="stop-name">{{item.name}}</text>
+                    <text class="stop-geo {{item.hasGeo ? 'ok' : 'miss'}}">{{item.geoText}}</text>
+                  </view>
+                  <view class="stop-facts">
+                    <view wx:if="{{item.sched || item.plannedTime}}" class="stop-fact main">
+                      <text class="stop-fact-k">时间</text>
+                      <text class="stop-fact-v">{{item.sched ? (item.sched.arrive + '–' + item.sched.leave) : item.plannedTime}}</text>
+                      <text wx:if="{{item.sched && item.sched.stayText}}" class="stop-fact-extra {{item.sched.staySet ? '' : 'sug'}}">停留 {{item.sched.stayText}}</text>
+                    </view>
+                    <view wx:if="{{item.address}}" class="stop-fact">
+                      <text class="stop-fact-k">地址</text>
+                      <text class="stop-fact-v">{{item.address}}</text>
+                    </view>
+                    <view wx:if="{{canEdit && item.completenessText}}" class="stop-meta">
+                      <text class="stop-meta-pill warn">{{item.completenessText}}</text>
+                    </view>
+                  </view>
+                </view>
+                <view wx:if="{{canEdit}}" class="stop-ops">
+                  <view class="stop-del" catchtap="delStop" data-id="{{item.id}}">×</view>
+                  <view class="stop-handle" data-id="{{item.id}}" bindtouchstart="onStopTouchStart">≡</view>
+                </view>
+              </view>
+            </movable-view>
+          </movable-area>
+        </view>
+
+        <view wx:if="{{canEdit && active.stops.length}}" class="btn-line" bindtap="openStopAdd">＋ 再记下一站</view>
+      </view>
+
+      <!-- 旅行花费 -->
+      <view wx:if="{{openid}}" class="block rise d4">
+        <view class="sec exp-sec">
+          <text class="sec-zh">旅行花费</text>
+          <view class="exp-sec-r">
+            <text class="sec-en">Budget · ¥{{expenseTotal}}</text>
+            <view wx:if="{{aiEnabled && expenseTotal > 0}}" class="exp-ai pressable" hover-class="pressed" bindtap="budgetAnalysis">整理花费</view>
+          </view>
+        </view>
+        <view wx:if="{{expenseTotal > 0}}" class="pie-wrap">
+          <canvas type="2d" id="expPie" class="pie-canvas"></canvas>
+          <view class="pie-legend">
+            <view wx:for="{{budgetBars}}" wx:key="key" class="pie-leg-item">
+              <view class="pie-dot" style="background:{{item.color}}"></view>
+              <text class="pie-leg-name">{{item.catName}}</text>
+              <text class="pie-leg-val serif">¥{{item.amount}}</text>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{budgetBars.length}}" class="bud-sum">
+          <view wx:for="{{budgetBars}}" wx:key="key" class="bud-row">
+            <text class="bud-cat">{{item.name}}</text>
+            <view class="bud-track"><view class="bud-fill" style="width:{{item.pct}}%"></view></view>
+            <text class="bud-val serif">¥{{item.value}}</text>
+          </view>
+        </view>
+        <view wx:if="{{!expenses.length}}" class="empty sm">
+          <view class="empty-zh">这趟还没记录花费</view>
+        </view>
+        <view wx:else class="exp-list">
+          <view wx:for="{{expenses}}" wx:key="id" class="exp-row">
+            <text class="exp-cat">{{item.catName}}</text>
+            <view class="exp-mid">
+              <text class="exp-memo">{{item.memo || item.catName}}</text>
+              <text wx:if="{{item.date}}" class="exp-date">{{item.date}}</text>
+            </view>
+            <text class="exp-amt serif">¥{{item.amount}}</text>
+            <text class="exp-del" catchtap="delExpense" data-id="{{item.id}}">删</text>
+          </view>
+        </view>
+        <view class="btn-line" bindtap="openExpenseAdd">＋ 记一笔</view>
+      </view>
+
+      <view class="foot rise d4">
+        <view class="hair"></view>
+        <view class="foot-txt">把想去的地方，排进我们的日子里</view>
+      </view>
+    </block>
+  </block>
+</view>
+
+<!-- 记账编辑器 -->
+<view wx:if="{{expenseEditor.show}}" class="mask" catchtap="closeExpenseEditor"></view>
+<view class="sheet {{expenseEditor.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-title">记一笔</view>
+  <view class="field">
+    <text class="field-label">类型</text>
+    <view class="exp-cats">
+      <view
+        wx:for="{{expCats}}"
+        wx:key="key"
+        class="exp-cat-chip {{expenseEditor.catIndex === index ? 'on' : ''}}"
+        data-index="{{index}}"
+        bindtap="pickExpCat"
+      >{{item.name}}</view>
+    </view>
+  </view>
+  <view class="field">
+    <text class="field-label">金额（元）</text>
+    <input class="field-input" type="digit" value="{{expenseEditor.amount}}" placeholder="0.00" bindinput="onExpAmount" />
+  </view>
+  <view class="field">
+    <text class="field-label">备注</text>
+    <input class="field-input" value="{{expenseEditor.memo}}" placeholder="如 午饭 / 门票" bindinput="onExpMemo" />
+  </view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="closeExpenseEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveExpense">保存</view>
+  </view>
+</view>
+
+<!-- 计划编辑器 -->
+<view wx:if="{{planEditor.show}}" class="mask" catchtap="closePlanEditor"></view>
+<view class="sheet plan-editor-sheet {{planEditor.show ? 'show' : ''}}">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closePlanEditor">✕</view>
+  <view class="sheet-title">{{planEditor.mode === 'add' ? '新的出发计划' : '调整计划'}}</view>
+
+  <view wx:if="{{planEditor.mode === 'add'}}" class="tpl-row">
+    <text class="tpl-lead">快速开始</text>
+    <view
+      wx:for="{{planTemplates}}"
+      wx:key="name"
+      class="tpl-chip"
+      hover-class="pressed"
+      data-index="{{index}}"
+      catchtap="applyPlanTemplate"
+    >{{item.name}}</view>
+  </view>
+
+  <view class="field">
+    <view class="field-head">
+      <text class="field-label">计划标题</text>
+      <text class="field-count {{planEditor.title.length > 30 ? 'over' : ''}}">{{planEditor.title.length}}/30</text>
+    </view>
+    <input class="field-input {{focusField === 'ptitle' ? 'on' : ''}}" value="{{planEditor.title}}" placeholder="如：杭州三日" placeholder-class="field-ph" maxlength="30" data-k="ptitle" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onPlanTitle" />
+  </view>
+  <view class="field">
+    <view class="field-head">
+      <text class="field-label">日期范围</text>
+      <text wx:if="{{planEditor.dayCountText}}" class="field-count">{{planEditor.dayCountText}}</text>
+    </view>
+    <view class="date-range">
+      <picker class="dr-pick" mode="date" value="{{planEditor.planDate}}" bindchange="onPlanDate">
+        <view class="field-picker">{{planEditor.planDate || '开始日期'}}</view>
+      </picker>
+      <text class="dr-sep">→</text>
+      <picker class="dr-pick" mode="date" start="{{planEditor.planDate}}" value="{{planEditor.planDateEnd}}" bindchange="onPlanDateEnd">
+        <view class="field-picker">{{planEditor.planDateEnd || '结束日期'}}</view>
+      </picker>
+    </view>
+  </view>
+  <view class="field">
+    <text class="field-label">封面图</text>
+    <view wx:if="{{planEditor.coverImageUrl}}" class="cover-pick has">
+      <image class="cover-thumb" src="{{planEditor.coverImageUrl}}" mode="aspectFill"></image>
+      <view class="cover-ops">
+        <view class="cover-op" hover-class="pressed" catchtap="chooseCoverImage">{{planEditor.uploadingCover ? '上传中…' : '更换'}}</view>
+        <view class="cover-op danger" hover-class="pressed" catchtap="removeCoverImage">移除</view>
+      </view>
+    </view>
+    <view wx:else class="cover-pick" hover-class="pressed" catchtap="chooseCoverImage">
+      <text class="cover-plus">＋</text>
+      <text class="cover-hint">{{planEditor.uploadingCover ? '上传中…' : '上传封面图（可选）'}}</text>
+    </view>
+  </view>
+  <view class="field">
+    <view class="field-head">
+      <text class="field-label">备注</text>
+      <text class="field-count {{planEditor.note.length > 200 ? 'over' : ''}}">{{planEditor.note.length}}/200</text>
+    </view>
+    <textarea class="field-area {{focusField === 'pnote' ? 'on' : ''}}" value="{{planEditor.note}}" placeholder="这趟行程的主题、预算、注意事项…" placeholder-class="field-ph" maxlength="200" data-k="pnote" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onPlanNote" auto-height />
+  </view>
+  <view class="field">
+    <text class="field-label">住宿酒店（每天默认从这里出发）</text>
+    <input class="field-input {{focusField === 'hname' ? 'on' : ''}}" value="{{planEditor.hotelName}}" placeholder="酒店 / 民宿名称（可选）" placeholder-class="field-ph" data-field="hotelName" data-k="hname" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onHotelField" />
+    <view class="field-row" style="margin-top: 12rpx;">
+      <input class="field-input grow {{focusField === 'haddr' ? 'on' : ''}}" value="{{planEditor.hotelAddress}}" placeholder="酒店地址，用于定位" placeholder-class="field-ph" data-field="hotelAddress" data-k="haddr" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onHotelField" />
+      <view class="geo-btn {{planEditor.hotelGeoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeHotel">{{planEditor.hotelGeoLoading ? '定位中' : '定位'}}</view>
+    </view>
+    <text wx:if="{{planEditor.hotelLat}}" class="geo-hint">坐标 {{planEditor.hotelLng}}, {{planEditor.hotelLat}}</text>
+    <text wx:else class="geo-hint dim">填地址点「定位」获取坐标，导航更准确</text>
+  </view>
+  <view class="field">
+    <text class="field-label">封面色调</text>
+    <scroll-view scroll-x class="tone-scroll" show-scrollbar="{{false}}">
+      <view
+        wx:for="{{toneSwatches}}"
+        wx:key="tone"
+        class="tone-cell {{planEditor.toneIndex === index ? 'on' : ''}}"
+        data-index="{{index}}"
+        bindtap="pickPlanTone"
+      >
+        <view class="tone-dot" style="background-image: {{item.grad}};">
+          <text wx:if="{{planEditor.toneIndex === index}}" class="tone-check">✓</text>
+        </view>
+        <text class="tone-name">{{item.name}}</text>
+      </view>
+    </scroll-view>
+  </view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="closePlanEditor">取消</view>
+    <view class="btn solid {{planEditor.title ? '' : 'disabled'}}" hover-class="pressed" catchtap="savePlan">保存</view>
+  </view>
+</view>
+
+<!-- 目的地编辑器 -->
+<view wx:if="{{stopEditor.show}}" class="mask" catchtap="closeStopEditor"></view>
+<view class="sheet stop-editor-sheet {{stopEditor.show ? 'show' : ''}}">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeStopEditor">✕</view>
+  <view class="sheet-title">{{stopEditor.mode === 'add' ? '记下目的地' : '调整目的地'}}</view>
+  <view class="field">
+    <text class="field-label">地点名称</text>
+    <input class="field-input {{focusField === 'sname' ? 'on' : ''}}" value="{{stopEditor.name}}" placeholder="如：西湖 · 断桥" placeholder-class="field-ph" data-field="name" data-k="sname" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">第几天</text>
+    <view class="day-step">
+      <view class="day-step-btn" hover-class="pressed" data-d="-1" catchtap="stopDayDelta">−</view>
+      <text class="day-step-val serif">第 {{stopEditor.day}} 天</text>
+      <view class="day-step-btn" hover-class="pressed" data-d="1" catchtap="stopDayDelta">＋</view>
+    </view>
+  </view>
+  <view class="field">
+    <text class="field-label">时间</text>
+    <input class="field-input {{focusField === 'stime' ? 'on' : ''}}" value="{{stopEditor.plannedTime}}" placeholder="如：09:00（可选，指定到达时间）" placeholder-class="field-ph" data-field="plannedTime" data-k="stime" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">建议游玩时长</text>
+    <view class="stay-chips">
+      <view wx:for="{{stayPresets}}" wx:key="v" class="stay-chip {{stopEditor.stayMinutes === item.v ? 'on' : ''}}" hover-class="pressed" catchtap="pickStay" data-v="{{item.v}}">{{item.t}}</view>
+    </view>
+    <view class="field-row stay-custom">
+      <input class="field-input grow {{focusField === 'sstay' ? 'on' : ''}}" type="number" value="{{stopEditor.stayMinutes ? stopEditor.stayMinutes : ''}}" placeholder="自定义分钟（可选）" placeholder-class="field-ph" data-k="sstay" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStayInput" />
+      <text class="stay-unit">分钟</text>
+    </view>
+  </view>
+  <view class="field">
+    <text class="field-label">地址</text>
+    <view class="field-row">
+      <input class="field-input grow {{focusField === 'saddr' ? 'on' : ''}}" value="{{stopEditor.address}}" placeholder="详细地址，用于定位" placeholder-class="field-ph" data-field="address" data-k="saddr" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+      <view class="geo-btn {{stopEditor.geoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeStop">{{stopEditor.geoLoading ? '整理中' : '补上细节'}}</view>
+    </view>
+    <text wx:if="{{stopEditor.latitude}}" class="geo-hint">坐标 {{stopEditor.longitude}}, {{stopEditor.latitude}}</text>
+    <text wx:else class="geo-hint dim">点「补上细节」获取地址和坐标，开放时间/门票查不到会留空</text>
+  </view>
+  <view class="field">
+    <text class="field-label">营业时间</text>
+    <input class="field-input {{focusField === 'sopen' ? 'on' : ''}}" value="{{stopEditor.openHours}}" placeholder="如：08:30-17:00（可选）" placeholder-class="field-ph" data-field="openHours" data-k="sopen" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">门票</text>
+    <input class="field-input {{focusField === 'sticket' ? 'on' : ''}}" value="{{stopEditor.ticket}}" placeholder="如：¥60 / 免费 / 需预约（可选）" placeholder-class="field-ph" data-field="ticket" data-k="sticket" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">预约 / 购票链接</text>
+    <input class="field-input {{focusField === 'sbook' ? 'on' : ''}}" value="{{stopEditor.bookingUrl}}" placeholder="粘贴预约或购票网址（可选）" placeholder-class="field-ph" data-field="bookingUrl" data-k="sbook" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" />
+  </view>
+  <view class="field">
+    <text class="field-label">备注</text>
+    <textarea class="field-area {{focusField === 'snote' ? 'on' : ''}}" value="{{stopEditor.note}}" placeholder="想做的事、tips…" placeholder-class="field-ph" data-field="note" data-k="snote" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onStopField" auto-height />
+  </view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="closeStopEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveStop">保存</view>
+  </view>
+</view>
+
+<!-- 目的地抽屉：怎么去 + 一键导航 -->
+<view wx:if="{{stopSheet.show}}" class="mask" catchtap="closeStopSheet"></view>
+<view class="sheet stop-detail-sheet {{stopSheet.show ? 'show' : ''}}">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeStopSheet">✕</view>
+  <view class="sheet-title">{{stopSheet.name}}</view>
+  <view class="rd-meta">
+    <text wx:if="{{stopSheet.plannedTime}}" class="rd-time">{{stopSheet.plannedTime}}</text>
+    <text wx:if="{{stopSheet.address}}" class="rd-addr">{{stopSheet.address}}</text>
+    <text wx:if="{{stopSheet.address}}" class="rd-copy" hover-class="pressed" catchtap="copyStopAddr">复制</text>
+  </view>
+  <view wx:if="{{stopSheet.schedText || stopSheet.stayText}}" class="rd-sched">
+    <text wx:if="{{stopSheet.schedText}}" class="rd-sched-time">预计 {{stopSheet.schedText}}</text>
+    <text wx:if="{{stopSheet.stayText}}" class="rd-sched-stay">游玩约 {{stopSheet.stayText}}</text>
+  </view>
+  <view wx:if="{{stopSheet.note}}" class="rd-note">备注 · {{stopSheet.note}}</view>
+
+  <view wx:if="{{stopSheet.openHours || stopSheet.ticket || stopSheet.bookingUrl}}" class="rd-info">
+    <view wx:if="{{stopSheet.openHours}}" class="rd-info-row"><text class="rd-info-k">营业</text><text class="rd-info-v">{{stopSheet.openHours}}</text></view>
+    <view wx:if="{{stopSheet.ticket}}" class="rd-info-row"><text class="rd-info-k">门票</text><text class="rd-info-v">{{stopSheet.ticket}}</text></view>
+    <view wx:if="{{stopSheet.bookingUrl}}" class="rd-info-row"><text class="rd-info-k">预约</text><text class="rd-info-v link">{{stopSheet.bookingUrl}}</text><text class="rd-copy" hover-class="pressed" catchtap="copyBookingUrl">复制</text></view>
+  </view>
+  <view wx:if="{{aiEnabled}}" class="rd-ai pressable" hover-class="pressed" catchtap="openAiDrawer" data-name="{{stopSheet.name}}" data-address="{{stopSheet.address}}" data-open-hours="{{stopSheet.openHours}}" data-ticket="{{stopSheet.ticket}}" data-booking-url="{{stopSheet.bookingUrl}}" data-note="{{stopSheet.note}}">帮我们整理攻略</view>
+
+  <!-- 直接在抽屉里调整这站属于第几天 / 当天排第几 -->
+  <view wx:if="{{canEdit}}" class="rd-adjust">
+    <view class="rd-adj-row">
+      <text class="rd-adj-k">归属</text>
+      <view class="he-step">
+        <text class="he-step-btn" hover-class="pressed" catchtap="changeStopDay" data-delta="-1">－</text>
+        <text class="he-step-val">第 {{stopSheet.day}} 天</text>
+        <text class="he-step-btn" hover-class="pressed" catchtap="changeStopDay" data-delta="1">＋</text>
+      </view>
+      <text class="rd-adj-k">当天顺序</text>
+      <view class="he-step">
+        <text class="he-step-btn" hover-class="pressed" catchtap="moveStopInDay" data-dir="-1">↑</text>
+        <text class="he-step-btn" hover-class="pressed" catchtap="moveStopInDay" data-dir="1">↓</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="rd-route-head">
+    <text class="rd-route-zh">怎么去</text>
+    <text wx:if="{{stopSheet.originName}}" class="rd-route-from">{{stopSheet.originName}} → {{stopSheet.name}}</text>
+  </view>
+
+  <view wx:if="{{!stopSheet.canRoute}}" class="rd-empty">
+    <text wx:if="{{!stopSheet.canNav}}">这站还没定位，补上地址后就能看到路线。</text>
+    <text wx:else>还没设置出发点。在「住宿 & 出发」里选好酒店或当天出发点，就能看到路线。</text>
+  </view>
+  <block wx:else>
+    <view wx:if="{{stopSheet.route.loading}}" class="rd-loading">路线规划中…</view>
+    <view wx:elif="{{stopSheet.route.error}}" class="rd-err">{{stopSheet.route.error}}</view>
+    <block wx:else>
+      <view class="rd-tabs">
+        <view wx:for="{{stopSheet.route.modes}}" wx:key="key" class="rd-tab {{stopSheet.route.mode === item.key ? 'on' : ''}}" hover-class="pressed" data-mode="{{item.key}}" catchtap="pickRouteMode">{{item.label}}</view>
+      </view>
+      <block wx:for="{{stopSheet.route.modes}}" wx:key="key">
+        <view wx:if="{{stopSheet.route.mode === item.key}}" class="rd-pane">
+          <view class="rd-reco">
+            <text class="rd-mode">{{item.label}}</text>
+            <text class="rd-stat">{{item.duration}}{{item.distance ? ' · ' + item.distance : ''}}</text>
+          </view>
+          <text wx:if="{{item.extra}}" class="rd-extra">{{item.extra}}</text>
+          <view wx:if="{{item.lastBusText}}" class="rd-lastbus {{item.lastBusWarn ? 'warn' : ''}}">{{item.lastBusText}}</view>
+          <view wx:for="{{item.steps}}" wx:for-item="step" wx:key="*this" class="rd-step">
+            <text class="rd-dot">·</text>
+            <text class="rd-step-txt">{{step}}</text>
+          </view>
+          <view wx:if="{{!item.steps.length}}" class="rd-step">
+            <text class="rd-step-txt">按「{{item.label}}」前往即可，点下方一键导航查看实时路线</text>
+          </view>
+        </view>
+      </block>
+    </block>
+  </block>
+
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="editFromStopSheet">{{canEdit ? '调整' : '登录后调整'}}</view>
+    <view class="btn solid {{stopSheet.canNav ? '' : 'disabled'}}" hover-class="pressed" catchtap="navStop">一键导航</view>
+  </view>
+</view>
+
+<!-- 每天出发点编辑器 -->
+<view wx:if="{{dayStartEditor.show}}" class="mask" catchtap="closeDayStartEditor"></view>
+<view class="sheet {{dayStartEditor.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeDayStartEditor">✕</view>
+  <view class="sheet-title">第 {{dayStartEditor.day}} 天 · 出发点</view>
+  <text class="rd-addr">不填则默认从{{dayStartEditor.hotelName ? '酒店「' + dayStartEditor.hotelName + '」' : '住宿酒店'}}出发</text>
+  <view class="field">
+    <text class="field-label">出发地名称</text>
+    <input class="field-input {{focusField === 'dsname' ? 'on' : ''}}" value="{{dayStartEditor.name}}" placeholder="如：杭州东站 / 某酒店" placeholder-class="field-ph" data-field="name" data-k="dsname" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onDayStartField" />
+  </view>
+  <view class="field">
+    <text class="field-label">地址</text>
+    <view class="field-row">
+      <input class="field-input grow {{focusField === 'dsaddr' ? 'on' : ''}}" value="{{dayStartEditor.address}}" placeholder="详细地址，用于定位" placeholder-class="field-ph" data-field="address" data-k="dsaddr" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onDayStartField" />
+      <view class="geo-btn {{dayStartEditor.geoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeDayStart">{{dayStartEditor.geoLoading ? '定位中' : '定位'}}</view>
+    </view>
+    <text wx:if="{{dayStartEditor.lat}}" class="geo-hint">坐标 {{dayStartEditor.lng}}, {{dayStartEditor.lat}}</text>
+    <text wx:else class="geo-hint dim">点「定位」获取坐标，路线/导航更准确</text>
+  </view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="resetDayStart">恢复默认</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveDayStart">保存</view>
+  </view>
+</view>
+
+<!-- 当天全程：串联各段 + 估算总通勤时长 -->
+<view wx:if="{{dayRouteSheet.show}}" class="mask" catchtap="closeDayRoute"></view>
+<view class="sheet {{dayRouteSheet.show ? 'show' : ''}}" catchtouchmove="true">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeDayRoute">✕</view>
+  <view class="dr-head">
+    <text class="sheet-title">{{dayRouteSheet.label}} · 全程</text>
+    <text wx:if="{{dayRouteSheet.total}}" class="dr-total">总通勤 {{dayRouteSheet.total}}</text>
+  </view>
+  <view wx:if="{{dayRouteSheet.loading}}" class="rd-loading">正在估算各段通勤…</view>
+  <view wx:for="{{dayRouteSheet.legs}}" wx:key="toName" class="dr-leg">
+    <view class="dr-leg-line">
+      <text class="dr-leg-path">{{item.fromName}} → {{item.toName}}</text>
+      <text class="dr-leg-stat">{{item.label}}{{item.dur ? ' · ' + item.dur : ''}}{{item.dist ? ' · ' + item.dist : ''}}</text>
+    </view>
+    <view class="dr-nav {{item.canNav ? '' : 'disabled'}}" hover-class="pressed" catchtap="navLeg" data-lat="{{item.toLat}}" data-lng="{{item.toLng}}" data-name="{{item.toName}}">导航</view>
+  </view>
+  <text class="rd-addr dim">逐段导航：点每段「导航」唤起微信内置地图前往该站</text>
+</view>
+
+<!-- 住宿调整：多晚 / 跨城分段（每段覆盖第几天） -->
+<view wx:if="{{hotelsEditor.show}}" class="mask" catchtap="closeHotelsEditor"></view>
+<view class="sheet tall hotels-editor-sheet {{hotelsEditor.show ? 'show' : ''}}">
+  <view class="sheet-grab"></view>
+  <view class="sheet-x" hover-class="pressed" catchtap="closeHotelsEditor">✕</view>
+  <view class="sheet-title">住宿 · 多晚 / 分段</view>
+  <text class="rd-addr">每段填一个酒店并设它覆盖第几天；跨城换酒店时多加一段，行程会自动按当天对应酒店出发{{hotelsEditor.dayMax ? '（本计划共 ' + hotelsEditor.dayMax + ' 天）' : ''}}。</text>
+  <scroll-view scroll-y class="he-scroll">
+    <view wx:for="{{hotelsEditor.list}}" wx:key="key" class="he-seg">
+      <view class="he-seg-top">
+        <text class="he-seg-no serif">住宿 {{index + 1}}</text>
+        <text class="he-seg-del" hover-class="pressed" catchtap="removeHotelSeg" data-i="{{index}}">移除</text>
+      </view>
+      <input class="field-input {{focusField === ('hn'+index) ? 'on' : ''}}" value="{{item.name}}" placeholder="酒店 / 民宿名称" placeholder-class="field-ph" data-i="{{index}}" data-field="name" data-k="hn{{index}}" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onHotelSegField" />
+      <view class="field-row he-row">
+        <input class="field-input grow {{focusField === ('ha'+index) ? 'on' : ''}}" value="{{item.address}}" placeholder="酒店地址，用于定位" placeholder-class="field-ph" data-i="{{index}}" data-field="address" data-k="ha{{index}}" bindfocus="onFieldFocus" bindblur="onFieldBlur" bindinput="onHotelSegField" />
+        <view class="geo-btn {{item.geoLoading ? 'busy' : ''}}" hover-class="pressed" catchtap="geocodeHotelSeg" data-i="{{index}}">{{item.geoLoading ? '定位中' : '定位'}}</view>
+      </view>
+      <text wx:if="{{item.lat}}" class="geo-hint">坐标 {{item.lng}}, {{item.lat}}</text>
+      <text wx:else class="geo-hint dim">点「定位」获取坐标，路线/导航更准确</text>
+      <view class="he-days">
+        <text class="he-days-lab">覆盖</text>
+        <view class="he-step">
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="-1">－</text>
+          <text class="he-step-val">第 {{item.startDay}} 天</text>
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="1">＋</text>
+        </view>
+        <text class="he-days-to">至</text>
+        <view class="he-step">
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="-1">－</text>
+          <text class="he-step-val">第 {{item.endDay}} 天</text>
+          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="1">＋</text>
+        </view>
+      </view>
+    </view>
+    <view class="he-add pressable" hover-class="pressed" catchtap="addHotelSeg">＋ 添加一段住宿</view>
+  </scroll-view>
+  <view class="sheet-acts">
+    <view class="btn ghost" hover-class="pressed" catchtap="closeHotelsEditor">取消</view>
+    <view class="btn solid" hover-class="pressed" catchtap="saveHotels">保存</view>
+  </view>
+</view>
+
+<!-- AI 助手抽屉 -->
+<view class="ai-drawer {{aiDrawerShow ? 'show' : ''}}" catchtap="closeAiDrawer">
+  <view class="ai-drawer-content {{aiDrawerShow ? 'show' : ''}}" catchtap="stopProp">
+    <view class="ai-drawer-handle"></view>
+    <view class="ai-drawer-head">
+      <view class="ai-drawer-title-wrap">
+        <text class="ai-drawer-title">{{aiDrawerTitle || ('攻略 · ' + aiDrawerPlace)}}</text>
+        <text wx:if="{{aiDrawerBasis}}" class="ai-drawer-basis">基于 {{aiDrawerBasis}}{{aiDrawerCached ? ' · 已缓存' : ''}}</text>
+      </view>
+      <text class="ai-drawer-close" catchtap="closeAiDrawer">✕</text>
+    </view>
+    <scroll-view class="ai-drawer-body" scroll-y enhanced show-scrollbar="{{false}}">
+      <view wx:if="{{aiDrawerLoading}}" class="ai-loading">
+        <view class="ai-loading-dot"></view>
+        <view class="ai-loading-dot"></view>
+        <view class="ai-loading-dot"></view>
+        <text class="ai-loading-txt">正在帮我们整理这一站…</text>
+      </view>
+      <view wx:elif="{{aiDrawerError}}" class="ai-error">
+        <text class="ai-error-txt">{{aiDrawerError}}</text>
+        <view class="btn-line" catchtap="retryAiDrawer">再试一次</view>
+      </view>
+      <view wx:else class="ai-content">
+        <rich-text class="ai-content-text md-content" nodes="{{aiDrawerHtml}}" user-select="{{true}}"></rich-text>
+        <view class="ai-refresh" hover-class="pressed" catchtap="regenerateAiDrawer">换一种写法</view>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+
+<!-- 离屏画布：用于绘制行程分享长图 -->
+<canvas type="2d" id="itinPoster" class="itin-poster-canvas" style="width:{{posterW}}px;height:{{posterH}}px;"></canvas>

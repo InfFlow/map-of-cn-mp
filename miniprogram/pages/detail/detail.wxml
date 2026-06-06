@@ -1,0 +1,131 @@
+<!-- 骨架屏 -->
+<view wx:if="{{loading}}" class="wrap">
+  <view class="sk sk-block" style="height:24rpx;width:40%;"></view>
+  <view class="sk sk-block" style="height:2rpx;margin-top:18rpx;"></view>
+  <view class="sk sk-block" style="height:96rpx;width:55%;margin-top:44rpx;"></view>
+  <view class="sk sk-block" style="height:520rpx;margin-top:36rpx;"></view>
+  <view class="sk sk-block" style="height:24rpx;width:90%;margin-top:36rpx;"></view>
+  <view class="sk sk-block" style="height:24rpx;width:80%;margin-top:14rpx;"></view>
+</view>
+
+<view wx:elif="{{error}}" class="empty">
+  <view>{{error}}</view>
+  <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+</view>
+
+<view wx:else class="wrap">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">{{trip.province}}</text>
+      <text class="mast-vol">{{trip.dateShort}}</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="d-cover mag rise d2" style="background-image: {{trip.coverGrad}};">
+    <image wx:if="{{trip.cover}}" class="d-cover-img" src="{{trip.cover}}" mode="aspectFill"></image>
+    <view wx:else class="d-cover-empty">
+      <text class="dce-city serif">{{trip.city}}</text>
+      <text class="dce-text">这段回忆还缺一张照片</text>
+    </view>
+    <text class="d-cover-fig figno">COVER · {{trip.city}}</text>
+    <view class="d-cover-scrim"></view>
+    <view class="d-cover-cap">
+      <view class="kicker light">{{trip.season}} · {{trip.dateShort}}</view>
+      <view class="d-city display">{{trip.city}}</view>
+      <view class="d-title serif">{{trip.title}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{trip.photos.length}}" class="block rise d3">
+    <view class="sec">
+      <text class="sec-zh">那天的画面</text>
+      <text class="sec-en">Frames · {{trip.photos.length}}</text>
+    </view>
+    <view wx:if="{{trip.photos.length > 4}}" class="photos-hint">点击看大图，长按保存</view>
+    <view class="photos {{trip.photoCountClass}}">
+      <view
+        wx:for="{{trip.photos}}"
+        wx:key="id"
+        class="photo-cell {{item.shape}}"
+        bindtap="preview"
+        bindlongpress="savePhoto"
+        data-url="{{item.imageUrl}}"
+      >
+        <view class="photo pressable" hover-class="pressed" hover-stay-time="60" style="background-image: {{item.grad}};">
+          <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="true"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="photo-empty rise d3">
+    <view class="photo-empty-title serif">照片还在路上</view>
+    <view class="photo-empty-sub">这一站已经被地图记住了，等补上一张照片就更完整。</view>
+  </view>
+
+  <view wx:if="{{trip.intro}}" class="d-lede dropcap rise d3">{{trip.intro}}</view>
+
+  <view wx:if="{{trip.pullquote}}" class="pullquote serif rise d3">{{trip.pullquote}}</view>
+
+  <view class="d-facts grid2 rise d4">
+    <view wx:if="{{trip.season}}" class="fact">
+      <text class="fk">季节 / SEASON</text>
+      <text class="fv">{{trip.season}}</text>
+    </view>
+    <view wx:if="{{trip.province}}" class="fact">
+      <text class="fk">省份 / PROVINCE</text>
+      <text class="fv">{{trip.province}}</text>
+    </view>
+    <view wx:if="{{trip.weather}}" class="fact">
+      <text class="fk">天气 / WEATHER</text>
+      <text class="fv">{{trip.weather}}</text>
+    </view>
+    <view wx:if="{{trip.landmark}}" class="fact">
+      <text class="fk">地标 / LANDMARK</text>
+      <text class="fv">{{trip.landmark}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{trip.tags.length}}" class="d-tags rise d4">
+    <text wx:for="{{trip.tags}}" wx:key="*this" class="chip" bindtap="searchTag" data-tag="{{item}}">#{{item}}</text>
+  </view>
+
+  <view class="d-actions rise d4">
+    <view class="da-main pressable" hover-class="pressed" bindtap="makePoster">
+      <text class="da-main-zh">生成回忆海报</text>
+      <text class="da-main-en serif">POSTER ›</text>
+    </view>
+    <view class="da-row">
+      <view wx:if="{{aiEnabled}}" class="da-sub pressable" hover-class="pressed" bindtap="askAi">
+        <text class="da-sub-ico">✦</text>
+        <text class="da-sub-t">帮我们写一段</text>
+      </view>
+      <view class="da-sub pressable {{sharing ? 'disabled' : ''}}" hover-class="pressed" bindtap="shareCard">
+        <text class="da-sub-ico">▣</text>
+        <text class="da-sub-t">{{sharing ? '生成中…' : '分享卡片'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{trip.restNotes.length}}" class="block rise d4">
+    <view class="sec">
+      <text class="sec-zh">手记</text>
+      <text class="sec-en">Notes</text>
+    </view>
+    <view wx:for="{{trip.restNotes}}" wx:key="*this" class="note serif" bindlongpress="copyNote" data-text="{{item}}">{{item}}</view>
+  </view>
+
+  <view class="foot rise d5">
+    <view class="hair"></view>
+    <view class="foot-txt">Map of Us · 我们的地图</view>
+  </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+</view>
+
+<canvas type="2d" id="shareCanvas" style="position:fixed;left:-9999px;top:0;width:300px;height:400px;"></canvas>
+
+<photo-viewer show="{{viewerShow}}" urls="{{viewerUrls}}" current="{{viewerCurrent}}" bindclose="closeViewer"></photo-viewer>
+
+<!-- 离屏画布：用于绘制分享长图 -->
+<canvas type="2d" id="poster" class="poster-canvas" style="width:{{posterW}}px;height:{{posterH}}px;"></canvas>

@@ -1,0 +1,150 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">DASHBOARD</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们旅途的全部数字</view>
+    <view class="h1 display">数据<view class="br"></view>概览</view>
+    <view class="lede">Our Journey in Numbers — 把走过的城、点亮的省、定格的瞬间，一次数清楚。</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:360rpx;margin-top:32rpx;"></view>
+      <view class="sk sk-block" style="height:240rpx;margin-top:32rpx;"></view>
+      <view class="sk sk-block" style="height:240rpx;margin-top:32rpx;"></view>
+    </view>
+  </block>
+
+  <block wx:elif="{{!error}}">
+    <!-- 核心数字墙 -->
+    <view class="num-wall stagger rise d2">
+      <view class="nw-cell">
+        <text class="nw-num">{{nums.cities}}</text>
+        <text class="nw-lab">去过的城市</text>
+        <text class="nw-en">Cities</text>
+      </view>
+      <view class="nw-cell">
+        <text class="nw-num">{{nums.provinces}}</text>
+        <text class="nw-lab">点亮的省份</text>
+        <text class="nw-en">Provinces</text>
+      </view>
+      <view class="nw-cell">
+        <text class="nw-num">{{nums.memories}}</text>
+        <text class="nw-lab">回忆总数</text>
+        <text class="nw-en">Memories</text>
+      </view>
+      <view class="nw-cell">
+        <text class="nw-num">{{nums.photos}}</text>
+        <text class="nw-lab">照片总数</text>
+        <text class="nw-en">Photos</text>
+      </view>
+      <view class="nw-cell">
+        <text class="nw-num">{{nums.km}}</text>
+        <text class="nw-lab">估算总里程</text>
+        <text class="nw-en">Kilometres</text>
+      </view>
+      <view class="nw-cell">
+        <text class="nw-num">{{nums.days}}</text>
+        <text class="nw-lab">在一起天数</text>
+        <text class="nw-en">Days Together</text>
+      </view>
+    </view>
+    <view class="wall-note">≈ 里程按出行先后把城市连成大圆估算</view>
+
+    <!-- 年度趋势 -->
+    <view wx:if="{{yearBars.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">年度趋势</text>
+        <text class="sec-en">By Year</text>
+      </view>
+      <view class="bars">
+        <view wx:for="{{yearBars}}" wx:key="year" class="bar-row">
+          <text class="bar-lab">{{item.year}}</text>
+          <view class="bar-track"><view class="bar-fill bar-fill-anim" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 季节分布 -->
+    <view wx:if="{{seasonBars.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">季节分布</text>
+        <text class="sec-en">By Season</text>
+      </view>
+      <view class="bars bars-season">
+        <view wx:for="{{seasonBars}}" wx:key="label" class="bar-row">
+          <text class="bar-lab"><text class="season-ico">{{item.icon}}</text>{{item.label}}</text>
+          <view class="bar-track"><view class="bar-fill bar-fill-anim" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 常去城市 Top5 -->
+    <view wx:if="{{topCities.length}}" class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">常去城市</text>
+        <text class="sec-en">Top Cities</text>
+      </view>
+      <view class="bars bars-city">
+        <view wx:for="{{topCities}}" wx:key="city" class="bar-row bar-row-city {{item.top ? 'is-top' : ''}}">
+          <text class="city-rank serif">{{item.rank}}</text>
+          <text class="bar-lab bar-lab-city">{{item.city}}</text>
+          <view class="bar-track"><view class="bar-fill bar-fill-anim {{item.top ? 'bar-fill-top' : 'bar-fill-sub'}}" style="width:{{item.pct}}%;"></view></view>
+          <text class="bar-val serif">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 最近回忆 -->
+    <view wx:if="{{latest}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">最近一段回忆</text>
+        <text class="sec-en">Latest</text>
+      </view>
+      <view class="latest-card">
+        <image wx:if="{{latest.cover}}" class="latest-cover" src="{{latest.cover}}" mode="aspectFill" lazy-load></image>
+        <view wx:else class="latest-cover latest-cover-empty"><text class="lc-mono serif">{{latest.city}}</text></view>
+        <view class="latest-meta">
+          <text class="latest-city serif">{{latest.city}}</text>
+          <text wx:if="{{latest.title}}" class="latest-title">{{latest.title}}</text>
+          <text class="latest-date">{{latest.date}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 标签云 -->
+    <view wx:if="{{tags.length}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">高频标签</text>
+        <text class="sec-en">Tags</text>
+      </view>
+      <view class="tag-cloud">
+        <view wx:for="{{tags}}" wx:key="name" class="tag-item">
+          <text class="tag-name">{{item.name}}</text>
+          <text class="tag-count serif">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="foot rise d5">
+      <view class="hair"></view>
+      <view class="foot-txt">数字会长大，故事也是</view>
+    </view>
+  </block>
+
+  <view wx:if="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+</view>

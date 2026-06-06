@@ -1,0 +1,112 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">LOGS</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们一起做过的事</view>
+    <view class="h1 display">打卡<view class="br"></view>记录</view>
+    <view class="lede">电影、美食、读书、旅行……每一件共同经历的小事。</view>
+  </view>
+
+  <!-- 分类标签 -->
+  <scroll-view class="cats-bar rise d2" scroll-x enable-flex>
+    <view wx:for="{{cats}}" wx:key="key"
+      class="cat-chip {{activecat === item.key ? 'on' : ''}}"
+      data-key="{{item.key}}" bindtap="switchCat">
+      <text>{{item.icon}} {{item.name}}</text>
+      <text wx:if="{{counts[item.key] && item.key !== 'all'}}" class="cat-cnt"> {{counts[item.key]}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 列表 -->
+  <view wx:if="{{loading}}" class="block">
+    <view class="sk sk-block" style="height:120rpx;margin-top:20rpx;" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+  </view>
+
+  <view wx:elif="{{logs.length}}" class="log-list rise d3">
+    <view wx:for="{{logs}}" wx:key="id" class="log-card">
+      <image wx:if="{{item.coverImage}}" class="log-cover" src="{{item.coverImage}}" mode="aspectFill"></image>
+      <view class="log-body">
+        <view class="log-top">
+          <text class="log-title serif">{{item.title}}</text>
+          <view class="log-stars">
+            <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" class="star {{item.rating >= item ? 'on' : ''}}">★</text>
+          </view>
+        </view>
+        <view class="log-meta">
+          <text class="log-date">{{item.date}}</text>
+          <text wx:if="{{item.note}}" class="log-note">{{item.note}}</text>
+        </view>
+      </view>
+      <view class="log-del pressable" hover-class="pressed" data-id="{{item.id}}" catchtap="delLog">×</view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-fig empty-fig-logs"></view>
+    <view class="empty-zh">还没有记录</view>
+    <view class="empty-hint">{{activecat === 'movie' ? '记录你们一起看的第一部电影' : activecat === 'food' ? '记录你们一起吃的第一顿饭' : '点击「＋ 记录」开始'}}</view>
+  </view>
+
+  <!-- 底部加按钮 -->
+  <view class="add-fab pressable" hover-class="pressed" bindtap="openEditor">＋ 记录</view>
+
+  <!-- 编辑器弹层 -->
+  <view wx:if="{{editor.show}}" class="ed-mask" catchtap="closeEditor">
+    <view class="ed-sheet" catchtap="noop">
+      <view class="grab-handle"></view>
+      <view class="ed-title serif">记录一件事</view>
+
+      <view class="ed-row">
+        <text class="ed-label">分类</text>
+        <picker mode="selector" range="{{editCats}}" range-key="name" bindchange="onCatChange">
+          <view class="ed-picker">{{editor.catName || '电影'}}</view>
+        </picker>
+      </view>
+      <view class="ed-row">
+        <text class="ed-label">标题</text>
+        <input class="ed-input" value="{{editor.title}}" placeholder="{{editor.titlePh}}" bindinput="onTitle" />
+      </view>
+      <view class="ed-row">
+        <text class="ed-label">日期</text>
+        <input class="ed-input" type="date" value="{{editor.date}}" bindinput="onDate" />
+      </view>
+      <view class="ed-row">
+        <text class="ed-label">备注</text>
+        <input class="ed-input" value="{{editor.note}}" placeholder="一句话感受（选填）" bindinput="onNote" />
+      </view>
+
+      <!-- 评分 -->
+      <view class="ed-stars">
+        <text class="ed-label">评分</text>
+        <view class="star-row">
+          <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this"
+            class="star-btn {{editor.rating >= item ? 'on' : ''}}"
+            data-r="{{item}}" bindtap="setRating">★</text>
+        </view>
+      </view>
+
+      <!-- 封面图 -->
+      <view class="ed-cover-row">
+        <view wx:if="{{editor.coverImage}}" class="ed-cover-preview">
+          <image class="ed-cover-img" src="{{editor.coverImage}}" mode="aspectFill"></image>
+        </view>
+        <view class="ed-cover-btn pressable" hover-class="pressed" bindtap="chooseCover">
+          {{editor.coverImage ? '换封面' : '＋ 封面图'}}
+        </view>
+      </view>
+
+      <view class="ed-actions">
+        <view class="ed-cancel pressable" hover-class="pressed" bindtap="closeEditor">取消</view>
+        <view class="ed-save pressable {{editor.saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="saveLog">
+          {{editor.saving ? '保存中…' : '保存'}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

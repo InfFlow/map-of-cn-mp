@@ -1,0 +1,86 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">ALBUM</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们一起拍下的</view>
+    <view class="h1 display">照片<view class="br"></view>相册</view>
+    <view class="lede">所有照片的相册总览，把走过的城、吃过的饭、看过的风景，按城市归档进这一格格里。</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="grid">
+      <view class="cell" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
+        <view class="sk sk-block ph"></view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{!error}}">
+    <!-- 工具条：城市筛选 + 黑白滤镜 + 回忆整理 -->
+    <view class="tools rise d2">
+      <scroll-view class="chips" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view class="chip {{filterCity === '' ? 'on' : ''}}" data-city="" bindtap="onFilter" hover-class="pressed">全部</view>
+        <view
+          wx:for="{{cities}}"
+          wx:key="*this"
+          class="chip {{filterCity === item ? 'on' : ''}}"
+          data-city="{{item}}"
+          bindtap="onFilter"
+          hover-class="pressed"
+        >{{item}}</view>
+      </scroll-view>
+      <view class="mono-btn {{mono ? 'on' : ''}}" bindtap="toggleMono" hover-class="pressed">
+        {{mono ? '原色' : '黑白'}}
+      </view>
+    </view>
+
+    <view class="cap rise d2">{{photos.length}} / {{total}} 帧{{filterCity ? ' · ' + filterCity : ''}}</view>
+
+    <view wx:if="{{photos.length}}" class="grid waterfall rise d3 {{mono ? 'mono' : ''}}">
+      <view
+        wx:for="{{photos}}"
+        wx:key="imageUrl"
+        class="cell"
+      >
+        <view class="ph pressable" hover-class="pressed" hover-stay-time="60"
+          style="height:{{item.h}}rpx;"
+          data-index="{{index}}"
+          data-url="{{item.imageUrl}}" data-city="{{item.city}}" data-id="{{item.journeyId}}"
+          bindtap="preview" bindlongpress="onPhotoHold">
+          <image class="ph-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="true" data-index="{{index}}" binderror="onPhotoError"></image>
+          <view wx:if="{{item.broken}}" class="ph-fail">照片暂时加载不了</view>
+          <text class="ph-no figno">{{item.no}}</text>
+          <text wx:if="{{item.city && !filterCity}}" class="ph-place">{{item.city}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty">
+      <view class="empty-fig empty-fig-album"></view>
+      <view class="empty-zh">还没有照片</view>
+      <view class="empty-en">No photos yet</view>
+      <view class="empty-hint">这段回忆还缺几张照片，补上之后就能在这里汇成相册</view>
+    </view>
+
+    <view class="foot rise d4">
+      <view class="hair"></view>
+      <view class="foot-txt">每一帧，都是我们一起按下的快门</view>
+    </view>
+  </block>
+
+  <view wx:if="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+
+  <photo-viewer show="{{viewerShow}}" urls="{{viewerUrls}}" current="{{viewerCurrent}}" bindclose="closeViewer"></photo-viewer>
+</view>

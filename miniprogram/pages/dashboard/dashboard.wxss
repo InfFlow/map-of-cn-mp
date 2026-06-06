@@ -1,0 +1,303 @@
+.page {
+  padding: 24rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+/* 英雄区 */
+.hero {
+  padding: 48rpx 0 6rpx;
+}
+.hero .h1 {
+  font-size: 116rpx;
+  line-height: 0.96;
+  margin-top: 20rpx;
+}
+.hero .br {
+  height: 0;
+}
+.lede {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 30rpx;
+  max-width: 540rpx;
+}
+
+/* 核心数字墙：大屏视觉重点 */
+.num-wall {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 1rpx solid var(--line);
+  border-left: 1rpx solid var(--line);
+  margin-top: 32rpx;
+}
+.nw-cell {
+  width: 33.333%;
+  box-sizing: border-box;
+  border-right: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  padding: 32rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+}
+.nw-num {
+  font-size: 64rpx;
+  line-height: 1.1;
+  font-family: Georgia, "Songti SC", serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ink);
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nw-lab {
+  font-size: 20rpx;
+  color: var(--ink-2);
+  margin-top: 14rpx;
+}
+.nw-en {
+  font-size: 16rpx;
+  color: var(--faint);
+  letter-spacing: 1rpx;
+  margin-top: 4rpx;
+  text-transform: uppercase;
+}
+.wall-note {
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 20rpx;
+  line-height: 1.5;
+  color: var(--faint);
+  letter-spacing: 0.5rpx;
+  margin-top: 18rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid var(--line-soft);
+  text-align: right;
+}
+
+/* 区块 + 条形图 */
+.block {
+  margin-top: 56rpx;
+}
+.bars {
+  margin-top: 26rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.bar-lab {
+  flex: none;
+  width: 110rpx;
+  font-size: 24rpx;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bar-track {
+  flex: 1;
+  height: 18rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--ink);
+  transition: width 0.5s ease;
+}
+
+/* 条形「长出」动画：纯 CSS，进页面时从 0 横向展开 */
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.bar-fill-anim {
+  transform-origin: left center;
+  animation: grow 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+/* 同组内逐条依次展开，错落更有节奏 */
+.bars .bar-row:nth-child(1) .bar-fill-anim { animation-delay: 0.06s; }
+.bars .bar-row:nth-child(2) .bar-fill-anim { animation-delay: 0.14s; }
+.bars .bar-row:nth-child(3) .bar-fill-anim { animation-delay: 0.22s; }
+.bars .bar-row:nth-child(4) .bar-fill-anim { animation-delay: 0.30s; }
+.bars .bar-row:nth-child(5) .bar-fill-anim { animation-delay: 0.38s; }
+.bars .bar-row:nth-child(6) .bar-fill-anim { animation-delay: 0.46s; }
+.bars .bar-row:nth-child(n+7) .bar-fill-anim { animation-delay: 0.54s; }
+.bar-val {
+  flex: none;
+  min-width: 56rpx;
+  text-align: right;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+/* 季节分布：标签前字符图标，一眼区别于其他两组 */
+.bars-season .bar-lab {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.season-ico {
+  font-size: 28rpx;
+  line-height: 1;
+  filter: grayscale(100%);
+  opacity: 0.92;
+}
+
+/* 常去城市：序号墙 + 第一名重强调 */
+.bar-row-city {
+  gap: 14rpx;
+}
+.city-rank {
+  flex: none;
+  width: 46rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--faint);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+.bar-lab-city {
+  width: 96rpx;
+}
+/* 冠军行：序号与城市名加墨、轨道更扎实 */
+.bar-row-city.is-top .city-rank {
+  color: var(--ink);
+}
+.bar-row-city.is-top .bar-lab-city {
+  font-weight: 700;
+}
+.bar-row-city.is-top .bar-track {
+  height: 24rpx;
+  border-color: var(--ink);
+}
+.bar-row-city.is-top .bar-val {
+  color: var(--ink);
+  font-weight: 700;
+}
+/* 第一名实心墨色，其余浅墨拉开层次 */
+.bar-fill-top {
+  background: var(--ink);
+}
+.bar-fill-sub {
+  background: var(--muted);
+}
+
+/* 最近回忆卡片 */
+.latest-card {
+  margin-top: 26rpx;
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+}
+.latest-cover {
+  width: 100%;
+  height: 380rpx;
+  display: block;
+  background: var(--bg);
+}
+.latest-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1rpx solid var(--line);
+}
+.lc-mono {
+  font-size: 64rpx;
+  color: var(--faint);
+}
+.latest-meta {
+  padding: 28rpx 32rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+}
+.latest-city {
+  font-size: 40rpx;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.latest-title {
+  font-size: 28rpx;
+  color: var(--ink-2);
+  margin-top: 10rpx;
+}
+.latest-date {
+  font-size: 20rpx;
+  color: var(--muted);
+  letter-spacing: 1rpx;
+  margin-top: 12rpx;
+}
+
+/* 标签云 */
+.tag-cloud {
+  margin-top: 26rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.tag-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10rpx;
+  border: 1rpx solid var(--line);
+  padding: 12rpx 24rpx;
+  border-radius: var(--radius-sm);
+}
+.tag-name {
+  font-size: 24rpx;
+  color: var(--ink);
+}
+.tag-count {
+  font-size: 20rpx;
+  color: var(--muted);
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 64rpx;
+}
+.foot-txt {
+  margin-top: 30rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+@media (max-width: 360px) {
+  .hero .h1 {
+    font-size: 84rpx;
+    line-height: 1;
+  }
+}

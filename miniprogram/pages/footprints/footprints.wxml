@@ -1,0 +1,189 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">ATLAS</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">我们去过的地方</view>
+    <view class="h1 display">我们的<view class="br"></view>足迹地图</view>
+    <view class="lede">所有走过的点，按城市收进这张地图里。</view>
+  </view>
+
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:380rpx;margin-top:24rpx;"></view>
+      <view class="sk sk-block" style="height:120rpx;margin-top:24rpx;"></view>
+    </view>
+  </block>
+
+  <view wx:elif="{{error}}" class="fp-empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
+
+  <block wx:elif="{{stats.journeyCount === 0}}">
+    <view class="fp-empty">第一座被点亮的城市，还在路上。</view>
+  </block>
+
+  <block wx:else>
+    <!-- 概览数字 -->
+    <view class="grid3 rise d2">
+      <view class="cellnum">
+        <text class="num display">{{stats.cityCount}}</text>
+        <text class="lab">城市 Cities</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{stats.provinceCount}}</text>
+        <text class="lab">省份 Provinces</text>
+      </view>
+      <view class="cellnum">
+        <text class="num display">{{stats.journeyCount}}</text>
+        <text class="lab">足迹 Spots</text>
+      </view>
+    </view>
+
+    <!-- 地图 -->
+    <view class="fp-map-wrap rise d2">
+      <view class="fp-map-toggle">
+        <view class="fmt-btn {{!showHeat ? 'on' : ''}}" bindtap="toggleHeat">足迹点</view>
+        <view class="fmt-btn {{showHeat ? 'on' : ''}}" bindtap="toggleHeat">热力图</view>
+        <view class="fmt-btn {{showRoute ? 'on' : ''}}" bindtap="toggleRoute">路线</view>
+      </view>
+      <map
+        class="fp-map"
+        latitude="{{center.latitude}}"
+        longitude="{{center.longitude}}"
+        scale="{{scale}}"
+        markers="{{showHeat ? [] : markers}}"
+        include-points="{{includePoints}}"
+        heat-map-data="{{heatMapData}}"
+        polyline="{{polyline}}"
+        show-location="{{true}}"
+        enable-rotate="{{false}}"
+        enable-overlooking="{{false}}"
+        bindmarkertap="onMarkerTap"
+        bindcallouttap="onMarkerTap"
+      ></map>
+      <view class="fp-map-cap">{{activeCity ? '已聚焦 · 再点一次该城市可看全部' : '点下方城市可聚焦 · 点标记进回忆'}}</view>
+    </view>
+
+    <!-- 按城市归类 -->
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">按城市</text>
+        <text class="sec-en">By City</text>
+        <view class="sec-compare pressable" hover-class="pressed" bindtap="loadCompare">{{compareLoading ? '…' : '足迹对比'}}</view>
+      </view>
+      <view wx:for="{{cityGroups}}" wx:key="key" class="fp-city {{activeCity === item.key ? 'on' : ''}}">
+        <view class="fp-city-head pressable" hover-class="pressed" data-key="{{item.key}}" catchtap="focusCity">
+          <view class="fp-city-l">
+            <text class="fp-city-name serif">{{item.city}}</text>
+            <text wx:if="{{item.province}}" class="fp-city-prov">{{item.province}}</text>
+          </view>
+          <view class="fp-city-r">
+            <text class="fp-city-count serif">{{item.count}}</text>
+            <text class="fp-city-unit">个足迹</text>
+          </view>
+        </view>
+        <view class="fp-spots">
+          <view wx:for="{{item.items}}" wx:for-item="sp" wx:key="id" class="fp-spot pressable" hover-class="pressed" data-id="{{sp.id}}" catchtap="openDetail">
+            <text class="fp-spot-title">{{sp.title}}</text>
+            <text class="fp-spot-meta">{{sp.season}}{{sp.season && sp.date ? ' · ' : ''}}{{sp.date}}</text>
+            <text class="fp-spot-arrow serif">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+
+  <!-- 定位打卡浮动按钮 -->
+  <view class="checkin-fab pressable" hover-class="pressed" bindtap="startCheckin">＋ 打卡</view>
+
+  <!-- 打卡弹层 -->
+  <view wx:if="{{checkin.show}}" class="ck-mask" catchtap="closeCheckin">
+    <view class="ck-sheet" catchtap="noop">
+      <view class="grab-handle"></view>
+      <view class="ck-title serif">当前位置打卡</view>
+
+      <block wx:if="{{checkin.locating}}">
+        <view class="ck-hint">正在确认这一刻的位置…</view>
+      </block>
+      <block wx:else>
+        <view class="ck-row">
+          <text class="ck-label">地点</text>
+          <input class="ck-input" value="{{checkin.title}}" placeholder="景区/地点名称（选填）" bindinput="onCheckinTitle" />
+        </view>
+        <view class="ck-row">
+          <text class="ck-label">省份</text>
+          <picker class="ck-picker" mode="selector" range="{{PROVINCES}}" value="{{checkin.provinceIndex}}" bindchange="onProvincePick">
+            <view class="ck-picker-val">{{checkin.province || '请选择省份'}}</view>
+          </picker>
+        </view>
+        <view class="ck-row">
+          <text class="ck-label">城市</text>
+          <picker class="ck-picker" mode="selector" range="{{checkin.cityOptions}}" value="{{checkin.cityIndex}}" bindchange="onCityPick">
+            <view class="ck-picker-val">{{checkin.city || '请选择城市'}}</view>
+          </picker>
+        </view>
+        <view wx:if="{{checkin.weather || checkin.season}}" class="ck-auto">
+          已帮你带上 {{checkin.season || '这一季'}}<text wx:if="{{checkin.weather}}"> · {{checkin.weather}}</text>
+        </view>
+        <!-- 照片 -->
+        <view class="ck-photos">
+          <view wx:for="{{checkin.photos}}" wx:key="*this" class="ck-photo-wrap">
+            <image class="ck-photo" src="{{item}}" mode="aspectFill"></image>
+            <view class="ck-photo-del pressable" hover-class="pressed" data-idx="{{index}}" catchtap="removePhoto">×</view>
+          </view>
+          <view wx:if="{{checkin.photos.length < 4}}" class="ck-photo-add pressable" hover-class="pressed" bindtap="choosePhoto">
+            <text class="ck-add-ico">＋</text>
+            <text class="ck-add-txt">照片</text>
+          </view>
+        </view>
+        <view class="ck-actions">
+          <view class="ck-cancel pressable" hover-class="pressed" bindtap="closeCheckin">取消</view>
+          <view class="ck-save pressable {{checkin.saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="saveCheckin">{{checkin.saving ? '保存中…' : '打卡'}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 足迹对比弹层 -->
+  <view wx:if="{{showCompare && compare}}" class="cmp-mask" catchtap="closeCompare">
+    <view class="cmp-sheet" catchtap="noop">
+      <view class="cmp-title serif">足迹对比</view>
+      <view wx:if="{{compare.singleUser}}" class="cmp-hint">现在只有一人的足迹。等两个人都留下记录，这里会变成你们的共同地图。</view>
+      <block wx:else>
+        <view class="cmp-row">
+          <view class="cmp-col">
+            <view class="cmp-num serif">{{compare.together.length}}</view>
+            <view class="cmp-lab">一起去过</view>
+            <view class="cmp-cities">
+              <text wx:for="{{compare.together}}" wx:key="*this" class="cmp-city">{{item}}</text>
+            </view>
+          </view>
+          <view class="cmp-col">
+            <view class="cmp-num serif">{{compare.mine.length}}</view>
+            <view class="cmp-lab">我去过</view>
+            <view class="cmp-cities">
+              <text wx:for="{{compare.mine}}" wx:key="*this" class="cmp-city alone">{{item}}</text>
+            </view>
+          </view>
+          <view class="cmp-col">
+            <view class="cmp-num serif">{{compare.hers.length}}</view>
+            <view class="cmp-lab">她去过</view>
+            <view class="cmp-cities">
+              <text wx:for="{{compare.hers}}" wx:key="*this" class="cmp-city alone">{{item}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="cmp-hint-sm">共 {{compare.total}} 座城市 · 一起打卡了 {{compare.together.length}} 座</view>
+      </block>
+    </view>
+  </view>
+</view>

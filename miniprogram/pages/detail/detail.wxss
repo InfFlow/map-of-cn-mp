@@ -1,0 +1,501 @@
+.wrap {
+  padding: 24rpx 48rpx 72rpx;
+}
+
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+}
+.mast-vol {
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  color: var(--muted);
+}
+.mast .rule {
+  margin-top: 12rpx;
+}
+
+.d-city {
+  font-size: 96rpx;
+  line-height: 1;
+  margin-top: 14rpx;
+}
+.d-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin-top: 18rpx;
+}
+
+/* 杂志式大封面：图上叠标题 */
+.d-cover {
+  width: 100%;
+  height: 700rpx;
+  margin-top: 32rpx;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-float);
+}
+.d-cover.mag {
+  display: flex;
+  align-items: flex-end;
+}
+.d-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.d-cover-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48rpx;
+  background:
+    linear-gradient(135deg, rgba(250, 248, 243, 0.28), rgba(27, 23, 18, 0.08)),
+    repeating-linear-gradient(45deg, rgba(27, 23, 18, 0.05) 0, rgba(27, 23, 18, 0.05) 1rpx, transparent 1rpx, transparent 18rpx);
+}
+.dce-city {
+  font-size: 88rpx;
+  line-height: 1;
+  color: rgba(27, 23, 18, 0.72);
+}
+.dce-text {
+  margin-top: 18rpx;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+.d-cover-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(27, 23, 18, 0) 30%, rgba(27, 23, 18, 0.2) 58%, rgba(27, 23, 18, 0.66) 100%);
+}
+.d-cover-cap {
+  position: relative;
+  z-index: 2;
+  padding: 0 32rpx 32rpx;
+}
+.kicker.light {
+  color: rgba(250, 248, 243, 0.82);
+}
+.d-cover-cap .d-city {
+  color: var(--paper);
+  font-size: 96rpx;
+}
+.d-cover-cap .d-title {
+  color: rgba(250, 248, 243, 0.92);
+}
+.d-cover-fig {
+  position: absolute;
+  left: 18rpx;
+  top: 16rpx;
+  color: var(--ink);
+  opacity: 0.85;
+  background: rgba(244, 241, 234, 0.7);
+  padding: 4rpx 12rpx;
+  z-index: 2;
+}
+
+/* 引文式简介（首字下沉） */
+.d-lede {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--ink);
+  margin-top: 40rpx;
+}
+
+/* 引文分隔 */
+.pullquote {
+  font-size: 40rpx;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--ink);
+  text-align: center;
+  padding: 40rpx 16rpx;
+  margin-top: 36rpx;
+  border-top: 3rpx solid var(--ink);
+  border-bottom: 3rpx solid var(--ink);
+}
+
+/* 事实表：双栏 */
+.d-facts {
+  margin-top: 40rpx;
+  border-top: 1rpx solid var(--line);
+}
+.d-facts.grid2 {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 0;
+}
+.d-facts.grid2 .fact {
+  width: 50%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8rpx;
+}
+.d-facts.grid2 .fact:nth-child(odd) {
+  padding-right: 18rpx;
+}
+.fact {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--line);
+  box-sizing: border-box;
+}
+.fk {
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: var(--muted);
+}
+.fv {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.d-tags {
+  margin-top: 30rpx;
+}
+
+.block {
+  margin-top: 56rpx;
+}
+.d-cover + .block {
+  margin-top: 38rpx;
+}
+
+/* 照片墙：按照片数量和横竖图自适应 */
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  width: 100%;
+  align-items: flex-start;
+}
+.photo-cell {
+  width: calc((100% - 16rpx) / 2);
+  box-sizing: border-box;
+}
+.photo-cell:first-child {
+  width: 100%;
+}
+.photo {
+  width: 100%;
+  height: 244rpx;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  border: 1rpx solid var(--line);
+  position: relative;
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-md);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+.photo-cell:first-child .photo {
+  height: 360rpx;
+}
+.photo-cell.wide .photo {
+  height: 220rpx;
+}
+.photo-cell.tall .photo {
+  height: 320rpx;
+}
+.photo-cell.square .photo {
+  height: 260rpx;
+}
+.photos.count-1 .photo-cell,
+.photos.count-2 .photo-cell,
+.photos.count-3 .photo-cell:first-child {
+  width: 100%;
+}
+.photos.count-1 .photo,
+.photos.count-2 .photo {
+  height: 420rpx;
+}
+.photos.count-3 .photo-cell:not(:first-child) {
+  width: calc((100% - 16rpx) / 2);
+}
+.photos.count-3 .photo-cell:first-child .photo {
+  height: 390rpx;
+}
+.photos.count-3 .photo-cell:not(:first-child) .photo {
+  height: 250rpx;
+}
+.photos.count-4 .photo-cell {
+  width: calc((100% - 16rpx) / 2);
+}
+.photos.count-4 .photo-cell:first-child {
+  width: calc((100% - 16rpx) / 2);
+}
+.photos.count-4 .photo,
+.photos.count-4 .photo-cell:first-child .photo {
+  height: 286rpx;
+}
+.photos.count-9 {
+  gap: 10rpx;
+}
+.photos.count-9 .photo-cell,
+.photos.count-9 .photo-cell:first-child {
+  width: calc((100% - 20rpx) / 3);
+}
+.photos.count-9 .photo,
+.photos.count-9 .photo-cell:first-child .photo,
+.photos.count-9 .photo-cell.wide .photo,
+.photos.count-9 .photo-cell.tall .photo,
+.photos.count-9 .photo-cell.square .photo {
+  height: 210rpx;
+  border-radius: var(--radius-sm);
+}
+.photo:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 12rpx rgba(27, 23, 18, 0.06);
+}
+.photo-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 手记：衬线引文 */
+.note {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--ink);
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--line);
+  position: relative;
+  padding-left: 30rpx;
+}
+.note::before {
+  content: "“";
+  position: absolute;
+  left: -6rpx;
+  top: 10rpx;
+  font-size: 64rpx;
+  line-height: 1;
+  color: var(--faint);
+  font-family: Georgia, serif;
+}
+.note:last-child {
+  border-bottom: 0;
+}
+
+/* 页脚 */
+.foot {
+  margin-top: 56rpx;
+}
+.foot-txt {
+  margin-top: 28rpx;
+  text-align: center;
+  font-size: 20rpx;
+  color: var(--muted);
+  letter-spacing: 3rpx;
+}
+
+/* 操作栏：主操作（海报）+ 两个次操作（问AI / 分享卡片） */
+.d-actions {
+  margin: 32rpx 0 6rpx;
+}
+.da-main { border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  background: var(--ink);
+  border-radius: var(--radius-md);
+}
+.da-main-zh {
+  font-size: 28rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+  color: var(--bg);
+}
+.da-main-en {
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  color: rgba(244, 241, 234, 0.6);
+}
+.da-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+.da-sub {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 24rpx 0;
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.da-sub.disabled { opacity: 0.5; }
+.da-sub-ico {
+  font-size: 24rpx;
+  color: var(--ink);
+}
+.da-sub-t {
+  font-size: 24rpx;
+  letter-spacing: 0.5rpx;
+  color: var(--ink);
+}
+
+.sec-gen { font-size:20rpx; color:var(--muted); border:1rpx solid var(--line); padding:4rpx 14rpx; margin-left:auto; }
+
+.photos-hint { font-size: 20rpx; color: var(--faint); margin: -10rpx 0 16rpx; }
+.photo-empty {
+  margin-top: 38rpx;
+  padding: 54rpx 36rpx;
+  border: 1rpx dashed var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-align: center;
+}
+.photo-empty-title {
+  font-size: 36rpx;
+  color: var(--ink);
+}
+.photo-empty-sub {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+/* 智能手记入口 */
+.journal-entry {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 32rpx;
+  padding: 32rpx;
+  background: linear-gradient(135deg, #fff9e6 0%, var(--surface) 100%);
+  border: 1rpx solid #f0e6c8;
+  border-radius: var(--radius-lg);
+  transition: transform 0.2s ease;
+}
+.journal-entry:active {
+  transform: scale(0.98);
+}
+.journal-entry-icon {
+  font-size: 56rpx;
+  line-height: 1;
+}
+.journal-entry-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.journal-entry-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+.journal-entry-hint {
+  font-size: 22rpx;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.journal-entry-arrow {
+  font-size: 48rpx;
+  color: var(--ink-2);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+/* 离屏画布：移出视口，不参与布局视觉 */
+.poster-canvas {
+  position: fixed;
+  left: -2000px;
+  top: 0;
+}
+
+@media (max-width: 360px) {
+  .wrap {
+    padding-bottom: calc(64rpx + env(safe-area-inset-bottom));
+  }
+  .d-city,
+  .d-cover-cap .d-city {
+    font-size: 78rpx;
+  }
+  .d-cover {
+    height: 560rpx;
+    margin-top: 24rpx;
+  }
+  .d-cover-cap {
+    padding: 0 24rpx 26rpx;
+  }
+  .d-title,
+  .d-cover-cap .d-title {
+    font-size: 28rpx;
+  }
+}
+
+/* 日常体验打磨：详情页以照片、手记为主，操作按钮不抢叙事 */
+.d-lede {
+  margin-top: 34rpx;
+}
+.d-facts {
+  margin-top: 32rpx;
+}
+.fact {
+  padding: 20rpx 0;
+}
+.d-actions {
+  margin: 28rpx 0 0;
+}
+.da-main {
+  padding: 24rpx 30rpx;
+  box-shadow: none;
+}
+.da-row {
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+.da-sub {
+  padding: 20rpx 0;
+  border-color: var(--line-soft);
+  background: transparent;
+}
+.da-sub-t {
+  font-size: 23rpx;
+}
+.note {
+  padding-top: 22rpx;
+  padding-bottom: 22rpx;
+}
+.photo-empty {
+  margin-top: 32rpx;
+  padding: 46rpx 32rpx;
+  border-color: var(--line-soft);
+}
+.foot {
+  margin-top: 44rpx;
+}
+
+@media (max-width: 360px) {
+  .da-main {
+    padding: 22rpx 26rpx;
+  }
+  .da-row {
+    gap: 10rpx;
+  }
+  .da-sub-t {
+    font-size: 22rpx;
+  }
+}

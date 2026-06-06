@@ -1,0 +1,192 @@
+<view class="wrap">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">TIMELINE</text>
+      <text class="mast-vol">{{filtered.length ? filtered.length + ' TRIPS' : '我们走过的日子'}}</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">按时间回看</view>
+    <view class="h1 display">我们走过<view class="br"></view>的日子</view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="block">
+      <view class="sk sk-block" style="height:34rpx;width:160rpx;"></view>
+      <view class="sk sk-block" style="height:360rpx;margin-top:30rpx;"></view>
+      <view class="sk sk-block" style="height:50rpx;width:60%;margin-top:24rpx;"></view>
+      <view class="sk sk-block" style="height:24rpx;width:90%;margin-top:18rpx;"></view>
+      <view class="sk sk-block" style="height:24rpx;width:80%;margin-top:12rpx;"></view>
+    </view>
+  </block>
+
+  <view wx:elif="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{anniversaries.length}}" class="block rise d2">
+      <view class="sec">
+        <text class="sec-zh">纪念日</text>
+        <text class="sec-en">Milestones</text>
+      </view>
+      <scroll-view scroll-x class="anni-scroll" show-scrollbar="{{false}}" enhanced>
+        <view wx:for="{{anniversaries}}" wx:key="id" class="anni">
+          <view class="anni-tag">{{item.repeatYearly ? 'ANNUAL' : 'ANNIVERSARY'}}</view>
+          <view class="anni-count serif {{item.countKind}}">{{item.countText}}</view>
+          <view class="anni-hair"></view>
+          <view class="anni-label">{{item.label}}</view>
+          <view class="anni-foot">
+            <text class="anni-date">{{item.dateShort}}</text>
+            <text wx:if="{{item.city}}" class="anni-city">· {{item.city}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">旅程</text>
+        <text class="sec-en">The Journeys</text>
+      </view>
+
+      <view class="tl-filters">
+        <scroll-view scroll-x class="tl-filter-scroll" show-scrollbar="{{false}}">
+          <view class="tl-filter-chip {{!filterYear ? 'on' : ''}}" data-y="" bindtap="setYear">全部</view>
+          <view wx:for="{{years}}" wx:key="*this" class="tl-filter-chip {{filterYear === item ? 'on' : ''}}" data-y="{{item}}" bindtap="setYear">{{item}}</view>
+        </scroll-view>
+        <view class="tl-filter-seasons">
+          <view wx:for="{{seasons}}" wx:key="*this" class="tl-filter-chip sm {{filterSeason === item ? 'on' : ''}}" data-s="{{item}}" bindtap="setSeason">{{item}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{!filtered.length}}" class="tl-empty">
+        <view class="tl-empty-title serif">这一段还没有回忆</view>
+        <view class="tl-empty-sub">换个年份或季节看看，或者记下新的那一站。</view>
+      </view>
+
+      <view wx:else class="tl">
+        <block wx:for="{{filtered}}" wx:key="id">
+        <view wx:if="{{item.yearHead}}" class="tl-year">
+          <text class="tl-year-n display">{{item.yearHead}}</text>
+          <view class="tl-year-line"></view>
+          <text class="tl-year-en">ANNO</text>
+        </view>
+        <view
+          class="tl-item pressable stagger-item"
+          style="animation-delay: {{0.05 + index * 0.06}}s"
+          hover-class="pressed"
+          hover-stay-time="60"
+          bindtap="openDetail"
+          bindlongpress="onTripHold"
+          data-id="{{item.id}}"
+        >
+          <view class="tl-rail">
+            <text class="tl-no serif">{{item.no}}</text>
+            <view class="tl-line"></view>
+          </view>
+          <view class="tl-body">
+            <view class="tl-cover" style="background-image: {{item.coverGrad}};">
+              <image wx:if="{{item.cover}}" class="tl-img" src="{{item.cover}}" mode="aspectFill" lazy-load="true"></image>
+              <view wx:if="{{item.cover}}" class="tl-cover-cap">
+                <text class="tl-cover-city display">{{item.city}}</text>
+                <text class="tl-cover-date">{{item.dateShort}}</text>
+              </view>
+              <text wx:else class="tl-figno figno">PLATE {{item.no}}</text>
+            </view>
+            <view class="tl-meta">
+              <text wx:if="{{item.seasonIcon}}" class="tl-ic">{{item.seasonIcon}}</text>
+              <text class="tl-season">{{item.season}}</text>
+              <block wx:if="{{item.weather}}">
+                <text class="tl-dot">·</text>
+                <text wx:if="{{item.weatherIcon}}" class="tl-ic">{{item.weatherIcon}}</text>
+                <text class="tl-season">{{item.weather}}</text>
+              </block>
+              <text class="tl-dot">·</text>
+              <text class="tl-date">{{item.dateShort}}</text>
+            </view>
+            <view class="tl-city display">{{item.city}}</view>
+            <view wx:if="{{item.photos && item.photos.length}}" class="tl-photo-count">{{item.photos.length}} 张照片</view>
+            <view class="tl-title">{{item.title}}</view>
+            <view class="tl-intro">{{item.intro}}</view>
+            <view class="tl-tags">
+              <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="chip">{{tag}}</text>
+            </view>
+            <view class="tl-foot-row">
+              <view class="tl-more">阅读这段回忆 <text class="tl-more-arrow">›</text></view>
+            </view>
+          </view>
+        </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="foot rise d4">
+      <view class="hair"></view>
+      <view class="foot-txt">每一次出发，都会被这张地图记住</view>
+    </view>
+  </block>
+
+  <view class="rec-fab pressable" hover-class="pressed" bindtap="openRecorder">
+    <text class="rec-fab-plus">＋</text>
+    <text class="rec-fab-text">记下这一站</text>
+  </view>
+
+  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
+
+  <view wx:if="{{recorder.show}}" class="rec-mask" catchtap="closeRecorder">
+    <view class="rec-sheet" catchtap="noop">
+      <view class="grab-handle"></view>
+      <view class="rec-title serif">记录一段回忆</view>
+      <view class="rec-row">
+        <text class="rec-label">省份</text>
+        <picker class="rec-picker" mode="selector" range="{{PROVINCES}}" value="{{recorder.provinceIndex}}" bindchange="onRecProvince">
+          <view class="rec-pick-val">{{recorder.province||'请选择'}}</view>
+        </picker>
+      </view>
+      <view class="rec-row">
+        <text class="rec-label">城市</text>
+        <picker class="rec-picker" mode="selector" range="{{recorder.cityOptions}}" value="{{recorder.cityIndex}}" bindchange="onRecCity">
+          <view class="rec-pick-val">{{recorder.city||'请选择'}}</view>
+        </picker>
+      </view>
+      <view class="rec-row">
+        <text class="rec-label">日期</text>
+        <picker class="rec-picker" mode="date" value="{{recorder.date}}" bindchange="onRecDate">
+          <view class="rec-pick-val">{{recorder.date||'选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="rec-row">
+        <text class="rec-label">标题</text>
+        <input class="rec-input" value="{{recorder.title}}" placeholder="这段回忆叫什么（选填）" bindinput="onRecTitle" />
+      </view>
+      <view class="rec-row">
+        <text class="rec-label">手记</text>
+        <input class="rec-input" value="{{recorder.intro}}" placeholder="想说点什么（选填）" bindinput="onRecIntro" />
+      </view>
+      <view class="rec-seasons">
+        <text class="rec-label">季节</text>
+        <view class="rec-season-opts">
+          <view wx:for="{{['春','夏','秋','冬']}}" wx:key="*this" class="rec-season {{recorder.season===item?'on':''}}" data-s="{{item}}" bindtap="recSeason">{{item}}</view>
+        </view>
+      </view>
+      <view class="rec-photos">
+        <view wx:for="{{recorder.photos}}" wx:key="*this" class="rec-photo-wrap">
+          <image class="rec-photo" src="{{item}}" mode="aspectFill"></image>
+          <view class="rec-photo-del pressable" hover-class="pressed" data-idx="{{index}}" catchtap="recRemovePhoto">×</view>
+        </view>
+        <view wx:if="{{recorder.photos.length<9}}" class="rec-photo-add pressable" hover-class="pressed" bindtap="recChoosePhoto">
+          <text class="rec-add-ico">＋</text><text class="rec-add-txt">照片</text>
+        </view>
+      </view>
+      <view class="rec-actions">
+        <view class="rec-cancel pressable" hover-class="pressed" bindtap="closeRecorder">取消</view>
+        <view class="rec-save pressable {{recorder.saving?'disabled':''}}" hover-class="pressed" bindtap="saveRecord">{{recorder.saving?'保存中…':'保存'}}</view>
+      </view>
+    </view>
+  </view>
+</view>

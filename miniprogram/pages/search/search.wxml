@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="search-bar">
+    <input class="search-input" value="{{keyword}}" placeholder="搜索城市、标题、标签、手记…" placeholder-class="ph" bindinput="onInput" focus="{{true}}" />
+    <view wx:if="{{keyword}}" class="search-clear pressable" hover-class="pressed" bindtap="clear">✕</view>
+  </view>
+
+  <view wx:if="{{hasSearched && !results.length}}" class="empty">
+    <view class="empty-zh">没有找到「{{keyword}}」</view>
+  </view>
+
+  <view wx:elif="{{results.length}}" class="results">
+    <view class="result-count">找到 {{results.length}} 条结果</view>
+    <view wx:for="{{results}}" wx:key="id" class="result-item pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openDetail">
+      <image wx:if="{{item.imageUrl}}" class="result-img" src="{{item.imageUrl}}" mode="aspectFill"></image>
+      <view wx:else class="result-img-ph"></view>
+      <view class="result-body">
+        <view class="result-city serif">{{item.city}}</view>
+        <view wx:if="{{item.title}}" class="result-title">{{item.title}}</view>
+        <view class="result-meta">
+          <text class="result-prov">{{item.province}}</text>
+          <text class="result-date">{{item.date}}</text>
+        </view>
+      </view>
+      <text class="result-arrow serif">›</text>
+    </view>
+  </view>
+
+  <view wx:elif="{{!hasSearched}}" class="empty">
+    <view class="empty-fig empty-fig-search"></view>
+    <view class="empty-zh">搜索旅行回忆</view>
+    <view class="empty-hint">输入城市、标题、标签或手记关键词</view>
+  </view>
+</view>

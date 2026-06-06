@@ -1,0 +1,396 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">ADMIN</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">整理和补全</view>
+    <view class="h1 display">后台<view class="br"></view>管理</view>
+    <view class="lede">把足迹、行程、菜单和订单收整好，前台体验就会更顺。</view>
+  </view>
+
+  <!-- 未登录 -->
+  <block wx:if="{{notAdmin}}">
+    <view class="gate rise d2">
+      <view class="gate-zh display">需要登录</view>
+      <view class="gate-sub">请先在「我的」页用微信登录，登录后即可编辑足迹与纪念日。</view>
+      <view class="gate-btn pressable" hover-class="pressed" bindtap="goLogin">去「我的」 ›</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{ready}}">
+    <!-- Tab 切换 -->
+    <scroll-view class="tabs rise d1" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="tab {{tab === 'todo' ? 'on' : ''}}" data-tab="todo" bindtap="switchTab">待补</view>
+      <view class="tab {{tab === 'journeys' ? 'on' : ''}}" data-tab="journeys" bindtap="switchTab">足迹</view>
+      <view class="tab {{tab === 'anniversaries' ? 'on' : ''}}" data-tab="anniversaries" bindtap="switchTab">纪念日</view>
+      <view class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
+      <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
+      <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
+    </scroll-view>
+
+    <!-- ============ 待补数据 ============ -->
+    <block wx:if="{{tab === 'todo'}}">
+      <view class="todo-head">
+        <view class="todo-stat">
+          <text class="todo-num serif">{{todoSummary.total}}</text>
+          <text class="todo-label">待补项</text>
+        </view>
+        <view class="todo-stat">
+          <text class="todo-num serif">{{todoSummary.journeys}}</text>
+          <text class="todo-label">足迹</text>
+        </view>
+        <view class="todo-stat">
+          <text class="todo-num serif">{{todoSummary.stops}}</text>
+          <text class="todo-label">行程地点</text>
+        </view>
+      </view>
+      <view wx:if="{{todoLoaded && !todoIssues.length}}" class="empty">资料都很完整</view>
+      <view wx:elif="{{!todoLoaded}}" class="empty">正在读取…</view>
+      <view class="todo-list">
+        <view wx:for="{{todoGroups}}" wx:key="key" class="todo-group">
+          <view class="todo-group-title">{{item.title}}</view>
+          <view wx:for="{{item.items}}" wx:for-item="issue" wx:key="key" class="todo-row">
+            <text class="todo-type">{{issue.type}}</text>
+            <view class="todo-mid">
+              <text class="todo-title">{{issue.title}}</text>
+              <text class="todo-desc">{{issue.desc}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- ============ 菜品 ============ -->
+    <block wx:elif="{{tab === 'dishes'}}">
+      <scroll-view scroll-x class="catbar" wx:if="{{categories.length}}">
+        <view class="catchip {{activeCat === item.id ? 'on' : ''}}" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="pickCat">{{item.name}}</view>
+      </scroll-view>
+
+      <view wx:if="{{!filteredDishes.length}}" class="empty">该分类下还没有菜品</view>
+
+      <view class="dish-list">
+        <view wx:for="{{filteredDishes}}" wx:key="id" class="d-card {{item.available ? '' : 'off'}}">
+          <view class="d-thumb">
+            <image wx:if="{{item.imageUrl}}" src="{{item.imageUrl}}" mode="aspectFill" class="d-img"></image>
+            <text wx:else class="d-thumb-ph serif">{{item.name[0]}}</text>
+          </view>
+          <view class="d-mid">
+            <view class="d-name serif">{{item.name}}</view>
+            <view class="d-badges">
+              <text wx:if="{{item.recommended}}" class="bdg rec">推荐</text>
+              <text wx:if="{{item.spicy > 0}}" class="bdg">{{item.spicyText}}</text>
+              <text wx:if="{{item.portion}}" class="bdg">{{item.portion}}</text>
+              <text wx:if="{{!item.available}}" class="bdg muted">已下架</text>
+            </view>
+            <view wx:if="{{item.description}}" class="d-desc">{{item.description}}</view>
+            <view class="d-price serif">{{item.price > 0 ? '¥' + item.price : '随意'}}</view>
+          </view>
+          <view class="d-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveDish">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveDish">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggleDish">{{item.available ? '下架' : '上架'}}</text>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openDishEditor">编辑</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delDish">删除</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openDishEditor">＋ 新增菜品</view>
+    </block>
+
+    <!-- ============ 分类 ============ -->
+    <block wx:elif="{{tab === 'categories'}}">
+      <view wx:if="{{!categories.length}}" class="empty">还没有分类</view>
+      <view class="cat-list">
+        <view wx:for="{{categories}}" wx:key="id" class="c-row {{item.visible ? '' : 'off'}}">
+          <view class="c-mid">
+            <text class="c-name serif">{{item.name}}</text>
+            <text wx:if="{{!item.visible}}" class="bdg muted">已隐藏</text>
+          </view>
+          <view class="c-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveCat">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveCat">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggleCat">{{item.visible ? '隐藏' : '显示'}}</text>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openCatEditor">改名</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delCat">删除</text>
+          </view>
+        </view>
+      </view>
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openCatEditor">＋ 新增分类</view>
+    </block>
+
+    <!-- ============ 订单 ============ -->
+    <block wx:elif="{{tab === 'orders'}}">
+      <view wx:if="{{ordersLoaded && !orders.length}}" class="empty">还没有订单</view>
+      <view wx:elif="{{!ordersLoaded}}" class="empty">正在读取…</view>
+      <view class="order-list">
+        <view wx:for="{{orders}}" wx:key="id" class="o-card">
+          <view class="o-top">
+            <text class="o-date serif">{{item.dateShort}}</text>
+            <text class="o-status s-{{item.status}} pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="changeStatus">{{item.statusLabel}} ▾</text>
+          </view>
+          <view class="o-who">{{item.nickname || '匿名'}}</view>
+          <view class="o-sum">{{item.summary}}</view>
+          <view wx:if="{{item.remark}}" class="o-note">「{{item.remark}}」</view>
+          <view class="o-foot">
+            <text class="o-count">{{item.itemCount}} 份</text>
+            <text wx:if="{{item.totalAmount > 0}}" class="o-total serif">¥{{item.totalAmount}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- ============ 足迹 / 城市 ============ -->
+    <block wx:elif="{{tab === 'journeys'}}">
+      <view wx:if="{{journeysLoaded && !journeys.length}}" class="empty">还没有足迹，点下方新增</view>
+      <view wx:elif="{{!journeysLoaded}}" class="empty">正在读取…</view>
+      <view class="cat-list">
+        <view wx:for="{{journeys}}" wx:key="id" class="c-row {{item.visible ? '' : 'off'}}">
+          <view class="c-mid col">
+            <text class="c-name serif">{{item.city}}<text class="j-prov"> · {{item.province}}</text></text>
+            <view class="j-meta">
+              <text wx:if="{{item.ownerLabel}}" class="bdg owner {{item.mine ? 'mine' : ''}}">{{item.ownerLabel}}</text>
+              <text wx:if="{{item.dateText}}">{{item.dateText}}</text>
+              <text wx:if="{{item.landmark}}"> · {{item.landmark}}</text>
+              <text wx:if="{{!item.hasGeo}}" class="bdg muted">无坐标</text>
+              <text wx:if="{{!item.visible}}" class="bdg muted">已隐藏</text>
+            </view>
+          </view>
+          <view class="c-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveJourney">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveJourney">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="toggleJourney">{{item.visible ? '隐藏' : '显示'}}</text>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openJourneyEditor">编辑</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delJourney">删除</text>
+          </view>
+        </view>
+      </view>
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openJourneyEditor">＋ 新增足迹城市</view>
+    </block>
+
+    <!-- ============ 纪念日 ============ -->
+    <block wx:elif="{{tab === 'anniversaries'}}">
+      <view wx:if="{{anniLoaded && !anniversaries.length}}" class="empty">还没有纪念日，点下方新增</view>
+      <view wx:elif="{{!anniLoaded}}" class="empty">正在读取…</view>
+      <view class="cat-list">
+        <view wx:for="{{anniversaries}}" wx:key="id" class="c-row">
+          <view class="c-mid col">
+            <text class="c-name serif">{{item.label}}</text>
+            <view class="j-meta">
+              <text>{{item.dateText}}</text>
+              <text wx:if="{{item.city}}"> · {{item.city}}</text>
+              <text wx:if="{{item.repeatYearly}}" class="bdg">每年</text>
+            </view>
+            <view class="a-count count-{{item.countKind}}">{{item.countText}}</view>
+          </view>
+          <view class="c-ops">
+            <view class="op-move">
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="-1" bindtap="moveAnni">↑</text>
+              <text class="mv pressable" hover-class="pressed" data-id="{{item.id}}" data-dir="1" bindtap="moveAnni">↓</text>
+            </view>
+            <text class="op pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="openAnniEditor">编辑</text>
+            <text class="op del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="delAnni">删除</text>
+          </view>
+        </view>
+      </view>
+      <view class="add-btn pressable" hover-class="pressed" bindtap="openAnniEditor">＋ 新增纪念日</view>
+    </block>
+  </block>
+
+  <view wx:else class="empty">正在读取…</view>
+
+  <!-- 分类编辑器 -->
+  <view wx:if="{{catEditor.show}}" class="mask" bindtap="closeCatEditor">
+    <view class="sheet" catchtap>
+      <view class="sheet-title serif">{{catEditor.id ? '编辑分类' : '新增分类'}}</view>
+      <input class="fld" value="{{catEditor.name}}" placeholder="分类名称，如「家常热菜」" placeholder-class="ph" bindinput="onCatName" maxlength="20" />
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeCatEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveCat">保存</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 菜品编辑器 -->
+  <view wx:if="{{dishEditor.show}}" class="mask" bindtap="closeDishEditor">
+    <view class="sheet tall" catchtap>
+      <view class="sheet-title serif">{{dishEditor.id ? '编辑菜品' : '新增菜品'}}</view>
+      <scroll-view scroll-y class="sheet-scroll">
+        <view class="fl">分类</view>
+        <picker mode="selector" range="{{categories}}" range-key="name" value="{{dishEditor.catIndex}}" bindchange="onDishCat">
+          <view class="fld picker">{{categories[dishEditor.catIndex].name || '请选择分类'}}</view>
+        </picker>
+
+        <view class="fl">菜名</view>
+        <input class="fld" value="{{dishEditor.name}}" placeholder="菜名" placeholder-class="ph" data-f="name" bindinput="onDishField" maxlength="40" />
+
+        <view class="fl">描述</view>
+        <input class="fld" value="{{dishEditor.description}}" placeholder="一句话描述（可空）" placeholder-class="ph" data-f="description" bindinput="onDishField" maxlength="60" />
+
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">价格（元）</view>
+            <input class="fld" type="digit" value="{{dishEditor.price}}" placeholder="0 表示随意" placeholder-class="ph" data-f="price" bindinput="onDishField" />
+          </view>
+          <view class="fl-col">
+            <view class="fl">分量</view>
+            <input class="fld" value="{{dishEditor.portion}}" placeholder="如：大份 / 2人份" placeholder-class="ph" data-f="portion" bindinput="onDishField" maxlength="16" />
+          </view>
+        </view>
+
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">辣度</view>
+            <picker mode="selector" range="{{spicyOptions}}" value="{{dishEditor.spicy}}" bindchange="onDishSpicy">
+              <view class="fld picker">{{spicyOptions[dishEditor.spicy]}}</view>
+            </picker>
+          </view>
+          <view class="fl-col rec-col">
+            <view class="fl">推荐</view>
+            <switch checked="{{dishEditor.recommended}}" color="#1b1712" bindchange="onDishRec" />
+          </view>
+        </view>
+
+        <view class="fl">图片</view>
+        <view class="img-row">
+          <view wx:if="{{dishEditor.imageUrl}}" class="img-prev">
+            <image src="{{dishEditor.imageUrl}}" mode="aspectFill" class="img-prev-i"></image>
+            <text class="img-x pressable" hover-class="pressed" bindtap="removeImage">×</text>
+          </view>
+          <view wx:else class="img-add pressable" hover-class="pressed" bindtap="chooseImage">
+            <text>{{dishEditor.uploading ? '上传中…' : '＋ 选择图片'}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeDishEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveDish">保存</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 足迹编辑器 -->
+  <view wx:if="{{journeyEditor.show}}" class="mask" bindtap="closeJourneyEditor">
+    <view class="sheet tall" catchtap>
+      <view class="sheet-title serif">{{journeyEditor.id ? '编辑足迹' : '新增足迹城市'}}</view>
+      <scroll-view scroll-y class="sheet-scroll">
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">城市</view>
+            <input class="fld" value="{{journeyEditor.city}}" placeholder="如 杭州" placeholder-class="ph" data-f="city" bindinput="onJourneyField" maxlength="24" />
+          </view>
+          <view class="fl-col">
+            <view class="fl">省份</view>
+            <input class="fld" value="{{journeyEditor.province}}" placeholder="如 浙江省" placeholder-class="ph" data-f="province" bindinput="onJourneyField" maxlength="24" />
+          </view>
+        </view>
+
+        <view class="fl">日期</view>
+        <picker mode="date" value="{{journeyEditor.date}}" bindchange="onJourneyDate">
+          <view class="fld picker">{{journeyEditor.date || '选择日期'}}</view>
+        </picker>
+
+        <view class="fl-row">
+          <view class="fl-col">
+            <view class="fl">季节</view>
+            <input class="fld" value="{{journeyEditor.season}}" placeholder="如 春" placeholder-class="ph" data-f="season" bindinput="onJourneyField" maxlength="8" />
+          </view>
+          <view class="fl-col">
+            <view class="fl">天气</view>
+            <input class="fld" value="{{journeyEditor.weather}}" placeholder="如 晴" placeholder-class="ph" data-f="weather" bindinput="onJourneyField" maxlength="8" />
+          </view>
+        </view>
+
+        <view class="fl">地标</view>
+        <input class="fld" value="{{journeyEditor.landmark}}" placeholder="如 西湖" placeholder-class="ph" data-f="landmark" bindinput="onJourneyField" maxlength="40" />
+
+        <view class="fl">标题</view>
+        <input class="fld" value="{{journeyEditor.title}}" placeholder="这段回忆的标题（可空）" placeholder-class="ph" data-f="title" bindinput="onJourneyField" maxlength="40" />
+
+        <view class="fl">简介</view>
+        <textarea class="fld area" value="{{journeyEditor.intro}}" placeholder="一句话简介（可空）" placeholder-class="ph" data-f="intro" bindinput="onJourneyField" maxlength="120" auto-height />
+
+        <view class="fl">封面色调</view>
+        <scroll-view scroll-x class="tone-row">
+          <view wx:for="{{toneList}}" wx:key="*this" class="tone-chip {{journeyEditor.toneIndex === index ? 'on' : ''}}" data-index="{{index}}" bindtap="pickJourneyTone">{{item}}</view>
+        </scroll-view>
+
+        <view class="fl">坐标（用于地图点亮）</view>
+        <view class="fl-row">
+          <view class="fl-col">
+            <input class="fld" value="{{journeyEditor.longitude}}" placeholder="经度" placeholder-class="ph" data-f="longitude" bindinput="onJourneyField" />
+          </view>
+          <view class="fl-col">
+            <input class="fld" value="{{journeyEditor.latitude}}" placeholder="纬度" placeholder-class="ph" data-f="latitude" bindinput="onJourneyField" />
+          </view>
+        </view>
+        <view class="geo-btn-wide pressable" hover-class="pressed" bindtap="locateJourneyHere">{{journeyEditor.locating ? '定位中…' : '＋ 用我当前位置自动填坐标'}}</view>
+        <view class="geo-btn-wide alt pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '或：填城市/地标后高德定位'}}</view>
+
+        <view class="fl">标签（逗号分隔）</view>
+        <input class="fld" value="{{journeyEditor.tagsText}}" placeholder="如 西湖，断桥，龙井" placeholder-class="ph" data-f="tagsText" bindinput="onJourneyField" />
+
+        <view class="fl">手记（每行一条）</view>
+        <textarea class="fld area" value="{{journeyEditor.notesText}}" placeholder="每行一条手记" placeholder-class="ph" data-f="notesText" bindinput="onJourneyField" auto-height />
+
+        <view class="fl">打卡照片墙</view>
+        <view wx:if="{{!journeyEditor.id}}" class="photo-hint">可一次选多张，保存这段足迹时会自动上传</view>
+        <view class="photo-grid">
+          <view wx:for="{{journeyEditor.photos}}" wx:key="id" class="photo-cell">
+            <image wx:if="{{item.imageUrl}}" class="photo-img" src="{{item.imageUrl}}" mode="aspectFill" />
+            <view wx:else class="photo-img {{item.tone}}"></view>
+            <text class="photo-rm" catchtap="delJourneyPhoto" data-id="{{item.id}}">×</text>
+          </view>
+          <view wx:for="{{journeyEditor.pendingPhotos}}" wx:key="*this" wx:for-index="pi" class="photo-cell">
+            <image class="photo-img" src="{{item}}" mode="aspectFill" />
+            <text class="photo-pending">待上传</text>
+            <text class="photo-rm" catchtap="delPendingPhoto" data-index="{{pi}}">×</text>
+          </view>
+          <view class="photo-add pressable" hover-class="pressed" bindtap="chooseJourneyPhoto">
+            <text>{{journeyEditor.uploading ? '上传中…' : '＋ 照片'}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeJourneyEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveJourney">保存</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 纪念日编辑器 -->
+  <view wx:if="{{anniEditor.show}}" class="mask" bindtap="closeAnniEditor">
+    <view class="sheet" catchtap>
+      <view class="sheet-title serif">{{anniEditor.id ? '编辑纪念日' : '新增纪念日'}}</view>
+      <view class="fl">名称</view>
+      <input class="fld" value="{{anniEditor.label}}" placeholder="如 在一起 / 第一次旅行" placeholder-class="ph" data-f="label" bindinput="onAnniField" maxlength="40" />
+      <view class="fl">日期</view>
+      <picker mode="date" value="{{anniEditor.date}}" bindchange="onAnniDate">
+        <view class="fld picker">{{anniEditor.date || '选择日期'}}</view>
+      </picker>
+      <view class="fl">城市（可空）</view>
+      <input class="fld" value="{{anniEditor.city}}" placeholder="如 济南" placeholder-class="ph" data-f="city" bindinput="onAnniField" maxlength="24" />
+      <view class="fl-row rec-line">
+        <view class="fl">每年重复（生日/周年）</view>
+        <switch checked="{{anniEditor.repeatYearly}}" color="#1b1712" bindchange="onAnniRepeat" />
+      </view>
+      <view class="sheet-ops">
+        <text class="sbtn ghost pressable" hover-class="pressed" bindtap="closeAnniEditor">取消</text>
+        <text class="sbtn solid pressable" hover-class="pressed" bindtap="saveAnni">保存</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "回忆",
+  "usingComponents": {
+    "photo-viewer": "/components/photo-viewer/index"
+  }
+}

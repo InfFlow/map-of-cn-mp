@@ -1,0 +1,68 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">STORY</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">写给你们的</view>
+    <view class="h1 display">旅行故事</view>
+    <view class="lede">根据你们走过的足迹，生成一篇专属故事</view>
+  </view>
+
+  <!-- 年份切换 -->
+  <scroll-view wx:if="{{years.length > 1}}" class="years-scroll rise d2" scroll-x>
+    <view class="years-row">
+      <view
+        wx:for="{{years}}"
+        wx:key="*this"
+        class="year-chip {{(item === '全部' && year === '') || item === year ? 'on' : ''}} pressable"
+        hover-class="pressed"
+        data-year="{{item}}"
+        bindtap="selectYear"
+      >{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 加载骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="block rise d2">
+      <view class="sk sk-block" style="height:32rpx;width:200rpx;margin-bottom:20rpx;"></view>
+      <view class="sk sk-block" style="height:28rpx;width:90%;margin-bottom:12rpx;"></view>
+      <view class="sk sk-block" style="height:28rpx;width:85%;margin-bottom:12rpx;"></view>
+      <view class="sk sk-block" style="height:28rpx;width:88%;margin-bottom:12rpx;"></view>
+      <view class="sk sk-block" style="height:28rpx;width:75%;margin-bottom:12rpx;"></view>
+      <view class="sk sk-block" style="height:28rpx;width:82%;margin-bottom:24rpx;"></view>
+      <view class="sk sk-block" style="height:28rpx;width:90%;margin-bottom:12rpx;"></view>
+      <view class="sk sk-block" style="height:28rpx;width:80%;"></view>
+    </view>
+    <view class="loading-hint">正在翻找我们的回忆…</view>
+  </block>
+
+  <!-- 故事正文 -->
+  <block wx:elif="{{story}}">
+    <view class="story-wrap rise d2">
+      <view wx:if="{{count > 0}}" class="story-meta">共 {{count}} 段足迹 · {{year || '所有年份'}}</view>
+      <view class="story-body">
+        <rich-text class="story-text md-content" nodes="{{storyHtml}}" user-select="{{true}}"></rich-text>
+      </view>
+    </view>
+    <view class="action-row rise d3">
+      <view class="action-btn pressable" hover-class="pressed" bindtap="copyStory">带走故事</view>
+      <view class="story-btn pressable {{exporting ? 'disabled' : ''}}" hover-class="pressed" bindtap="exportStory">{{exporting ? '生成中…' : '导出长图'}}</view>
+      <view class="action-btn primary pressable" hover-class="pressed" bindtap="retry">再写一版</view>
+    </view>
+  </block>
+
+  <!-- 空 / 错误 -->
+  <block wx:elif="{{!loading && !story}}">
+    <view class="empty-state rise d2">
+      <view class="empty-text">第一段回忆，还在路上</view>
+    </view>
+  </block>
+
+  <canvas type="2d" id="storyCanvas" style="position:fixed;left:-9999px;top:0;width:320px;height:800px;"></canvas>
+</view>

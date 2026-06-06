@@ -1,0 +1,199 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">MINE</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <!-- 未登录 -->
+  <block wx:if="{{!user}}">
+    <view class="hero rise d1">
+      <view class="kicker">先认一下你</view>
+      <view class="h1 display">登录<view class="br"></view>开始记录</view>
+      <view class="lede">用微信一键登录，我们一起走过的地方都会留在这里。</view>
+    </view>
+    <view class="login-box rise d2">
+      <view class="login-btn pressable {{loggingIn ? 'disabled' : ''}}" hover-class="pressed" bindtap="login">
+        微信快捷登录
+      </view>
+      <view class="login-tip">仅用于识别身份、保存你们的旅行回忆</view>
+    </view>
+  </block>
+
+  <!-- 已登录 -->
+  <block wx:else>
+    <!-- 个人卡片 -->
+    <view class="pcard rise d1">
+      <view class="pcard-top">
+        <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image wx:if="{{user.avatarUrl}}" class="avatar-img" src="{{user.avatarUrl}}" mode="aspectFill"></image>
+          <view wx:else class="avatar serif">{{monogram}}</view>
+          <view class="avatar-edit">换</view>
+        </button>
+        <view class="pcard-mid">
+          <block wx:if="{{editingName}}">
+            <input class="profile-name-input" type="nickname" value="{{nickInput}}" placeholder="填昵称" placeholder-class="ph" bindinput="onNickInput" bindblur="onNickInput" focus="{{editingName}}" maxlength="20" />
+            <view class="profile-name-save pressable {{savingName ? 'disabled' : ''}}" hover-class="pressed" bindtap="saveName">保存</view>
+          </block>
+          <block wx:else>
+            <view class="profile-name serif pressable" hover-class="pressed" bindtap="startEditName">{{user.nickname || '亲爱的'}} <text class="profile-name-edit">改</text></view>
+            <view wx:if="{{headStats.days > 0}}" class="pcard-days">在一起的第 <text class="serif">{{headStats.days}}</text> 天</view>
+            <view wx:else class="profile-id">点头像换头像 · 点名字改昵称</view>
+          </block>
+        </view>
+      </view>
+      <view class="pcard-stats">
+        <view class="ps-cell">
+          <text class="ps-num serif">{{headStats.provinces}}</text>
+          <text class="ps-lab">省份</text>
+        </view>
+        <view class="ps-cell">
+          <text class="ps-num serif">{{headStats.cities}}</text>
+          <text class="ps-lab">城市</text>
+        </view>
+        <view class="ps-cell">
+          <text class="ps-num serif">{{headStats.spots}}</text>
+          <text class="ps-lab">足迹</text>
+        </view>
+        <view class="ps-cell">
+          <text class="ps-num serif">{{headStats.photos}}</text>
+          <text class="ps-lab">照片</text>
+        </view>
+      </view>
+      <view class="showcase">
+        <view wx:if="{{showcase.latest}}" class="show-row">
+          <text class="show-k">最近一次回忆</text>
+          <text class="show-v">{{showcase.latest}}</text>
+        </view>
+        <view wx:if="{{showcase.nextAnniv}}" class="show-row">
+          <text class="show-k">下个纪念日</text>
+          <text class="show-v">{{showcase.nextAnniv.label}} · 还有 {{showcase.nextAnniv.days}} 天</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分组1：记录 -->
+    <view class="block rise d2">
+      <view class="ae-group-label">记录</view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openAdmin">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-memory"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">整理我们的回忆</text>
+            <text class="ae-sub">足迹 · 纪念日 · 菜品 · 订单</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openAlbum">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-album"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">照片相册</text>
+            <text class="ae-sub">所有照片 · 按城市归档</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+      <view wx:if="{{aiEnabled}}" class="admin-entry pressable" hover-class="pressed" bindtap="openMoments">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-camera"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">旅途剪影</text>
+            <text class="ae-sub">随手拍 · 碎片记录</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openLogs">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-check"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">我们的打卡</text>
+            <text class="ae-sub">电影 · 美食 · 读书 · 演出</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+    </view>
+
+    <!-- 分组2：计划与心愿 -->
+    <view class="block rise d2">
+      <view class="ae-group-label">计划与心愿</view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openWish">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-wish"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">心愿清单</text>
+            <text class="ae-sub">想一起去的地方</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openCapsule">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-capsule"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">时间胶囊</text>
+            <text class="ae-sub">写给未来的信 · 到期自动开启</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+    </view>
+
+    <!-- 分组3：回顾与统计 -->
+    <view class="block rise d2">
+      <view class="ae-group-label">回顾与统计</view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openHub">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-stats"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">回顾与统计</text>
+            <text class="ae-sub">足迹 · 地图 · 故事 · 回顾 · 搜索</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
+    </view>
+
+    <view class="block rise d3">
+      <view class="sec">
+        <text class="sec-zh">我们的点菜</text>
+        <text class="sec-en">ORDERS</text>
+      </view>
+
+      <view wx:if="{{loading}}" class="loading">正在翻找我们的记录…</view>
+
+      <view wx:elif="{{!orders.length}}" class="orders-empty">
+        <view class="empty-fig empty-fig-logs"></view>
+        <view class="oe-txt">还没有点过菜</view>
+        <view class="oe-go pressable" hover-class="pressed" bindtap="goMenu">去菜单看看 ›</view>
+      </view>
+
+      <view wx:else class="order-list">
+        <view wx:for="{{orders}}" wx:key="id" class="ocard">
+          <view class="ocard-top">
+            <text class="ocard-date serif">{{item.dateShort}}</text>
+            <text class="ocard-status {{item.status === 'done' ? 'on' : ''}}">{{item.statusText}}</text>
+          </view>
+          <view class="ocard-sum">{{item.summary}}</view>
+          <view wx:if="{{item.remark}}" class="ocard-note">「{{item.remark}}」</view>
+          <view class="ocard-foot">
+            <text class="ocard-count">{{item.itemCount}} 份</text>
+            <view class="ocard-right">
+              <text wx:if="{{item.totalAmount > 0}}" class="ocard-total serif">¥{{item.totalAmount}}</text>
+              <view class="ocard-redo pressable" hover-class="pressed" data-id="{{item.id}}" catchtap="reorder">再来一单</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{!user.isAdmin}}" class="admin-claim rise d4">
+      <text class="ac-link" bindtap="claimAdmin">管理员入口</text>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,114 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">CAPSULE</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <view class="hero rise d1">
+    <view class="kicker">写给未来的信</view>
+    <view class="h1 display">时间胶囊</view>
+    <view class="lede">封存此刻的心情，到期自动开启</view>
+  </view>
+
+  <!-- 加载中 / 骨架屏 -->
+  <view wx:if="{{loading && !capsules.length}}" class="cap-list rise d2">
+    <view wx:for="{{[1,2,3]}}" wx:key="*this" class="sk sk-block" style="height:120rpx;margin-top:16rpx;"></view>
+  </view>
+
+  <!-- 胶囊列表 -->
+  <view wx:elif="{{capsules.length}}" class="capsule-list rise d2">
+    <view
+      wx:for="{{capsules}}"
+      wx:key="id"
+      class="capsule-card {{item.canOpen && !item.isOpened ? 'can-open' : ''}} {{item.isOpened ? 'is-opened' : ''}} pressable"
+      hover-class="pressed"
+      data-capsule="{{item}}"
+      bindtap="openCapsule"
+    >
+      <view class="cc-top">
+        <view class="cc-title serif">{{item.title}}</view>
+        <view class="cc-date">{{item.openDateFmt}}</view>
+      </view>
+      <view class="cc-status">
+        <block wx:if="{{item.isOpened}}">
+          <text class="status-opened">✓ 已开启</text>
+          <view wx:if="{{item.message}}" class="cc-preview">{{item.message}}</view>
+        </block>
+        <block wx:elif="{{item.canOpen}}">
+          <text class="status-ready">✉ 点击开启</text>
+        </block>
+        <block wx:else>
+          <text class="status-sealed">封存中 · {{item.daysLeft}} 天后开启</text>
+        </block>
+      </view>
+      <view wx:if="{{item.isOpened && item.photos && item.photos.length}}" class="cc-photos">
+        <image
+          wx:for="{{item.photos}}"
+          wx:for-item="ph"
+          wx:key="*this"
+          class="cc-photo"
+          src="{{ph}}"
+          mode="aspectFill"
+        ></image>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{!loading}}" class="empty rise d2">
+    <view class="empty-fig empty-fig-capsule"></view>
+    <view class="empty-zh">还没有封存过胶囊</view>
+    <view class="empty-hint">封存一个胶囊，写给N年后的你们</view>
+  </view>
+
+  <!-- 封存按钮 -->
+  <view class="add-btn pressable rise d3" hover-class="pressed" bindtap="openEditor">＋ 封存一个胶囊</view>
+
+  <!-- 编辑器遮罩 -->
+  <view wx:if="{{editor.show}}" class="mask" catchtap="closeEditor"></view>
+
+  <!-- 编辑器弹层 -->
+  <view class="editor {{editor.show ? 'show' : ''}}">
+    <view class="editor-head">
+      <text class="editor-title serif">新的时间胶囊</text>
+      <text class="editor-close" bindtap="closeEditor">✕</text>
+    </view>
+
+    <view class="field">
+      <text class="flabel">标题</text>
+      <input class="finput" style="font-size: 28rpx;" value="{{editor.title}}" bindinput="onInputTitle" placeholder="给这颗胶囊起个名字" placeholder-class="ph" maxlength="64" />
+    </view>
+
+    <view class="field">
+      <text class="flabel">写信给未来的你们</text>
+      <textarea class="ftext" style="font-size: 28rpx;" value="{{editor.message}}" bindinput="onInputMessage" placeholder="此刻的心情、期待、约定…" placeholder-class="ph" maxlength="500" />
+    </view>
+
+    <view class="field">
+      <text class="flabel">开启日期（格式：2027-01-01）</text>
+      <input class="finput" style="font-size: 28rpx;" value="{{editor.openDate}}" bindinput="onInputDate" placeholder="2027-01-01" placeholder-class="ph" maxlength="10" />
+    </view>
+
+    <view class="field">
+      <text class="flabel">附上照片（选填，最多 6 张）</text>
+      <view class="photo-row">
+        <view
+          wx:for="{{editor.photos}}"
+          wx:key="*this"
+          class="photo-item"
+        >
+          <image class="photo-img" src="{{item}}" mode="aspectFill"></image>
+          <view class="photo-del pressable" hover-class="pressed" data-idx="{{index}}" catchtap="removePhoto">✕</view>
+        </view>
+        <view wx:if="{{editor.photos.length < 6}}" class="photo-add pressable" hover-class="pressed" bindtap="choosePhoto">＋</view>
+      </view>
+    </view>
+
+    <view class="editor-save pressable {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="saveNewCapsule">
+      {{saving ? '封存中…' : '封存胶囊'}}
+    </view>
+  </view>
+</view>

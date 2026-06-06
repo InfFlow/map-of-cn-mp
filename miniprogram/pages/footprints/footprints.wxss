@@ -1,0 +1,239 @@
+.page {
+  padding: 24rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.mast-name { font-size: 20rpx; font-weight: 700; letter-spacing: 6rpx; }
+.mast-vol { font-size: 20rpx; font-weight: 700; letter-spacing: 3rpx; color: var(--muted); }
+.mast .rule { margin-top: 12rpx; }
+
+/* 英雄区 */
+.hero { padding: 48rpx 0 6rpx; }
+.hero .h1 { font-size: 116rpx; line-height: 0.96; margin-top: 20rpx; }
+.hero .br { height: 0; }
+.lede {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 30rpx;
+  max-width: 520rpx;
+}
+
+/* 概览三宫格 */
+.grid3 {
+  display: flex;
+  margin-top: 44rpx;
+  border-top: 1rpx solid var(--line);
+  border-left: 1rpx solid var(--line);
+}
+.cellnum {
+  width: 33.333%;
+  box-sizing: border-box;
+  border-right: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line);
+  padding: 32rpx 24rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+}
+.num { font-size: 64rpx; line-height: 1; }
+.lab { font-size: 20rpx; letter-spacing: 1rpx; color: var(--ink-2); margin-top: 12rpx; }
+
+/* 地图 */
+.fp-map-wrap { margin-top: 40rpx; }
+.fp-map {
+  width: 100%;
+  height: 460rpx;
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+}
+.fp-map-cap {
+  font-family: Georgia, "Songti SC", serif;
+  font-style: italic;
+  font-size: 20rpx;
+  color: var(--muted);
+  margin-top: 14rpx;
+  text-align: right;
+}
+
+/* 区块 */
+.block { margin-top: 56rpx; }
+
+/* 城市分组 */
+.fp-city {
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  margin-top: 22rpx;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.fp-city.on { border-color: var(--ink); }
+.fp-city-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx;
+}
+.fp-city.on .fp-city-head { background: var(--line-soft); }
+.fp-city-l { display: flex; align-items: baseline; gap: 14rpx; min-width: 0; }
+.fp-city-name { font-size: 32rpx; line-height: 1.1; }
+.fp-city-prov { font-size: 20rpx; color: var(--muted); }
+.fp-city-r { display: flex; align-items: baseline; gap: 6rpx; flex: none; }
+.fp-city-count { font-size: 40rpx; line-height: 1; }
+.fp-city-unit { font-size: 20rpx; color: var(--ink-2); }
+
+.fp-spots { border-top: 1rpx dashed var(--line); }
+.fp-spot {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 24rpx 28rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.fp-spot:first-child { border-top: none; }
+.fp-spot-title {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-spot-meta { flex: none; font-size: 20rpx; color: var(--muted); }
+.fp-spot-arrow { flex: none; font-size: 28rpx; color: var(--muted); }
+
+/* 空 / 错误（.totop 复用全局样式） */
+.fp-empty {
+  margin-top: 60rpx;
+  padding: 64rpx 40rpx;
+  text-align: center;
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--muted);
+  border: 1rpx dashed var(--line);
+  border-radius: var(--radius-md);
+}
+
+/* 打卡浮动按钮 */
+.checkin-fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: calc(140rpx + env(safe-area-inset-bottom));
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 28rpx;
+  letter-spacing: 2rpx;
+  padding: 16rpx 32rpx;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  z-index: 50;
+}
+
+/* 打卡弹层 */
+.ck-mask { position: fixed; inset: 0; background: var(--mask-soft); z-index: 100; display: flex; align-items: flex-end; }
+.ck-sheet { background: var(--bg); width: 100%; max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch; box-sizing: border-box; padding: 36rpx 40rpx 0; border-radius: 24rpx 24rpx 0 0; }
+
+@media (max-width: 360px) {
+  .hero .h1 {
+    font-size: 84rpx;
+    line-height: 1;
+  }
+  .checkin-fab {
+    right: 32rpx;
+    bottom: calc(var(--tabbar-h) + 22rpx);
+  }
+  .ck-sheet {
+    max-height: 82vh;
+    padding-left: 32rpx;
+    padding-right: 32rpx;
+    padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
+  }
+}
+.ck-title { font-size: 40rpx; margin-bottom: 32rpx; }
+.ck-hint { color: var(--muted); font-size: 28rpx; padding: 24rpx 0; }
+.ck-row { display: flex; align-items: center; border-bottom: 1rpx solid var(--line); padding: 20rpx 0; }
+.ck-label { font-size: 28rpx; color: var(--muted); width: 80rpx; flex: none; }
+.ck-input { flex: 1; font-size: 28rpx; color: var(--ink); }
+.ck-picker { flex: 1; }
+.ck-picker-val { font-size: 28rpx; color: var(--ink); padding: 4rpx 0; }
+.ck-auto { margin-top: 18rpx; padding: 16rpx 20rpx; border: 1rpx solid var(--line); color: var(--muted); font-size: 22rpx; background: var(--surface); }
+.ck-photos { display: flex; gap: 16rpx; margin: 28rpx 0; flex-wrap: wrap; }
+.ck-photo-wrap { position: relative; width: 148rpx; height: 148rpx; }
+.ck-photo { width: 100%; height: 100%; border-radius: var(--radius-sm); }
+.ck-photo-del { position: absolute; top: -12rpx; right: -12rpx; width: 40rpx; height: 40rpx; background: var(--ink); color: var(--bg); border-radius: 50%; font-size: 24rpx; display: flex; align-items: center; justify-content: center; }
+.ck-photo-add { width: 148rpx; height: 148rpx; border: 1rpx dashed var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8rpx; }
+.ck-add-ico { font-size: 40rpx; color: var(--muted); }
+.ck-add-txt { font-size: 20rpx; color: var(--muted); }
+.ck-actions { position: sticky; bottom: 0; display: flex; gap: 20rpx; margin: 28rpx -4rpx 0; padding: 18rpx 4rpx calc(18rpx + env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(244,241,234,0), var(--bg) 28rpx); }
+.ck-cancel { flex: 1; text-align: center; padding: 24rpx; border: 1rpx solid var(--line); font-size: 28rpx; }
+.ck-save { flex: 2; text-align: center; padding: 24rpx; background: var(--ink); color: var(--bg); font-size: 28rpx; border: 1rpx solid var(--ink); }
+.ck-save.disabled { opacity: 0.5; }
+
+/* 热力图切换按钮 */
+.fp-map-toggle { display: flex; border: 1rpx solid var(--line); margin-bottom: 12rpx; overflow: hidden; }
+.fmt-btn { flex: 1; text-align: center; padding: 14rpx; font-size: 24rpx; color: var(--muted); }
+.fmt-btn.on { background: var(--ink); color: var(--bg); }
+
+/* 足迹对比 */
+.sec-compare { font-size: 20rpx; color: var(--muted); border: 1rpx solid var(--line); padding: 4rpx 14rpx; margin-left: auto; }
+.cmp-mask { position: fixed; inset: 0; background: var(--mask-soft); z-index: 100; display: flex; align-items: flex-end; }
+.cmp-sheet { background: var(--bg); width: 100%; padding: 36rpx 40rpx calc(36rpx + env(safe-area-inset-bottom)); max-height: 75vh; overflow-y: auto; border-radius: 24rpx 24rpx 0 0; }
+.cmp-title { font-size: 40rpx; margin-bottom: 32rpx; }
+.cmp-row { display: flex; gap: 0; border: 1rpx solid var(--line); }
+.cmp-col { flex: 1; padding: 24rpx 16rpx; border-right: 1rpx solid var(--line); }
+.cmp-col:last-child { border-right: none; }
+.cmp-num { font-size: 56rpx; line-height: 1; margin-bottom: 6rpx; }
+.cmp-lab { font-size: 20rpx; color: var(--muted); margin-bottom: 16rpx; letter-spacing: 1rpx; }
+.cmp-cities { display: flex; flex-wrap: wrap; gap: 8rpx; }
+.cmp-city { font-size: 20rpx; color: var(--ink); background: var(--surface); padding: 4rpx 10rpx; border-radius: var(--radius-sm); }
+.cmp-city.alone { color: var(--muted); }
+.cmp-hint { font-size: 28rpx; color: var(--muted); padding: 20rpx 0; }
+.cmp-hint-sm { font-size: 20rpx; color: var(--faint); margin-top: 20rpx; text-align: center; }
+
+.grab-handle {
+  width: 72rpx; height: 8rpx;
+  background: var(--line);
+  border-radius: 999rpx;
+  margin: 0 auto 24rpx;
+  flex-shrink: 0;
+}
+
+/* 第三轮视觉统一：足迹弹层、对比弹层和浮动按钮对齐全局体系 */
+.checkin-fab {
+  box-shadow: var(--shadow-float);
+  border-radius: var(--radius-md);
+}
+.ck-mask,
+.cmp-mask {
+  background: var(--mask-soft) !important;
+}
+.ck-sheet,
+.cmp-sheet {
+  max-height: 82vh;
+  padding: 36rpx 40rpx 0;
+  border-radius: 24rpx 24rpx 0 0;
+  box-shadow: 0 -10rpx 34rpx rgba(27, 23, 18, 0.12);
+}
+.cmp-sheet {
+  padding-bottom: calc(36rpx + env(safe-area-inset-bottom));
+}
+.ck-actions {
+  gap: 14rpx;
+  padding-bottom: calc(18rpx + env(safe-area-inset-bottom));
+}
+.ck-cancel,
+.ck-save {
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+.ck-photo-add,
+.fmt-btn,
+.sec-compare,
+.cmp-city {
+  border-radius: var(--radius-sm);
+}

@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS couple_logs (
+  id VARCHAR(32) NOT NULL PRIMARY KEY,
+  openid VARCHAR(64) NOT NULL DEFAULT '',
+  category VARCHAR(32) NOT NULL DEFAULT 'other',
+  title VARCHAR(256) NOT NULL DEFAULT '',
+  log_date DATE NOT NULL,
+  note TEXT,
+  cover_image VARCHAR(512) DEFAULT '',
+  rating TINYINT UNSIGNED DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_category (category),
+  INDEX idx_date (log_date DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,0 +1,55 @@
+.page {
+  padding: 24rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* 报头 */
+.mast-row { display: flex; justify-content: space-between; align-items: baseline; }
+.mast-name { font-size: 20rpx; font-weight: 700; letter-spacing: 6rpx; }
+.mast-vol { font-size: 20rpx; font-weight: 700; letter-spacing: 3rpx; color: var(--muted); }
+.mast .rule { margin-top: 12rpx; }
+
+/* 英雄区 */
+.hero { padding: 48rpx 0 6rpx; }
+.hero .h1 { font-size: 116rpx; line-height: 0.96; margin-top: 20rpx; }
+.hero .br { height: 0; }
+
+@media (max-width: 360px) {
+  .hero .h1 {
+    font-size: 84rpx;
+    line-height: 1;
+  }
+}
+.lede { font-size: 28rpx; line-height: 1.8; color: var(--ink-2); margin-top: 30rpx; max-width: 520rpx; }
+
+.block { margin-top: 48rpx; }
+
+/* 入口列表（与「我的」页统一） */
+.admin-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  box-shadow: var(--shadow-card);
+  padding: 24rpx 28rpx;
+  margin-bottom: 18rpx;
+}
+.admin-entry:last-child { margin-bottom: 0; }
+.admin-entry .ae-mid { display: flex; flex-direction: column; gap: 6rpx; min-width: 0; }
+.admin-entry .ae-zh { font-size: 28rpx; font-weight: 700; color: var(--ink); }
+.admin-entry .ae-sub { font-size: 20rpx; letter-spacing: 2rpx; color: var(--muted); }
+.admin-entry .ae-arrow { font-size: 40rpx; color: var(--faint); }
+.admin-entry .ae-left { display: flex; align-items: center; gap: 22rpx; min-width: 0; }
+.admin-entry .ae-ico {
+  width: 64rpx;
+  height: 64rpx;
+  flex: none;
+  border: 1rpx solid var(--line);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 38rpx 38rpx;
+}
+.ae-ico-stats { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M5%2019v-7M12%2019V6M19%2019v-5%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3Cpath%20d=%22M4%2020h16%22%20stroke=%22%231b1712%22%20stroke-width=%221.1%22%20stroke-linecap=%22round%22/%3E%3C/svg%3E"); }
+.ae-ico-atlas { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%2021s-6-5.3-6-10a6%206%200%200%201%2012%200c0%204.7-6%2010-6%2010z%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linejoin=%22round%22/%3E%3Ccircle%20cx=%2212%22%20cy=%2211%22%20r=%222.2%22%20stroke=%22%231b1712%22%20stroke-width=%221.3%22/%3E%3C/svg%3E"); }
+.ae-ico-recap { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Ccircle%20cx=%2212%22%20cy=%2212%22%20r=%228%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22/%3E%3Cpath%20d=%22M10%209.5l4.5%202.5L10%2014.5z%22%20fill=%22%231b1712%22/%3E%3C/svg%3E"); }

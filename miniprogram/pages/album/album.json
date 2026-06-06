@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "照片相册",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "photo-viewer": "/components/photo-viewer/index"
+  }
+}
