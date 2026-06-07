@@ -1,36 +1,37 @@
+<page-meta page-style="{{catEditor.show || dishEditor.show || journeyEditor.show || anniEditor.show ? 'overflow: hidden;' : ''}}"></page-meta>
 <view class="page">
   <view class="mast rise d1">
     <view class="mast-row">
       <text class="mast-name">MAP OF US</text>
-      <text class="mast-vol">ADMIN</text>
+      <text class="mast-vol">STUDIO</text>
     </view>
     <view class="rule"></view>
   </view>
 
   <view class="hero rise d1">
-    <view class="kicker">整理和补全</view>
-    <view class="h1 display">后台<view class="br"></view>管理</view>
-    <view class="lede">把足迹、行程、菜单和订单收整好，前台体验就会更顺。</view>
+    <view class="kicker">把回忆收好</view>
+    <view class="h1 display">整理<view class="br"></view>我们的回忆</view>
+    <view class="lede">足迹、纪念日和菜单都在这里轻轻归档，展示时会更顺。</view>
   </view>
 
   <!-- 未登录 -->
   <block wx:if="{{notAdmin}}">
     <view class="gate rise d2">
-      <view class="gate-zh display">需要登录</view>
-      <view class="gate-sub">请先在「我的」页用微信登录，登录后即可编辑足迹与纪念日。</view>
-      <view class="gate-btn pressable" hover-class="pressed" bindtap="goLogin">去「我的」 ›</view>
+      <view class="gate-zh display">先认一下你</view>
+      <view class="gate-sub">登录后才能一起整理这些回忆。</view>
+      <view class="gate-btn pressable" hover-class="pressed" bindtap="goLogin">回到我们 ›</view>
     </view>
   </block>
 
   <block wx:elif="{{ready}}">
     <!-- Tab 切换 -->
     <scroll-view class="tabs rise d1" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="tab {{tab === 'todo' ? 'on' : ''}}" data-tab="todo" bindtap="switchTab">待补</view>
+      <view class="tab {{tab === 'todo' ? 'on' : ''}}" data-tab="todo" bindtap="switchTab">待整理</view>
       <view class="tab {{tab === 'journeys' ? 'on' : ''}}" data-tab="journeys" bindtap="switchTab">足迹</view>
       <view class="tab {{tab === 'anniversaries' ? 'on' : ''}}" data-tab="anniversaries" bindtap="switchTab">纪念日</view>
       <view class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
-      <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">分类</view>
-      <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">订单</view>
+      <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">菜单分类</view>
+      <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">点单记录</view>
     </scroll-view>
 
     <!-- ============ 待补数据 ============ -->
@@ -38,19 +39,23 @@
       <view class="todo-head">
         <view class="todo-stat">
           <text class="todo-num serif">{{todoSummary.total}}</text>
-          <text class="todo-label">待补项</text>
+          <text class="todo-label">待整理</text>
         </view>
         <view class="todo-stat">
           <text class="todo-num serif">{{todoSummary.journeys}}</text>
-          <text class="todo-label">足迹</text>
+          <text class="todo-label">足迹回忆</text>
         </view>
         <view class="todo-stat">
           <text class="todo-num serif">{{todoSummary.stops}}</text>
           <text class="todo-label">行程地点</text>
         </view>
       </view>
-      <view wx:if="{{todoLoaded && !todoIssues.length}}" class="empty">资料都很完整</view>
-      <view wx:elif="{{!todoLoaded}}" class="empty">正在读取…</view>
+      <view wx:if="{{todoLoaded && !todoIssues.length}}" class="empty">
+        <view class="empty-fig empty-fig-logs"></view>
+        <view class="empty-zh">这些资料都整理好了</view>
+        <view class="empty-hint">可以回到首页看看展示效果</view>
+      </view>
+      <view wx:elif="{{!todoLoaded}}" class="empty">正在翻找我们的回忆…</view>
       <view class="todo-list">
         <view wx:for="{{todoGroups}}" wx:key="key" class="todo-group">
           <view class="todo-group-title">{{item.title}}</view>
@@ -71,7 +76,11 @@
         <view class="catchip {{activeCat === item.id ? 'on' : ''}}" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="pickCat">{{item.name}}</view>
       </scroll-view>
 
-      <view wx:if="{{!filteredDishes.length}}" class="empty">该分类下还没有菜品</view>
+      <view wx:if="{{!filteredDishes.length}}" class="empty">
+        <view class="empty-fig empty-fig-logs"></view>
+        <view class="empty-zh">这个分类还没上菜</view>
+        <view class="empty-hint">先放一道你们常点的菜</view>
+      </view>
 
       <view class="dish-list">
         <view wx:for="{{filteredDishes}}" wx:key="id" class="d-card {{item.available ? '' : 'off'}}">
@@ -107,7 +116,11 @@
 
     <!-- ============ 分类 ============ -->
     <block wx:elif="{{tab === 'categories'}}">
-      <view wx:if="{{!categories.length}}" class="empty">还没有分类</view>
+      <view wx:if="{{!categories.length}}" class="empty">
+        <view class="empty-fig empty-fig-logs"></view>
+        <view class="empty-zh">菜单分类还没分好</view>
+        <view class="empty-hint">把想吃的慢慢归好类</view>
+      </view>
       <view class="cat-list">
         <view wx:for="{{categories}}" wx:key="id" class="c-row {{item.visible ? '' : 'off'}}">
           <view class="c-mid">
@@ -130,8 +143,12 @@
 
     <!-- ============ 订单 ============ -->
     <block wx:elif="{{tab === 'orders'}}">
-      <view wx:if="{{ordersLoaded && !orders.length}}" class="empty">还没有订单</view>
-      <view wx:elif="{{!ordersLoaded}}" class="empty">正在读取…</view>
+      <view wx:if="{{ordersLoaded && !orders.length}}" class="empty">
+        <view class="empty-fig empty-fig-logs"></view>
+        <view class="empty-zh">第一张点单还在路上</view>
+        <view class="empty-hint">下一顿饭会出现在这里</view>
+      </view>
+      <view wx:elif="{{!ordersLoaded}}" class="empty">正在翻找点单记录…</view>
       <view class="order-list">
         <view wx:for="{{orders}}" wx:key="id" class="o-card">
           <view class="o-top">
@@ -151,8 +168,12 @@
 
     <!-- ============ 足迹 / 城市 ============ -->
     <block wx:elif="{{tab === 'journeys'}}">
-      <view wx:if="{{journeysLoaded && !journeys.length}}" class="empty">还没有足迹，点下方新增</view>
-      <view wx:elif="{{!journeysLoaded}}" class="empty">正在读取…</view>
+      <view wx:if="{{journeysLoaded && !journeys.length}}" class="empty">
+        <view class="empty-fig empty-fig-plans"></view>
+        <view class="empty-zh">第一段足迹还在路上</view>
+        <view class="empty-hint">把你们去过的城市先记下来</view>
+      </view>
+      <view wx:elif="{{!journeysLoaded}}" class="empty">正在翻找足迹…</view>
       <view class="cat-list">
         <view wx:for="{{journeys}}" wx:key="id" class="c-row {{item.visible ? '' : 'off'}}">
           <view class="c-mid col">
@@ -181,8 +202,12 @@
 
     <!-- ============ 纪念日 ============ -->
     <block wx:elif="{{tab === 'anniversaries'}}">
-      <view wx:if="{{anniLoaded && !anniversaries.length}}" class="empty">还没有纪念日，点下方新增</view>
-      <view wx:elif="{{!anniLoaded}}" class="empty">正在读取…</view>
+      <view wx:if="{{anniLoaded && !anniversaries.length}}" class="empty">
+        <view class="empty-fig empty-fig-capsule"></view>
+        <view class="empty-zh">第一个纪念日还等你写下</view>
+        <view class="empty-hint">把重要的那一天留住</view>
+      </view>
+      <view wx:elif="{{!anniLoaded}}" class="empty">正在翻找纪念日…</view>
       <view class="cat-list">
         <view wx:for="{{anniversaries}}" wx:key="id" class="c-row">
           <view class="c-mid col">
@@ -208,7 +233,7 @@
     </block>
   </block>
 
-  <view wx:else class="empty">正在读取…</view>
+  <view wx:else class="empty">正在翻找我们的回忆…</view>
 
   <!-- 分类编辑器 -->
   <view wx:if="{{catEditor.show}}" class="mask" bindtap="closeCatEditor">
@@ -336,8 +361,8 @@
             <input class="fld" value="{{journeyEditor.latitude}}" placeholder="纬度" placeholder-class="ph" data-f="latitude" bindinput="onJourneyField" />
           </view>
         </view>
-        <view class="geo-btn-wide pressable" hover-class="pressed" bindtap="locateJourneyHere">{{journeyEditor.locating ? '定位中…' : '＋ 用我当前位置自动填坐标'}}</view>
-        <view class="geo-btn-wide alt pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '或：填城市/地标后高德定位'}}</view>
+        <view class="geo-btn-wide {{journeyEditor.locating ? 'busy' : ''}} pressable" hover-class="pressed" bindtap="locateJourneyHere">{{journeyEditor.locating ? '定位中…' : '＋ 用我当前位置自动填坐标'}}</view>
+        <view class="geo-btn-wide alt {{journeyEditor.geoLoading ? 'busy' : ''}} pressable" hover-class="pressed" bindtap="geocodeJourney">{{journeyEditor.geoLoading ? '定位中…' : '或：填城市/地标后高德定位'}}</view>
 
         <view class="fl">标签（逗号分隔）</view>
         <input class="fld" value="{{journeyEditor.tagsText}}" placeholder="如 西湖，断桥，龙井" placeholder-class="ph" data-f="tagsText" bindinput="onJourneyField" />

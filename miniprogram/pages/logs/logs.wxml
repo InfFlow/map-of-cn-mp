@@ -1,3 +1,4 @@
+<page-meta page-style="{{editor.show ? 'overflow: hidden;' : ''}}"></page-meta>
 <view class="page">
   <view class="mast rise d1">
     <view class="mast-row">
@@ -49,7 +50,7 @@
 
   <view wx:else class="empty">
     <view class="empty-fig empty-fig-logs"></view>
-    <view class="empty-zh">还没有记录</view>
+    <view class="empty-zh">第一件一起完成的事，还在路上</view>
     <view class="empty-hint">{{activecat === 'movie' ? '记录你们一起看的第一部电影' : activecat === 'food' ? '记录你们一起吃的第一顿饭' : '点击「＋ 记录」开始'}}</view>
   </view>
 

@@ -70,65 +70,26 @@
           show-location
           bindmarkertap="onMarkerTap"
         ></map>
-        <view class="map-ctrl {{markerPreview ? 'with-preview' : ''}}">
-          <view class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="locateMe">◎ 我的位置</view>
-          <view wx:if="{{markers.length}}" class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="fitAllFootprints">全部足迹</view>
-        </view>
-        <view wx:if="{{markerPreview}}" class="marker-card rise" catchtap="openMarkerPreview">
-          <image wx:if="{{markerPreview.imageUrl}}" class="marker-img" src="{{markerPreview.imageUrl}}" mode="aspectFill"></image>
-          <view wx:else class="marker-img marker-ph"></view>
-          <view class="marker-mid">
-            <view class="marker-city serif">{{markerPreview.city}}</view>
-            <view class="marker-title">{{markerPreview.title || markerPreview.intro || '打开这段回忆'}}</view>
-            <view class="marker-date">{{markerPreview.date}}</view>
-          </view>
-          <view class="marker-go">回看</view>
-          <view class="marker-close" catchtap="closeMarkerPreview">×</view>
-        </view>
+        <cover-view class="map-ctrl {{markerPreview ? 'with-preview' : ''}}">
+          <cover-view class="map-btn {{locationBusy ? 'busy' : ''}}" hover-class="pressed" hover-stay-time="80" bindtap="locateMe">{{locationBusy ? '正在找你' : '◎ 我的位置'}}</cover-view>
+          <cover-view wx:if="{{markers.length}}" class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="fitAllFootprints">全部足迹</cover-view>
+        </cover-view>
+        <cover-view wx:if="{{markerPreview}}" class="marker-card rise" catchtap="openMarkerPreview">
+          <cover-image wx:if="{{markerPreview.imageUrl}}" class="marker-img" src="{{markerPreview.imageUrl}}"></cover-image>
+          <cover-view wx:else class="marker-img marker-ph"></cover-view>
+          <cover-view class="marker-mid">
+            <cover-view class="marker-city serif">{{markerPreview.city}}</cover-view>
+            <cover-view class="marker-title">{{markerPreview.title || markerPreview.intro || '打开这段回忆'}}</cover-view>
+            <cover-view class="marker-date">{{markerPreview.date}}</cover-view>
+          </cover-view>
+          <cover-view class="marker-go">回看</cover-view>
+          <cover-view class="marker-close" catchtap="closeMarkerPreview">×</cover-view>
+        </cover-view>
       </view>
       <view class="map-cap">{{mapCaption}}</view>
     </view>
 
-    <view wx:if="{{upcomingPlan}}" class="block rise d3">
-      <view class="sec">
-        <text class="sec-zh">近期行程</text>
-        <text class="sec-en tap" bindtap="goPlans">Plans ›</text>
-      </view>
-      <view class="plan-mini pressable" hover-class="pressed" bindtap="goPlans">
-        <view class="plan-mini-main">
-          <text class="plan-mini-title">{{upcomingPlan.title}}</text>
-          <text class="plan-mini-sub">{{upcomingPlan.date || '待定日期'}} · {{upcomingPlan.stops}} 个目的地</text>
-        </view>
-        <text class="plan-mini-arrow serif">›</text>
-      </view>
-    </view>
-
-    <!-- 今天的回忆 -->
-    <view wx:if="{{onThisDay.length}}" class="block rise d3">
-      <view class="sec">
-        <text class="sec-zh">今天的回忆</text>
-        <text class="sec-en">On This Day</text>
-      </view>
-      <view class="otd-list">
-        <view
-          wx:for="{{onThisDay}}"
-          wx:key="dateShort"
-          class="otd {{item.type === 'journey' ? 'pressable' : ''}}"
-          hover-class="{{item.type === 'journey' ? 'pressed' : ''}}"
-          data-id="{{item.id}}"
-          bindtap="{{item.type === 'journey' ? 'openDetail' : ''}}"
-        >
-          <view class="otd-badge serif">{{item.yearsAgo > 0 ? item.yearsAgo + ' 年前' : '今天'}}</view>
-          <view class="otd-mid">
-            <view class="otd-title">{{item.type === 'journey' ? item.city : item.label}}</view>
-            <view class="otd-sub">{{item.type === 'journey' ? item.title : '纪念日'}} · {{item.dateShort}}</view>
-          </view>
-          <text wx:if="{{item.type === 'journey'}}" class="otd-arrow">›</text>
-        </view>
-      </view>
-    </view>
-
-    <view wx:if="{{recent.length}}" class="block rise d4">
+    <view wx:if="{{recent.length}}" class="block rise d3">
       <view class="sec">
         <text class="sec-zh">最近的回忆</text>
         <text class="sec-en tap" bindtap="goTimeline">Timeline ›</text>
@@ -152,6 +113,45 @@
           <text class="idx-date">{{item.dateShort}}</text>
           <text class="idx-arrow">›</text>
         </view>
+      </view>
+    </view>
+
+    <!-- 今天的回忆 -->
+    <view wx:if="{{onThisDay.length}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">今天的回忆</text>
+        <text class="sec-en">On This Day</text>
+      </view>
+      <view class="otd-list">
+        <view
+          wx:for="{{onThisDay}}"
+          wx:key="dateShort"
+          class="otd {{item.type === 'journey' ? 'pressable' : ''}}"
+          hover-class="{{item.type === 'journey' ? 'pressed' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="{{item.type === 'journey' ? 'openDetail' : ''}}"
+        >
+          <view class="otd-badge serif">{{item.yearsAgo > 0 ? item.yearsAgo + ' 年前' : '今天'}}</view>
+          <view class="otd-mid">
+            <view class="otd-title">{{item.type === 'journey' ? item.city : item.label}}</view>
+            <view class="otd-sub">{{item.type === 'journey' ? item.title : '纪念日'}} · {{item.dateShort}}</view>
+          </view>
+          <text wx:if="{{item.type === 'journey'}}" class="otd-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{upcomingPlan}}" class="block rise d4">
+      <view class="sec">
+        <text class="sec-zh">近期行程</text>
+        <text class="sec-en tap" bindtap="goPlans">Plans ›</text>
+      </view>
+      <view class="plan-mini pressable" hover-class="pressed" bindtap="goPlans">
+        <view class="plan-mini-main">
+          <text class="plan-mini-title">{{upcomingPlan.title}}</text>
+          <text class="plan-mini-sub">{{upcomingPlan.date || '待定日期'}} · {{upcomingPlan.stops}} 个目的地</text>
+        </view>
+        <text class="plan-mini-arrow serif">›</text>
       </view>
     </view>
 
@@ -189,7 +189,9 @@
   </block>
 
   <view wx:if="{{error}}" class="empty">
-    <view>{{error}}</view>
+    <view class="empty-fig empty-fig-plans"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">先给你留着这张地图，稍后再把回忆翻出来</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 
@@ -198,7 +200,7 @@
   <!-- 今日纪念日 -->
   <view wx:if="{{showAnniversary && todayAnniversary}}" class="ann-toast" catchtap="closeAnniversary">
     <view class="ann-card">
-      <view class="ann-label">🎉 今天是</view>
+      <view class="ann-label">今天是</view>
       <view class="ann-title serif">{{todayAnniversary.label}}</view>
       <view wx:if="{{todayAnniversary.yearsCount > 0}}" class="ann-years">第 {{todayAnniversary.yearsCount}} 年</view>
       <view class="ann-hint">轻触关闭</view>

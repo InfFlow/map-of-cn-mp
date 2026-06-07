@@ -148,6 +148,87 @@ function amap_get(string $endpoint, array $params, string $key): ?array
     return is_array($data) ? $data : null;
 }
 
+/** 高德地点解析：优先 POI，失败再地理编码；返回 null 时调用方自行降级 */
+function amap_lookup_place(string $key, string $address, string $city = ''): ?array
+{
+    $address = trim($address);
+    $city = trim($city);
+    if ($key === '' || $address === '') {
+        return null;
+    }
+
+    $poi = amap_get('place/text', [
+        'keywords' => $address,
+        'city' => $city,
+        'offset' => 1,
+        'page' => 1,
+        'extensions' => 'all',
+    ], $key);
+    if ($poi && ($poi['status'] ?? '0') === '1' && !empty($poi['pois'][0]['location'])) {
+        $p = $poi['pois'][0];
+        [$lng, $lat] = array_map('floatval', explode(',', (string) $p['location']));
+        if ($lng !== 0.0 || $lat !== 0.0) {
+            $addrParts = [];
+            foreach (['pname', 'cityname', 'adname', 'address'] as $k) {
+                $v = $p[$k] ?? '';
+                if (is_string($v) && $v !== '' && !in_array($v, $addrParts, true)) {
+                    $addrParts[] = $v;
+                }
+            }
+            $biz = is_array($p['biz_ext'] ?? null) ? $p['biz_ext'] : [];
+            $openHours = '';
+            foreach (['open_time', 'opentime', 'open_time2'] as $k) {
+                if (is_string($biz[$k] ?? null) && trim((string) $biz[$k]) !== '') {
+                    $openHours = trim((string) $biz[$k]);
+                    break;
+                }
+            }
+            $ticket = '';
+            foreach (['cost', 'price'] as $k) {
+                if (is_string($biz[$k] ?? null) && trim((string) $biz[$k]) !== '') {
+                    $ticket = trim((string) $biz[$k]);
+                    break;
+                }
+            }
+            return [
+                'longitude' => $lng,
+                'latitude' => $lat,
+                'province' => is_string($p['pname'] ?? '') ? $p['pname'] : '',
+                'city' => is_string($p['cityname'] ?? '') ? $p['cityname'] : '',
+                'formatted' => $addrParts ? implode('', $addrParts) : (string) ($p['name'] ?? $address),
+                'poiName' => (string) ($p['name'] ?? ''),
+                'openHours' => $openHours,
+                'ticket' => $ticket,
+            ];
+        }
+    }
+
+    $res = amap_get('geocode/geo', ['address' => $address, 'city' => $city], $key);
+    if (!$res || ($res['status'] ?? '0') !== '1' || empty($res['geocodes'])) {
+        return null;
+    }
+    $g = $res['geocodes'][0];
+    $level = is_string($g['level'] ?? null) ? $g['level'] : '';
+    if (in_array($level, ['国家', '省', '市', '区县', '开发区', '乡镇', '村庄'], true)) {
+        return null;
+    }
+    [$lng, $lat] = array_map('floatval', explode(',', (string) ($g['location'] ?? '0,0')));
+    if ($lng === 0.0 && $lat === 0.0) {
+        return null;
+    }
+    return [
+        'longitude' => $lng,
+        'latitude' => $lat,
+        'province' => $g['province'] ?? '',
+        'city' => is_string($g['city'] ?? '') ? $g['city'] : '',
+        'formatted' => $g['formatted_address'] ?? $address,
+        'poiName' => '',
+        'openHours' => '',
+        'ticket' => '',
+        'level' => $level,
+    ];
+}
+
 /** 调用 DeepSeek chat 接口，返回助手文本（失败返回 null） */
 function deepseek_chat(string $key, string $system, string $user, float $temperature = 0.8): ?string
 {
@@ -963,58 +1044,23 @@ try {
             if ($address === '') {
                 fail('缺少地址');
             }
-            // 先用 POI 关键字搜索（景区/地标名更准），失败再退回结构化地理编码
-            $poi = amap_get('place/text', ['keywords' => $address, 'city' => $city, 'offset' => 1, 'page' => 1, 'extensions' => 'all'], $key);
-            if ($poi && ($poi['status'] ?? '0') === '1' && !empty($poi['pois'][0]['location'])) {
-                $p = $poi['pois'][0];
-                [$lng, $lat] = array_map('floatval', explode(',', (string) $p['location']));
-                $addrParts = [];
-                foreach (['pname', 'cityname', 'adname', 'address'] as $k) {
-                    $v = $p[$k] ?? '';
-                    if (is_string($v) && $v !== '' && !in_array($v, $addrParts, true)) {
-                        $addrParts[] = $v;
-                    }
-                }
-                $biz = is_array($p['biz_ext'] ?? null) ? $p['biz_ext'] : [];
-                $openHours = '';
-                foreach (['open_time', 'opentime', 'open_time2'] as $k) {
-                    if (is_string($biz[$k] ?? null) && trim((string) $biz[$k]) !== '') {
-                        $openHours = trim((string) $biz[$k]);
-                        break;
-                    }
-                }
-                $ticket = '';
-                foreach (['cost', 'price'] as $k) {
-                    if (is_string($biz[$k] ?? null) && trim((string) $biz[$k]) !== '') {
-                        $ticket = trim((string) $biz[$k]);
-                        break;
-                    }
-                }
-                out([
-                    'ok' => true,
-                    'longitude' => $lng,
-                    'latitude' => $lat,
-                    'province' => is_string($p['pname'] ?? '') ? $p['pname'] : '',
-                    'city' => is_string($p['cityname'] ?? '') ? $p['cityname'] : '',
-                    'formatted' => $addrParts ? implode('', $addrParts) : (string) ($p['name'] ?? $address),
-                    'poiName' => (string) ($p['name'] ?? ''),
-                    'openHours' => $openHours,
-                    'ticket' => $ticket,
-                ]);
+            $geo = amap_lookup_place($key, $address, $city);
+            if (!$geo && $city !== '' && mb_strpos($address, $city) === false) {
+                $geo = amap_lookup_place($key, $city . ' ' . $address, $city);
             }
-            $res = amap_get('geocode/geo', ['address' => $address, 'city' => $city], $key);
-            if (!$res || ($res['status'] ?? '0') !== '1' || empty($res['geocodes'])) {
+            if (!$geo) {
                 fail('未找到该地点', 404);
             }
-            $g = $res['geocodes'][0];
-            [$lng, $lat] = array_map('floatval', explode(',', (string) ($g['location'] ?? '0,0')));
             out([
                 'ok' => true,
-                'longitude' => $lng,
-                'latitude' => $lat,
-                'province' => $g['province'] ?? '',
-                'city' => is_string($g['city'] ?? '') ? $g['city'] : '',
-                'formatted' => $g['formatted_address'] ?? $address,
+                'longitude' => $geo['longitude'],
+                'latitude' => $geo['latitude'],
+                'province' => $geo['province'] ?? '',
+                'city' => $geo['city'] ?? '',
+                'formatted' => $geo['formatted'] ?? $address,
+                'poiName' => $geo['poiName'] ?? '',
+                'openHours' => $geo['openHours'] ?? '',
+                'ticket' => $geo['ticket'] ?? '',
             ]);
         }
 
@@ -1396,11 +1442,13 @@ try {
             $tone = mb_substr(trim((string) ($body['coverTone'] ?? '')), 0, 64) ?: 'tone-slate';
             $planDate = trim((string) ($body['planDate'] ?? ''));
             $planDate = is_date($planDate) ? $planDate : null;
+            $city = mb_substr(trim((string) ($body['city'] ?? '')), 0, 80);
             $note = trim((string) ($body['note'] ?? ''));
             $days = $body['days'] ?? [];
             if (!is_array($days) || !$days) {
                 fail('缺少行程内容');
             }
+            $amapKey = (string) ($config['amap_key'] ?? '');
             $pdo->beginTransaction();
             try {
                 $planId = gen_id('p_');
@@ -1410,6 +1458,7 @@ try {
                 $stStop = $pdo->prepare('INSERT INTO plan_stops (plan_id, name, address, latitude, longitude, note, planned_time, day, sort_order) VALUES (?,?,?,?,?,?,?,?,?)');
                 $sort = 0;
                 $stopCount = 0;
+                $geoStops = 0;
                 foreach ($days as $d) {
                     $dayNum = max(1, min(60, (int) ($d['day'] ?? 1)));
                     $stops = isset($d['stops']) && is_array($d['stops']) ? $d['stops'] : [];
@@ -1420,7 +1469,24 @@ try {
                         }
                         $stopNote = mb_substr(trim((string) ($s['desc'] ?? $s['note'] ?? '')), 0, 255);
                         $time = mb_substr(trim((string) ($s['time'] ?? $s['plannedTime'] ?? '')), 0, 32);
-                        $stStop->execute([$planId, $name, '', null, null, $stopNote, $time, $dayNum, $sort++]);
+                        $rawAddress = mb_substr(trim((string) ($s['address'] ?? '')), 0, 255);
+                        $address = $rawAddress;
+                        $lat = null;
+                        $lng = null;
+                        if ($amapKey !== '') {
+                            $query = $rawAddress !== '' ? $rawAddress : (($city !== '' ? $city . ' ' : '') . $name);
+                            $geo = amap_lookup_place($amapKey, $query, $city);
+                            if ($geo) {
+                                $lat = round((float) $geo['latitude'], 6);
+                                $lng = round((float) $geo['longitude'], 6);
+                                $address = mb_substr(trim((string) ($geo['formatted'] ?? $rawAddress)), 0, 255);
+                                if ($address === '') {
+                                    $address = $rawAddress;
+                                }
+                                $geoStops++;
+                            }
+                        }
+                        $stStop->execute([$planId, $name, $address, $lat, $lng, $stopNote, $time, $dayNum, $sort++]);
                         if (++$stopCount >= 80) {
                             break 2;
                         }
@@ -1433,7 +1499,7 @@ try {
                 }
                 fail('导入失败，请重试', 500);
             }
-            out(['ok' => true, 'id' => $planId, 'stops' => $stopCount]);
+            out(['ok' => true, 'id' => $planId, 'stops' => $stopCount, 'geoStops' => $geoStops]);
         }
 
         /* ============ AI 批量打标：多张图片URL → 每张返回标签 ============ */

@@ -20,13 +20,19 @@
     </view>
   </block>
 
-  <view wx:elif="{{error}}" class="rc-empty">
-    <view>{{error}}</view>
+  <view wx:elif="{{error}}" class="empty rc-empty">
+    <view class="empty-fig empty-fig-plans"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">稍后再来，这份回顾会重新整理好</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 
   <block wx:elif="{{nums.spotCount === 0 && !selectedYear}}">
-    <view class="rc-empty">第一份旅行回顾，还在等第一段回忆。</view>
+    <view class="empty rc-empty">
+      <view class="empty-fig empty-fig-plans"></view>
+      <view class="empty-zh">第一份旅行回顾，还在等第一段回忆</view>
+      <view class="empty-hint">记下第一站后，这里会自动长成一份纪念</view>
+    </view>
   </block>
 
   <block wx:else>

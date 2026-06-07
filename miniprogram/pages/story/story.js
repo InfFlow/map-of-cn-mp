@@ -42,13 +42,13 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: 'AI 写给我们的旅行故事',
+      title: '写给我们的旅行故事',
       path: '/pages/story/story',
     }
   },
 
   onShareTimeline() {
-    return { title: 'AI 写给我们的旅行故事' }
+    return { title: '写给我们的旅行故事' }
   },
 
   async genStory() {
@@ -66,7 +66,7 @@ Page({
       this.setData({ story, storyHtml: markdownToHtml(story), count: data.count || 0, loading: false })
     } catch (e) {
       this.setData({ loading: false })
-      const msg = (e && e.data && e.data.message) || '生成失败，请稍后重试'
+      const msg = (e && e.data && e.data.message) || '这次没写好，稍后再试'
       wx.showToast({ title: msg, icon: 'none', duration: 3000 })
     }
   },
@@ -99,7 +99,7 @@ Page({
   async exportStory() {
     if (this.data.exporting || !this.data.story) return
     this.setData({ exporting: true })
-    wx.showLoading({ title: '生成长图…', mask: true })
+    wx.showLoading({ title: '正在整理长图…', mask: true })
     try {
       wx.createSelectorQuery().in(this).select('#storyCanvas').fields({ node: true, size: true }).exec(async res => {
         try {
@@ -182,12 +182,12 @@ Page({
           wx.previewImage({ urls: [tempPath], current: tempPath })
         } catch(e) {
           wx.hideLoading(); this.setData({ exporting: false })
-          wx.showToast({ title: '生成失败', icon: 'none' })
+          wx.showToast({ title: '长图暂时没整理好', icon: 'none' })
         }
       })
     } catch(e) {
       wx.hideLoading(); this.setData({ exporting: false })
-      wx.showToast({ title: '生成失败', icon: 'none' })
+      wx.showToast({ title: '长图暂时没整理好', icon: 'none' })
     }
   },
 })

@@ -140,7 +140,7 @@ Page({
     } catch (e) {
       wx.hideLoading()
       this.setData({ saving: false })
-      const msg = (e && e.data && e.data.message) || '封存失败，请重试'
+      const msg = (e && e.data && e.data.message) || '这颗胶囊暂时没收好'
       wx.showToast({ title: msg, icon: 'none', duration: 3000 })
     }
   },
@@ -162,7 +162,7 @@ Page({
       this.loadCapsules()
     } catch (e) {
       wx.hideLoading()
-      const msg = (e && e.data && e.data.message) || '开启失败，请重试'
+      const msg = (e && e.data && e.data.message) || '这颗胶囊暂时打不开'
       wx.showToast({ title: msg, icon: 'none', duration: 3000 })
     }
   },

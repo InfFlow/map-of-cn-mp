@@ -40,7 +40,7 @@ Component({
           success: (r) => {
             if (r.statusCode !== 200) {
               this.setData({ saving: false })
-              wx.showToast({ title: '下载失败', icon: 'none' })
+              wx.showToast({ title: '这张照片暂时没取到', icon: 'none' })
               return
             }
             wx.saveImageToPhotosAlbum({
@@ -51,13 +51,13 @@ Component({
               },
               fail: () => {
                 this.setData({ saving: false })
-                wx.showToast({ title: '保存失败', icon: 'none' })
+                wx.showToast({ title: '这张照片暂时没存好', icon: 'none' })
               },
             })
           },
           fail: () => {
             this.setData({ saving: false })
-            wx.showToast({ title: '下载失败', icon: 'none' })
+            wx.showToast({ title: '这张照片暂时没取到', icon: 'none' })
           },
         })
       }

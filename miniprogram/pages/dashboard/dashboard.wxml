@@ -142,7 +142,9 @@
   </block>
 
   <view wx:if="{{error}}" class="empty">
-    <view>{{error}}</view>
+    <view class="empty-fig empty-fig-plans"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">先歇一下，数字会重新排好队</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 

@@ -261,7 +261,7 @@
 }
 .photo:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 12rpx rgba(27, 23, 18, 0.06);
+  box-shadow: var(--shadow-card);
 }
 .photo-img {
   width: 100%;
@@ -365,16 +365,6 @@
   background: var(--surface);
   text-align: center;
 }
-.photo-empty-title {
-  font-size: 36rpx;
-  color: var(--ink);
-}
-.photo-empty-sub {
-  margin-top: 12rpx;
-  font-size: 24rpx;
-  line-height: 1.7;
-  color: var(--muted);
-}
 
 /* 智能手记入口 */
 .journal-entry {
@@ -383,9 +373,10 @@
   gap: 20rpx;
   margin-top: 32rpx;
   padding: 32rpx;
-  background: linear-gradient(135deg, #fff9e6 0%, var(--surface) 100%);
-  border: 1rpx solid #f0e6c8;
-  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
   transition: transform 0.2s ease;
 }
 .journal-entry:active {

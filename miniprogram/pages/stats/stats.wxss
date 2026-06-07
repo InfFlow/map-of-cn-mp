@@ -56,6 +56,9 @@
   margin-top: 44rpx;
   border-top: 1rpx solid var(--line);
   border-left: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface);
 }
 .cellnum {
   width: 50%;
@@ -142,8 +145,10 @@
   margin-top: 24rpx;
   text-align: center;
   font-size: 24rpx;
-  color: var(--muted);
+  color: var(--ink);
   border: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
   padding: 32rpx 0;
 }
 .exp-total {
@@ -164,8 +169,16 @@
 }
 .exp-empty {
   margin-top: 24rpx;
-  font-size: 24rpx;
-  color: var(--muted);
+  padding: 40rpx 24rpx;
+  border: 1rpx dashed var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.exp-empty .empty-fig {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+  background-size: 112rpx 112rpx;
 }
 .loading {
   margin-top: 24rpx;
@@ -203,7 +216,7 @@
 
 /* 年历 */
 .cal-years { white-space: nowrap; margin-bottom: 20rpx; }
-.cal-yr { display: inline-block; font-size: 24rpx; padding: 8rpx 20rpx; margin-right: 12rpx; border: 1rpx solid var(--line); color: var(--ink-2); }
+.cal-yr { display: inline-block; font-size: 24rpx; padding: 8rpx 20rpx; margin-right: 12rpx; border: 1rpx solid var(--line); border-radius: var(--radius-full); color: var(--ink-2); background: var(--surface); }
 .cal-yr.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .cal-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
 .cal-month { width: 48%; margin-bottom: 28rpx; }
@@ -222,5 +235,8 @@
   .hero .h1 {
     font-size: 84rpx;
     line-height: 1;
+  }
+  .cal-month {
+    width: 100%;
   }
 }

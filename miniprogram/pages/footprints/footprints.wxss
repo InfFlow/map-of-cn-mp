@@ -1,5 +1,5 @@
 .page {
-  padding: 24rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  padding: 24rpx 48rpx calc(120rpx + env(safe-area-inset-bottom));
 }
 
 /* 报头 */
@@ -110,27 +110,43 @@
 /* 空 / 错误（.totop 复用全局样式） */
 .fp-empty {
   margin-top: 60rpx;
-  padding: 64rpx 40rpx;
+  padding: 84rpx 40rpx;
   text-align: center;
-  font-size: 28rpx;
   line-height: 1.8;
   color: var(--muted);
   border: 1rpx dashed var(--line);
   border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.fp-empty .empty-zh {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.fp-empty .empty-hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--faint);
 }
 
 /* 打卡浮动按钮 */
 .checkin-fab {
   position: fixed;
-  right: 40rpx;
-  bottom: calc(140rpx + env(safe-area-inset-bottom));
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 28rpx;
-  letter-spacing: 2rpx;
-  padding: 16rpx 32rpx;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-float);
+  right: 34rpx;
+  bottom: calc(32rpx + env(safe-area-inset-bottom));
+  min-width: 136rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  box-sizing: border-box;
+  background: rgba(250, 248, 243, 0.92);
+  color: var(--ink);
+  border: 1rpx solid var(--line);
+  font-size: 24rpx;
+  letter-spacing: 1rpx;
+  padding: 0 24rpx;
+  text-align: center;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-card);
   z-index: 50;
 }
 
@@ -144,14 +160,17 @@
     line-height: 1;
   }
   .checkin-fab {
-    right: 32rpx;
-    bottom: calc(var(--tabbar-h) + 22rpx);
+    right: 28rpx;
+    bottom: calc(28rpx + env(safe-area-inset-bottom));
+    min-width: 124rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    padding: 0 20rpx;
   }
   .ck-sheet {
     max-height: 82vh;
     padding-left: 32rpx;
     padding-right: 32rpx;
-    padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
   }
 }
 .ck-title { font-size: 40rpx; margin-bottom: 32rpx; }
@@ -169,7 +188,7 @@
 .ck-photo-add { width: 148rpx; height: 148rpx; border: 1rpx dashed var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8rpx; }
 .ck-add-ico { font-size: 40rpx; color: var(--muted); }
 .ck-add-txt { font-size: 20rpx; color: var(--muted); }
-.ck-actions { position: sticky; bottom: 0; display: flex; gap: 20rpx; margin: 28rpx -4rpx 0; padding: 18rpx 4rpx calc(18rpx + env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(244,241,234,0), var(--bg) 28rpx); }
+.ck-actions { position: static; display: flex; gap: 20rpx; margin: 28rpx 0 0; padding: 20rpx 0 calc(24rpx + env(safe-area-inset-bottom)); border-top: 1rpx solid var(--line-soft); background: transparent; }
 .ck-cancel { flex: 1; text-align: center; padding: 24rpx; border: 1rpx solid var(--line); font-size: 28rpx; }
 .ck-save { flex: 2; text-align: center; padding: 24rpx; background: var(--ink); color: var(--bg); font-size: 28rpx; border: 1rpx solid var(--ink); }
 .ck-save.disabled { opacity: 0.5; }
@@ -205,8 +224,8 @@
 
 /* 第三轮视觉统一：足迹弹层、对比弹层和浮动按钮对齐全局体系 */
 .checkin-fab {
-  box-shadow: var(--shadow-float);
-  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-full);
 }
 .ck-mask,
 .cmp-mask {
@@ -217,17 +236,32 @@
   max-height: 82vh;
   padding: 36rpx 40rpx 0;
   border-radius: 24rpx 24rpx 0 0;
-  box-shadow: 0 -10rpx 34rpx rgba(27, 23, 18, 0.12);
+  box-shadow: var(--shadow-float);
 }
 .cmp-sheet {
   padding-bottom: calc(36rpx + env(safe-area-inset-bottom));
 }
 .ck-actions {
+  position: static;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
   gap: 14rpx;
-  padding-bottom: calc(18rpx + env(safe-area-inset-bottom));
+  margin: 28rpx 0 0;
+  padding: 20rpx 0 calc(24rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--line-soft);
+  background: transparent;
 }
 .ck-cancel,
 .ck-save {
+  width: 100%;
+  min-width: 0;
+  min-height: 84rpx;
+  padding: 0 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  line-height: 1.3;
   border-radius: var(--radius-md);
   box-shadow: none;
 }

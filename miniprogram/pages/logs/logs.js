@@ -97,7 +97,7 @@ Page({
       try {
         const up = await api.uploadImage(f, user.openid)
         this.setData({ 'editor.coverImage': up.imageUrl })
-      } catch { wx.showToast({ title: '上传失败', icon: 'none' }) }
+      } catch { wx.showToast({ title: '封面暂时没传好', icon: 'none' }) }
     }})
   },
 
@@ -112,7 +112,7 @@ Page({
       wx.vibrateShort && wx.vibrateShort({ type: 'light' })
       this.closeEditor()
       this.loadLogs()
-    } catch { wx.showToast({ title: '保存失败', icon: 'none' }) }
+    } catch { wx.showToast({ title: '这条记录暂时没保存好', icon: 'none' }) }
     this.setData({ 'editor.saving': false })
   },
 
@@ -120,7 +120,7 @@ Page({
     const id = e.currentTarget.dataset.id
     const user = app.getUser()
     if (!user || !user.openid) return
-    wx.showModal({ title: '确认删除？', success: async r => {
+    wx.showModal({ title: '拿掉这条记录？', content: '这条记录会先从列表里拿掉。', confirmText: '拿掉', success: async r => {
       if (!r.confirm) return
       await api.admin({ action: 'del_log', openid: user.openid, id }).catch(() => {})
       this.setData({ logs: this.data.logs.filter(l => l.id !== id) })

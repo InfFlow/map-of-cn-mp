@@ -15,6 +15,11 @@ function validCoord(lat, lng) {
   return { latitude, longitude }
 }
 
+function isLocationDenied(err) {
+  const msg = String((err && err.errMsg) || '').toLowerCase()
+  return msg.indexOf('deny') >= 0 || msg.indexOf('denied') >= 0 || msg.indexOf('auth') >= 0 || msg.indexOf('permission') >= 0
+}
+
 function seasonFromDate(date) {
   const month = Number(String(date || '').slice(5, 7)) || new Date().getMonth() + 1
   if (month >= 3 && month <= 5) return '春'
@@ -199,6 +204,7 @@ Page({
   async startCheckin() {
     const user = app.getUser()
     if (!user || !user.openid) { wx.showToast({ title: '请先登录', icon: 'none' }); return }
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     this.setData({ checkin: { show: true, locating: true, saving: false, lat: 0, lng: 0, city: '', province: '', title: '', weather: '', season: seasonFromDate(new Date().toISOString().slice(0, 10)), photos: [], provinceIndex: 0, cityIndex: 0, cityOptions: REGIONS[PROVINCES[0]] || [] } })
     wx.getLocation({
       type: 'gcj02',
@@ -231,9 +237,28 @@ Page({
           this.setData({ 'checkin.locating': false, 'checkin.lat': res.latitude, 'checkin.lng': res.longitude })
         }
       },
-      fail: () => {
+      fail: (err) => {
         this.setData({ 'checkin.show': false })
-        wx.showToast({ title: '暂时没定位到，请检查权限', icon: 'none' })
+        if (isLocationDenied(err)) {
+          wx.showModal({
+            title: '还没打开位置权限',
+            content: '打开后就能自动确认这一刻的位置。',
+            confirmText: '去设置',
+            cancelText: '先不了',
+            success: (res) => {
+              if (!res.confirm) return
+              wx.openSetting({
+                success: (setting) => {
+                  if (setting.authSetting && setting.authSetting['scope.userLocation'] !== false) {
+                    this.startCheckin()
+                  }
+                },
+              })
+            },
+          })
+          return
+        }
+        wx.showToast({ title: '暂时没定位到，请检查手机定位', icon: 'none' })
       },
     })
   },

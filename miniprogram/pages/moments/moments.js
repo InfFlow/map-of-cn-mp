@@ -73,7 +73,7 @@ Page({
   onHold(e) {
     const id = e.currentTarget.dataset.id
     wx.showActionSheet({
-      itemList: ['删除'],
+      itemList: ['拿掉这张剪影'],
       success: async (res) => {
         if (res.tapIndex !== 0) return
         const user = this._user()
@@ -81,9 +81,9 @@ Page({
         try {
           await api.admin({ action: 'del_moment', openid: user.openid, id })
           this.setData({ moments: this.data.moments.filter((m) => m.id !== id) })
-          wx.showToast({ title: '已删除', icon: 'success' })
+          wx.showToast({ title: '已拿掉', icon: 'success' })
         } catch {
-          wx.showToast({ title: '暂时没删掉', icon: 'none' })
+          wx.showToast({ title: '暂时没拿掉', icon: 'none' })
         }
       },
     })

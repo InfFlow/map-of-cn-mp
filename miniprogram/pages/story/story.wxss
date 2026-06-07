@@ -89,16 +89,45 @@
 }
 .action-btn.primary { background: var(--ink); color: var(--bg); }
 
-/* 空状态 */
-.empty-state {
-  margin-top: 80rpx;
-  padding: 64rpx 40rpx;
-  text-align: center;
-  border: 1rpx dashed var(--line);
+.story-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1rpx solid var(--line);
   border-radius: var(--radius-md);
+  box-sizing: border-box;
 }
-.empty-text { font-size: 28rpx; color: var(--muted); line-height: 1.8; }
+.story-btn.disabled {
+  opacity: 0.52;
+}
 
+.empty-hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--faint);
+  line-height: 1.7;
+}
+
+/* 参赛收口：故事页也使用统一卡片和按钮层级 */
+.story-body {
+  border-color: var(--line-soft);
+  box-shadow: var(--shadow-card);
+}
+.action-row {
+  align-items: stretch;
+}
+.action-btn,
+.story-btn {
+  min-height: 72rpx;
+  padding: 0 8rpx;
+  font-size: 24rpx;
+}
 @media (max-width: 360px) {
   .story-body {
     padding: 28rpx 24rpx;

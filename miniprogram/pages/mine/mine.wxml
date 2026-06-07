@@ -2,7 +2,7 @@
   <view class="mast rise d1">
     <view class="mast-row">
       <text class="mast-name">MAP OF US</text>
-      <text class="mast-vol">MINE</text>
+      <text class="mast-vol">OURS</text>
     </view>
     <view class="rule"></view>
   </view>
@@ -167,10 +167,11 @@
 
       <view wx:if="{{loading}}" class="loading">正在翻找我们的记录…</view>
 
-      <view wx:elif="{{!orders.length}}" class="orders-empty">
+      <view wx:elif="{{!orders.length}}" class="empty orders-empty">
         <view class="empty-fig empty-fig-logs"></view>
-        <view class="oe-txt">还没有点过菜</view>
-        <view class="oe-go pressable" hover-class="pressed" bindtap="goMenu">去菜单看看 ›</view>
+        <view class="empty-zh">第一顿想一起吃的饭，还在路上</view>
+        <view class="empty-hint">先挑几道想吃的，下一顿就有了开头</view>
+        <view class="empty-action pressable" hover-class="pressed" bindtap="goMenu">去菜单看看</view>
       </view>
 
       <view wx:else class="order-list">
@@ -193,7 +194,7 @@
     </view>
 
     <view wx:if="{{!user.isAdmin}}" class="admin-claim rise d4">
-      <text class="ac-link" bindtap="claimAdmin">管理员入口</text>
+      <text class="ac-link" bindtap="claimAdmin">整理权限</text>
     </view>
   </block>
 </view>

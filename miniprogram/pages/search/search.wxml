@@ -5,7 +5,9 @@
   </view>
 
   <view wx:if="{{hasSearched && !results.length}}" class="empty">
-    <view class="empty-zh">没有找到「{{keyword}}」</view>
+    <view class="empty-fig empty-fig-search"></view>
+    <view class="empty-zh">没翻到「{{keyword}}」</view>
+    <view class="empty-hint">换个城市、标题或标签，再找一次回忆</view>
   </view>
 
   <view wx:elif="{{results.length}}" class="results">

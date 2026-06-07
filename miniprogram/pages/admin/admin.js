@@ -18,6 +18,11 @@ function validCoord(lat, lng) {
   return { latitude, longitude }
 }
 
+function isLocationDenied(err) {
+  const msg = String((err && err.errMsg) || '').toLowerCase()
+  return msg.indexOf('deny') >= 0 || msg.indexOf('denied') >= 0 || msg.indexOf('auth') >= 0 || msg.indexOf('permission') >= 0
+}
+
 function seasonFromDate(date) {
   const month = Number(String(date || '').slice(5, 7)) || new Date().getMonth() + 1
   if (month >= 3 && month <= 5) return '春'
@@ -166,7 +171,7 @@ Page({
         todoLoaded: true,
       })
     } catch (e) {
-      wx.showToast({ title: '待补数据加载失败', icon: 'none' })
+      wx.showToast({ title: '整理清单暂时没翻到', icon: 'none' })
     }
   },
 
@@ -182,7 +187,7 @@ Page({
     } catch (e) {
       this.setData({ ready: true })
       if (e && e.statusCode === 403) this.setData({ notAdmin: true })
-      else wx.showToast({ title: '加载失败', icon: 'none' })
+      else wx.showToast({ title: '菜单暂时没翻到', icon: 'none' })
     }
   },
 
@@ -196,7 +201,7 @@ Page({
       }))
       this.setData({ orders, ordersLoaded: true })
     } catch (e) {
-      wx.showToast({ title: '订单加载失败', icon: 'none' })
+      wx.showToast({ title: '点单记录暂时没翻到', icon: 'none' })
     }
   },
 
@@ -219,7 +224,7 @@ Page({
   },
 
   async act(payload, okMsg) {
-    wx.showLoading({ title: '处理中', mask: true })
+    wx.showLoading({ title: '正在整理', mask: true })
     try {
       const res = await api.admin({ ...payload, openid: this.data.openid })
       wx.hideLoading()
@@ -227,7 +232,7 @@ Page({
       return res
     } catch (e) {
       wx.hideLoading()
-      wx.showToast({ title: (e && e.data && e.data.message) || '操作失败', icon: 'none' })
+      wx.showToast({ title: (e && e.data && e.data.message) || '这次没整理成功', icon: 'none' })
       throw e
     }
   },
@@ -340,7 +345,7 @@ Page({
         const file = res.tempFiles[0]
         if (!file) return
         this.setData({ ['dishEditor.uploading']: true })
-        wx.showLoading({ title: '上传中', mask: true })
+        wx.showLoading({ title: '正在收藏', mask: true })
         try {
           const { imageUrl } = await api.uploadDishImage(file.tempFilePath, this.data.openid)
           this.setData({ ['dishEditor.imageUrl']: imageUrl, ['dishEditor.uploading']: false })
@@ -348,7 +353,7 @@ Page({
         } catch (e) {
           this.setData({ ['dishEditor.uploading']: false })
           wx.hideLoading()
-          wx.showToast({ title: '上传失败', icon: 'none' })
+          wx.showToast({ title: '这张图暂时没收好', icon: 'none' })
         }
       },
     })
@@ -440,7 +445,7 @@ Page({
       }))
       this.setData({ journeys, journeysLoaded: true })
     } catch (e) {
-      wx.showToast({ title: '足迹加载失败', icon: 'none' })
+      wx.showToast({ title: '足迹暂时没翻到', icon: 'none' })
     }
   },
   openJourneyEditor(e) {
@@ -477,6 +482,7 @@ Page({
   // 用设备当前定位一键填坐标，并尝试逆地理编码补全省/市
   locateJourneyHere() {
     if (this.data.journeyEditor.locating) return
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     this.setData({ ['journeyEditor.locating']: true })
     wx.getLocation({
       type: 'gcj02',
@@ -505,9 +511,28 @@ Page({
         wx.vibrateShort && wx.vibrateShort({ type: 'light' })
         wx.showToast({ title: '地点和天气都填好了', icon: 'none' })
       },
-      fail: () => {
+      fail: (err) => {
         this.setData({ ['journeyEditor.locating']: false })
-        wx.showToast({ title: '定位失败，请允许定位权限', icon: 'none' })
+        if (isLocationDenied(err)) {
+          wx.showModal({
+            title: '还没打开位置权限',
+            content: '打开后就能用当前位置自动补好坐标。',
+            confirmText: '去设置',
+            cancelText: '先不了',
+            success: (res) => {
+              if (!res.confirm) return
+              wx.openSetting({
+                success: (setting) => {
+                  if (setting.authSetting && setting.authSetting['scope.userLocation'] !== false) {
+                    this.locateJourneyHere()
+                  }
+                },
+              })
+            },
+          })
+          return
+        }
+        wx.showToast({ title: '没拿到位置，先检查手机定位', icon: 'none' })
       },
     })
   },
@@ -591,7 +616,7 @@ Page({
           const fresh = this.data.journeys.find((x) => x.id === jid)
           this.setData({ ['journeyEditor.photos']: fresh ? fresh.photos || [] : [] })
         } catch (err) {
-          wx.showToast({ title: '删除失败', icon: 'none' })
+          wx.showToast({ title: '这张照片暂时没删掉', icon: 'none' })
         }
       },
     })
@@ -627,11 +652,11 @@ Page({
         wx.showToast({ title: '已定位', icon: 'success' })
       } else {
         this.setData({ ['journeyEditor.geoLoading']: false })
-        wx.showToast({ title: '未找到该地点', icon: 'none' })
+        wx.showToast({ title: '这处地点暂时没对上', icon: 'none' })
       }
     } catch (err) {
       this.setData({ ['journeyEditor.geoLoading']: false })
-      wx.showToast({ title: '定位失败', icon: 'none' })
+      wx.showToast({ title: '位置暂时没接上', icon: 'none' })
     }
   },
   async saveJourney() {
@@ -715,7 +740,7 @@ Page({
       })
       this.setData({ anniversaries, anniLoaded: true })
     } catch (e) {
-      wx.showToast({ title: '纪念日加载失败', icon: 'none' })
+      wx.showToast({ title: '纪念日暂时没翻到', icon: 'none' })
     }
   },
   openAnniEditor(e) {

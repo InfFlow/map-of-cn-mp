@@ -49,6 +49,9 @@
   flex-wrap: wrap;
   border-top: 1rpx solid var(--line);
   border-left: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface);
   margin-top: 32rpx;
 }
 .nw-cell {
@@ -128,6 +131,7 @@
   height: 18rpx;
   background: var(--surface);
   border: 1rpx solid var(--line);
+  border-radius: var(--radius-full);
   position: relative;
   overflow: hidden;
 }
@@ -217,8 +221,10 @@
 /* 最近回忆卡片 */
 .latest-card {
   margin-top: 26rpx;
-  border: 1rpx solid var(--line);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
   background: var(--surface);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 .latest-cover {
@@ -273,7 +279,23 @@
   gap: 10rpx;
   border: 1rpx solid var(--line);
   padding: 12rpx 24rpx;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+}
+
+.empty {
+  padding: 104rpx 0;
+  text-align: center;
+}
+.empty-zh {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.empty-hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--faint);
 }
 .tag-name {
   font-size: 24rpx;

@@ -30,25 +30,28 @@
   justify-content: space-between;
   background: var(--surface);
   color: var(--ink);
-  border: 1rpx solid var(--line);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
-  padding: 24rpx 28rpx;
-  margin-bottom: 18rpx;
+  padding: 22rpx 22rpx;
+  margin-bottom: 12rpx;
 }
 .admin-entry:last-child { margin-bottom: 0; }
+.admin-entry.pressed { opacity: 1; transform: scale(0.985); background: var(--paper); border-color: var(--line); }
 .admin-entry .ae-mid { display: flex; flex-direction: column; gap: 6rpx; min-width: 0; }
-.admin-entry .ae-zh { font-size: 28rpx; font-weight: 700; color: var(--ink); }
-.admin-entry .ae-sub { font-size: 20rpx; letter-spacing: 2rpx; color: var(--muted); }
-.admin-entry .ae-arrow { font-size: 40rpx; color: var(--faint); }
-.admin-entry .ae-left { display: flex; align-items: center; gap: 22rpx; min-width: 0; }
+.admin-entry .ae-zh { font-size: 27rpx; font-weight: 700; color: var(--ink); }
+.admin-entry .ae-sub { font-size: 20rpx; letter-spacing: 1.5rpx; color: var(--muted); }
+.admin-entry .ae-arrow { font-size: 34rpx; color: var(--faint); flex: none; margin-left: 16rpx; }
+.admin-entry .ae-left { display: flex; align-items: center; gap: 20rpx; min-width: 0; }
 .admin-entry .ae-ico {
-  width: 64rpx;
-  height: 64rpx;
+  width: 62rpx;
+  height: 62rpx;
   flex: none;
-  border: 1rpx solid var(--line);
+  border-radius: 50%;
+  background-color: var(--paper);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 38rpx 38rpx;
+  background-size: 34rpx 34rpx;
 }
 .ae-ico-stats { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M5%2019v-7M12%2019V6M19%2019v-5%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linecap=%22round%22/%3E%3Cpath%20d=%22M4%2020h16%22%20stroke=%22%231b1712%22%20stroke-width=%221.1%22%20stroke-linecap=%22round%22/%3E%3C/svg%3E"); }
 .ae-ico-atlas { background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%3E%3Cpath%20d=%22M12%2021s-6-5.3-6-10a6%206%200%200%201%2012%200c0%204.7-6%2010-6%2010z%22%20stroke=%22%231b1712%22%20stroke-width=%221.4%22%20stroke-linejoin=%22round%22/%3E%3Ccircle%20cx=%2212%22%20cy=%2211%22%20r=%222.2%22%20stroke=%22%231b1712%22%20stroke-width=%221.3%22/%3E%3C/svg%3E"); }

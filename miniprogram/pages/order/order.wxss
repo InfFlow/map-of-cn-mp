@@ -1,5 +1,8 @@
 .page {
-  padding: 24rpx 48rpx calc(220rpx + env(safe-area-inset-bottom));
+  padding: 24rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+.page.has-submit {
+  padding-bottom: calc(170rpx + env(safe-area-inset-bottom));
 }
 
 .mast-row {
@@ -37,8 +40,12 @@
 
 /* 已选菜品 */
 .oitem {
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid var(--line-soft);
+  margin-bottom: 18rpx;
+  padding: 24rpx;
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 .oitem-top {
   display: flex;
@@ -69,6 +76,7 @@
   padding: 12rpx 16rpx;
   background: var(--paper);
   border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-sm);
 }
 .ph {
   color: var(--faint);
@@ -112,6 +120,7 @@
   padding: 24rpx;
   background: var(--paper);
   border: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
   box-sizing: border-box;
 }
 
@@ -120,7 +129,7 @@
   position: fixed;
   left: 28rpx;
   right: 28rpx;
-  bottom: calc(32rpx + env(safe-area-inset-bottom));
+  bottom: calc(28rpx + env(safe-area-inset-bottom));
   z-index: 60;
   display: flex;
   align-items: center;
@@ -128,6 +137,7 @@
   padding: 20rpx 24rpx 20rpx 32rpx;
   background: var(--surface);
   border: 1rpx solid var(--ink);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-float);
 }
 .sb-total {
@@ -141,6 +151,7 @@
   font-weight: 700;
   letter-spacing: 3rpx;
   padding: 16rpx 40rpx;
+  border-radius: var(--radius-sm);
 }
 .sb-btn.disabled {
   opacity: 0.5;
@@ -150,5 +161,14 @@
   .hero .h1 {
     font-size: 84rpx;
     line-height: 1;
+  }
+  .submitbar {
+    left: 24rpx;
+    right: 24rpx;
+    padding: 18rpx 20rpx;
+  }
+  .sb-btn {
+    padding: 14rpx 28rpx;
+    font-size: 26rpx;
   }
 }

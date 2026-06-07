@@ -15,20 +15,20 @@
 }
 .lede { font-size: 28rpx; line-height: 1.8; color: var(--ink-2); margin-top: 30rpx; max-width: 520rpx; }
 
-.upload-bar { margin-top: 40rpx; border-top: 1rpx solid var(--line); border-bottom: 1rpx solid var(--line); padding: 20rpx 0; }
-.upload-btn { display: inline-block; font-size: 28rpx; letter-spacing: 2rpx; padding: 12rpx 32rpx; border: 1rpx solid var(--ink); }
+.upload-bar { margin-top: 40rpx; border-top: 1rpx solid var(--line-soft); border-bottom: 1rpx solid var(--line-soft); padding: 18rpx 0; }
+.upload-btn { display: inline-block; font-size: 28rpx; letter-spacing: 1rpx; padding: 16rpx 34rpx; border: 1rpx solid var(--ink); border-radius: var(--radius-md); background: var(--ink); color: var(--bg); }
 .upload-btn.disabled { opacity: 0.4; pointer-events: none; }
 
 .waterfall { margin-top: 32rpx; columns: 2; column-gap: 16rpx; }
-.card { break-inside: avoid; margin-bottom: 16rpx; border: 1rpx solid var(--line); background: var(--surface); }
+.card { break-inside: avoid; margin-bottom: 16rpx; border: 1rpx solid var(--line-soft); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-card); overflow: hidden; }
 .card-img { width: 100%; display: block; }
 .card-body { padding: 16rpx; }
 .card-caption { font-size: 24rpx; line-height: 1.75; color: var(--ink-2); display: block; }
 .card-tags { margin-top: 10rpx; display: flex; flex-wrap: wrap; gap: 8rpx; }
 .tag { font-size: 20rpx; color: var(--muted); letter-spacing: 1rpx; }
 
-.empty { margin-top: 80rpx; text-align: center; }
+.empty { margin-top: 80rpx; padding: 72rpx 0; text-align: center; }
 .empty-zh { font-size: 32rpx; color: var(--ink-2); }
 .empty-hint { font-size: 24rpx; color: var(--faint); margin-top: 16rpx; }
-.retry-btn { display: inline-block; margin-top: 28rpx; padding: 14rpx 48rpx; font-size: 28rpx; color: var(--ink-2); border: 1rpx solid var(--line); border-radius: var(--radius-full); }
+.retry-btn { display: inline-block; margin-top: 28rpx; padding: 14rpx 48rpx; font-size: 28rpx; color: var(--ink); border: 1rpx solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
 .loading-tip { text-align: center; font-size: 20rpx; color: var(--faint); margin: 40rpx 0; }

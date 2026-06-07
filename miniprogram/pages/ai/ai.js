@@ -3,7 +3,7 @@ const api = require('../../utils/api')
 const { markdownToHtml } = require('../../utils/markdown')
 
 const PRESETS = {
-  dish: ['想吃清淡的', '重口味下饭', '不知道吃什么', '适合两个人的家常菜', '减脂餐'],
+  dish: ['想吃清淡的', '重口味下饭', '今晚来点家常', '适合两个人的家常菜', '减脂餐'],
   scene: ['有什么必去的地方', '适合情侣的小众去处', '当地特色美食', '三天怎么安排', '拍照好看的地方'],
   place: ['西湖', '故宫', '鼓浪屿', '宽窄巷子', '洪崖洞'],
   trip: ['杭州', '成都', '厦门', '重庆', '大理'],
@@ -89,7 +89,7 @@ Page({
     if (!user || !user.openid) {
       wx.showModal({
         title: '需要登录',
-        content: '请先在「我的」页用微信登录后再使用 AI。',
+        content: '请先在「我的」页登录后，再让它帮你们想。',
         showCancel: false,
         success: () => wx.switchTab({ url: '/pages/mine/mine' }),
       })
@@ -123,7 +123,7 @@ Page({
       const answer = data.answer || ''
       this.setData({ answer, answerHtml: markdownToHtml(answer), loading: false })
     } catch (e) {
-      this.setData({ loading: false, error: (e && e.data && e.data.message) || 'AI 暂时不可用，请稍后再试' })
+      this.setData({ loading: false, error: (e && e.data && e.data.message) || '灵感暂时没接上，请稍后再试' })
     }
   },
 
@@ -138,7 +138,7 @@ Page({
       const data = await api.admin({ action: 'ai_place', openid: user.openid, place })
       this.setData({ placeDetail: data.detail || null, loading: false })
     } catch (e) {
-      this.setData({ loading: false, error: (e && e.data && e.data.message) || 'AI 暂时不可用，请稍后再试' })
+      this.setData({ loading: false, error: (e && e.data && e.data.message) || '灵感暂时没接上，请稍后再试' })
     }
   },
 
@@ -159,7 +159,7 @@ Page({
       })
       this.setData({ tripPlan: data.plan || null, loading: false })
     } catch (e) {
-      this.setData({ loading: false, error: (e && e.data && e.data.message) || 'AI 暂时不可用，请稍后再试' })
+      this.setData({ loading: false, error: (e && e.data && e.data.message) || '灵感暂时没接上，请稍后再试' })
     }
   },
 
@@ -169,12 +169,13 @@ Page({
     const user = this._requireLogin()
     if (!user) return
     this.setData({ importing: true })
-    wx.showLoading({ title: '导入中', mask: true })
+    wx.showLoading({ title: '正在带进计划', mask: true })
     try {
       const res = await api.admin({
         action: 'import_plan',
         openid: user.openid,
         title: plan.title || (this.data.city + ' 行程'),
+        city: this.data.city || '',
         note: plan.intro || '',
         days: plan.days,
       })
@@ -182,7 +183,7 @@ Page({
       this.setData({ importing: false })
       wx.showModal({
         title: '已导入',
-        content: `已生成计划，含 ${res.stops || 0} 个地点。去「行程」查看？`,
+        content: `已经放进计划，含 ${res.stops || 0} 个地点${res.geoStops ? `，${res.geoStops} 个已补好路线信息` : ''}。去「行程」查看？`,
         confirmText: '去看看',
         success: (r) => {
           if (r.confirm) wx.switchTab({ url: '/pages/plans/plans' })
@@ -191,7 +192,7 @@ Page({
     } catch (e) {
       wx.hideLoading()
       this.setData({ importing: false })
-      wx.showToast({ title: (e && e.data && e.data.message) || '导入失败', icon: 'none' })
+      wx.showToast({ title: (e && e.data && e.data.message) || '暂时没带进计划', icon: 'none' })
     }
   },
 

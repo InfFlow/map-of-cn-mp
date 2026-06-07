@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page {{cartCount > 0 ? 'has-cart' : ''}}">
   <view class="mast rise d1">
     <view class="mast-row">
       <text class="mast-name">MAP OF US</text>
@@ -12,7 +12,7 @@
     <view class="h1 display">今天<view class="br"></view>想吃什么</view>
     <view class="lede">挑几道想吃的，写上备注，交给我来做。</view>
     <view wx:if="{{aiEnabled}}" class="ai-entry pressable" hover-class="pressed" bindtap="openAi">
-      <text class="ai-zh">不知道吃什么？让 AI 帮你点菜</text>
+      <text class="ai-zh">今晚没主意？帮我们搭一桌</text>
       <text class="ai-arrow serif">›</text>
     </view>
   </view>
@@ -102,7 +102,9 @@
   </block>
 
   <view wx:if="{{error}}" class="empty">
-    <view>{{error}}</view>
+    <view class="empty-fig empty-fig-logs"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">稍等一下，菜单会回来的</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 
@@ -115,5 +117,5 @@
     <view class="cart-go pressable" hover-class="pressed" bindtap="goOrder">去点单 ›</view>
   </view>
 
-  <view class="totop {{showTop ? 'show' : ''}}" hover-class="pressed" bindtap="backToTop" style="bottom:148rpx;">↑</view>
+  <view class="totop {{showTop ? 'show' : ''}} {{cartCount > 0 ? 'has-cart' : ''}}" hover-class="pressed" bindtap="backToTop">↑</view>
 </view>

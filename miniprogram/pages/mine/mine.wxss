@@ -42,7 +42,8 @@
 .login-box {
   margin-top: 80rpx;
 }
-.login-btn { border-radius: var(--radius-md);
+.login-btn {
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,8 +69,8 @@
 .pcard {
   margin-top: 32rpx;
   background: var(--surface);
-  border: 1rpx solid var(--line);
-  border-radius: var(--radius-lg);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
   padding: 40rpx 36rpx 32rpx;
   box-shadow: var(--shadow-card);
 }
@@ -113,7 +114,7 @@
   font-weight: 700;
   color: var(--ink);
   padding: 6rpx 0;
-  border-bottom: 2rpx solid var(--ink);
+  border-bottom: 1rpx solid var(--line);
   min-width: 220rpx;
 }
 .pcard .profile-name-save {
@@ -124,7 +125,7 @@
   font-size: 24rpx;
   letter-spacing: 2rpx;
   padding: 10rpx 28rpx;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 .pcard .profile-name-save.disabled { opacity: 0.5; }
 .pcard-days {
@@ -275,7 +276,7 @@
   font-weight: 700;
   color: var(--ink);
   padding: 8rpx 0;
-  border-bottom: 2rpx solid var(--ink);
+  border-bottom: 1rpx solid var(--line);
   min-width: 200rpx;
 }
 .profile-name-save {
@@ -286,6 +287,7 @@
   font-size: 24rpx;
   letter-spacing: 2rpx;
   padding: 10rpx 28rpx;
+  border-radius: var(--radius-md);
 }
 .profile-name-save.disabled { opacity: 0.5; }
 .profile-id {
@@ -333,23 +335,10 @@
   padding: 64rpx 0;
   text-align: center;
 }
-.oe-txt {
-  font-size: 28rpx;
-  color: var(--muted);
-}
-.oe-go {
-  display: inline-block;
-  margin-top: 26rpx;
-  font-size: 24rpx;
-  letter-spacing: 1rpx;
-  color: var(--ink-2);
-  border: 1rpx solid var(--line);
-  border-radius: var(--radius-full);
-  padding: 12rpx 28rpx;
-}
 
 .ocard {
-  border: 1rpx solid var(--line);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
   padding: 28rpx 24rpx;
   margin-bottom: 22rpx;
   background: var(--surface);
@@ -369,6 +358,7 @@
   letter-spacing: 2rpx;
   color: var(--muted);
   border: 1rpx solid var(--line);
+  border-radius: var(--radius-full);
   padding: 4rpx 14rpx;
 }
 .ocard-status.on {
@@ -415,7 +405,9 @@
   letter-spacing: 2rpx;
   color: var(--ink);
   padding: 10rpx 20rpx;
-  border: 1rpx solid var(--ink);
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
 }
 
 /* 功能入口卡：轻盈白卡 + 圆角图标方块，层次更分明 */
@@ -427,7 +419,7 @@
   color: var(--ink);
   border: 1rpx solid var(--line-soft);
   border-radius: var(--radius-md);
-  box-shadow: 0 3rpx 14rpx rgba(27, 23, 18, 0.04);
+  box-shadow: var(--shadow-card);
   padding: 22rpx 22rpx;
   margin-bottom: 12rpx;
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
@@ -442,7 +434,7 @@
   opacity: 1;
   background: var(--paper);
   border-color: var(--line);
-  box-shadow: 0 1rpx 6rpx rgba(27, 23, 18, 0.05);
+  box-shadow: var(--shadow-card);
 }
 .admin-entry.featured {
   background: var(--ink);

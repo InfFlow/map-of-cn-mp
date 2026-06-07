@@ -58,7 +58,7 @@ Page({
       })
       this.applyCart()
     } catch (e) {
-      this.setData({ loading: false, error: '菜单加载失败，请检查网络' })
+      this.setData({ loading: false, error: '这份菜单暂时没端上来' })
     }
   },
 

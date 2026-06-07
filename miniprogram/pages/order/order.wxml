@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page {{items.length ? 'has-submit' : ''}}">
   <view class="mast rise d1">
     <view class="mast-row">
       <text class="mast-name">MAP OF US</text>
@@ -60,7 +60,12 @@
     </view>
   </block>
 
-  <view wx:else class="empty">购物车是空的，先去菜单选几道菜。</view>
+  <view wx:else class="empty">
+    <view class="empty-fig empty-fig-logs"></view>
+    <view class="empty-zh">这一桌还没开始点</view>
+    <view class="empty-hint">先去菜单挑几道想吃的，再回来确认</view>
+    <view class="empty-action pressable" hover-class="pressed" bindtap="goMenu">去菜单看看</view>
+  </view>
 
   <!-- 提交条 -->
   <view wx:if="{{items.length}}" class="submitbar">

@@ -94,9 +94,10 @@
   font-size: 24rpx;
   letter-spacing: 1rpx;
   color: var(--bg);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--ink);
+  border: 1rpx solid var(--ink);
   padding: 8rpx 20rpx;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   transition: all 0.2s ease;
 }
 .ai-btn:active {
@@ -146,7 +147,7 @@
   border: 0;
   background: var(--surface);
   border-radius: var(--radius-sm);
-  box-shadow: 0 3rpx 10rpx rgba(27, 23, 18, 0.04);
+  box-shadow: var(--shadow-card);
   transform: translateZ(0);
 }
 .waterfall .ph {
@@ -174,7 +175,7 @@
   border-radius: var(--radius-sm);
 }
 .ph:active .ph-no {
-  opacity: 0.34;
+  opacity: 0.48;
 }
 
 @media (max-width: 360px) {
@@ -240,5 +241,38 @@
   text-align: center;
   font-size: 24rpx;
   color: var(--muted);
+}
+
+/* 最终视觉收口：相册筛选条轻一点，照片网格更像同一套卡片系统 */
+.tools {
+  gap: 12rpx;
+  margin-top: 26rpx;
+  padding: 10rpx 0 0;
+  border-top-color: var(--line-soft);
+}
+.chip,
+.mono-btn {
+  border-color: var(--line-soft);
+  background: rgba(255, 255, 255, 0.36);
+}
+.chip.on,
+.mono-btn.on {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line);
+}
+.waterfall {
+  column-gap: 10rpx;
+}
+.waterfall .cell {
+  margin-bottom: 10rpx;
+}
+.ph {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.ph-place,
+.ph-no {
+  border-radius: var(--radius-full);
 }
 

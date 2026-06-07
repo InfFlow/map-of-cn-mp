@@ -148,19 +148,19 @@ Page({
     wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
   },
 
-  // 长按某条足迹 → 隐藏这段（仅从时间线移除，后台可恢复）
+  // 长按某条足迹 → 收起这段（仅从时间线列表拿掉，后台可恢复）
   onTripHold(e) {
     const id = e.currentTarget.dataset.id
     const trip = (this._trips || []).find((t) => t.id === id)
     if (!trip) return
     const user = app.getUser && app.getUser()
     if (!user || !user.openid) {
-      wx.showToast({ title: '登录后可管理', icon: 'none' })
+      wx.showToast({ title: '登录后就能一起整理', icon: 'none' })
       return
     }
     wx.vibrateShort && wx.vibrateShort({ type: 'medium' })
     wx.showActionSheet({
-      itemList: ['隐藏这段回忆', '查看详情'],
+      itemList: ['先收起这段回忆', '查看详情'],
       success: (res) => {
         if (res.tapIndex === 0) this.hideTrip(id, trip)
         if (res.tapIndex === 1) wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
@@ -172,17 +172,17 @@ Page({
     const user = app.getUser()
     if (!user || !user.openid) return
     wx.showModal({
-      title: '隐藏这段回忆？',
+      title: '先收起这段回忆？',
       content: `「${trip.city || ''}${trip.title ? ' · ' + trip.title : ''}」将不再显示在时间线，可在「编辑我们的回忆」里恢复。`,
-      confirmText: '隐藏',
+      confirmText: '收起',
       success: async (r) => {
         if (!r.confirm) return
         try {
           await api.admin({ action: 'toggle_journey', openid: user.openid, id })
-          // 从本地列表移除并刷新
+          // 从本地列表拿掉并刷新
           this._trips = (this._trips || []).filter((t) => t.id !== id)
           this.applyFilter()
-          wx.showToast({ title: '已隐藏', icon: 'success' })
+          wx.showToast({ title: '已收起', icon: 'success' })
         } catch {
           wx.showToast({ title: '暂时没处理成功，请重试', icon: 'none' })
         }

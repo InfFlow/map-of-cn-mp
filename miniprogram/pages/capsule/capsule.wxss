@@ -72,17 +72,6 @@
   border-radius: var(--radius-sm);
 }
 
-/* 空状态 */
-.empty-state {
-  margin-top: 80rpx;
-  padding: 64rpx 40rpx;
-  text-align: center;
-  border: 1rpx dashed var(--line);
-  border-radius: var(--radius-md);
-}
-.empty-text { font-size: 28rpx; color: var(--ink-2); }
-.empty-hint { font-size: 24rpx; color: var(--muted); margin-top: 14rpx; line-height: 1.75; }
-
 /* 封存按钮 */
 .add-btn {
   position: fixed;
@@ -101,7 +90,7 @@
 .mask {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--mask-soft);
   z-index: 100;
 }
 
@@ -110,15 +99,25 @@
   position: fixed;
   left: 0; right: 0; bottom: 0;
   background: var(--bg);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 36rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 28rpx 40rpx 0;
   z-index: 101;
   transform: translateY(110%);
   transition: transform 0.3s ease;
-  max-height: 88vh;
+  max-height: 82vh;
   overflow-y: auto;
+  box-shadow: var(--shadow-float);
 }
 .editor.show { transform: translateY(0); }
+.editor::before {
+  content: '';
+  display: block;
+  width: 64rpx;
+  height: 6rpx;
+  margin: 0 auto 24rpx;
+  border-radius: 999rpx;
+  background: var(--line);
+}
 
 .editor-head {
   display: flex;
@@ -181,6 +180,7 @@
 /* 保存按钮 */
 .editor-save {
   margin-top: 36rpx;
+  margin-bottom: calc(24rpx + env(safe-area-inset-bottom));
   text-align: center;
   padding: 28rpx 0;
   font-size: 28rpx;
@@ -197,5 +197,10 @@
   }
   .sheet {
     max-height: 82vh;
+  }
+  .add-btn {
+    left: 32rpx;
+    right: 32rpx;
+    bottom: calc(28rpx + env(safe-area-inset-bottom));
   }
 }

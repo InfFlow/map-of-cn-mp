@@ -303,13 +303,13 @@
   gap: 8rpx;
   margin-top: 12rpx;
   padding: 12rpx 16rpx;
-  background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
-  border-radius: var(--radius-sm);
-  border: 1rpx solid #f0e6c8;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--line-soft);
 }
 .roh-ico {
   font-size: 24rpx;
-  color: #c9a553;
+  color: var(--ink);
 }
 .roh-text {
   font-size: 20rpx;
@@ -336,7 +336,7 @@
   margin-bottom: 10rpx;
   background: var(--surface);
   border: 1rpx solid var(--line-soft);
-  box-shadow: 0 4rpx 16rpx rgba(27, 23, 18, 0.045);
+  box-shadow: var(--shadow-card);
   transition: box-shadow 0.18s, transform 0.18s;
 }
 .stop-rail {
@@ -792,7 +792,7 @@
   color: var(--muted);
 }
 
-/* 目的地卡片：怎么去 · 一键导航 提示 */
+/* 目的地卡片：怎么去 · 打开导航提示 */
 .stop-go-hint {
   display: flex;
   align-items: center;
@@ -811,7 +811,7 @@
   line-height: 1;
 }
 
-/* 目的地抽屉：怎么去 + 一键导航 */
+/* 目的地抽屉：怎么去 + 打开导航 */
 .rd-meta {
   display: flex;
   align-items: baseline;
@@ -897,11 +897,10 @@
 }
 .rd-info {
   margin: 16rpx 0 0;
-  padding: 4rpx 0;
-  background: transparent;
-  border-top: 1rpx solid var(--line-soft);
-  border-bottom: 1rpx solid var(--line-soft);
-  border-radius: 0;
+  padding: 4rpx 12rpx;
+  background: rgba(255, 255, 255, 0.36);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
 }
 .rd-info-row {
   display: flex;
@@ -945,10 +944,10 @@
 }
 .rd-adjust {
   margin: 14rpx 0 0;
-  padding: 8rpx 4rpx 0;
-  background: transparent;
-  border-top: 1rpx solid var(--line-soft);
-  border-radius: 0;
+  padding: 10rpx 12rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
   opacity: 0.72;
 }
 .rd-adj-row {
@@ -1092,7 +1091,7 @@
 .ea-ring {
   position: absolute;
   inset: 0;
-  border: 2rpx solid var(--ink);
+  border: 1rpx solid var(--line);
   border-radius: 50%;
 }
 .ea-diamond {
@@ -1102,7 +1101,7 @@
   width: 52rpx;
   height: 52rpx;
   margin: -24rpx 0 0 -24rpx;
-  border: 2rpx solid var(--ink);
+  border: 1rpx solid var(--line);
   transform: rotate(45deg);
 }
 .ea-dot {
@@ -1113,7 +1112,7 @@
   height: 12rpx;
   margin: -6rpx 0 0 -6rpx;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--line);
 }
 
 /* 底部编辑器（与管理页一致的语言） */
@@ -1157,7 +1156,7 @@
   text-align: center;
   padding-bottom: 22rpx;
   margin-bottom: 12rpx;
-  border-bottom: 2rpx solid var(--ink);
+  border-bottom: 1rpx solid var(--line-soft);
 }
 .sheet-x {
   position: absolute;
@@ -1409,7 +1408,7 @@
   color: var(--bg);
 }
 .btn.solid.disabled {
-  opacity: 0.32;
+  opacity: 0.46;
 }
 
 /* 行程分享 / 导出 */
@@ -1429,7 +1428,7 @@
   font-weight: 700;
   background: var(--ink);
   color: var(--bg);
-  border-radius: 0;
+  border-radius: var(--radius-md);
 }
 .share-btn::after {
   border: none;
@@ -1941,11 +1940,160 @@
   justify-content: center;
   line-height: 1.2;
 }
-.stop-editor-sheet {
-  max-height: 82vh;
+.stop-editor-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1101;
+  box-sizing: border-box;
+  padding: 24rpx 48rpx 0;
+  overflow: hidden;
+  background: var(--bg);
+  border-top-left-radius: 24rpx;
+  border-top-right-radius: 24rpx;
+  box-shadow: var(--shadow-float);
+}
+.stop-editor-scroll {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   padding-bottom: 0;
-  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+.stop-editor-panel .sheet-title {
+  padding-bottom: 18rpx;
+  margin-bottom: 10rpx;
+  border-bottom: 1rpx solid var(--line-soft);
+}
+.stop-editor-panel .sheet-grab {
+  margin-bottom: 18rpx;
+}
+.stop-section {
+  padding: 8rpx 0 2rpx;
+}
+.stop-section + .stop-section {
+  margin-top: 28rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.stop-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+.stop-section-title {
+  flex: none;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.stop-section-sub {
+  min-width: 0;
+  font-size: 20rpx;
+  color: var(--faint);
+  line-height: 1.4;
+  text-align: right;
+}
+.stop-editor-panel .field {
+  margin-top: 18rpx;
+}
+.stop-editor-panel .field-input,
+.stop-editor-panel .field-picker {
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 22rpx;
+  font-size: 26rpx;
+}
+.stop-editor-panel .field-area {
+  min-height: 132rpx;
+  padding: 18rpx 22rpx;
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+.stop-editor-panel .field-label {
+  margin-bottom: 8rpx;
+}
+.stop-editor-scroll .stop-section:first-child .field:first-of-type {
+  margin-top: 0;
+}
+.stop-scroll-cue {
+  margin: 24rpx 0 2rpx;
+  padding: 16rpx 0;
+  text-align: center;
+  font-size: 20rpx;
+  line-height: 1.4;
+  color: var(--faint);
+  border-top: 1rpx solid var(--line-soft);
+  border-bottom: 1rpx solid var(--line-soft);
+}
+.stop-section.optional {
+  margin-top: 20rpx;
+  color: var(--ink-2);
+}
+.optional-field .field-label {
+  color: var(--faint);
+}
+.optional-field .field-input,
+.optional-field .field-area {
+  color: var(--ink-2);
+  background: rgba(255, 255, 255, 0.52);
+  border-color: var(--line-soft);
+}
+.optional-field .field-input.on,
+.optional-field .field-area.on {
+  border-color: var(--ink-2);
+  background: var(--surface);
+}
+.stop-editor-panel .day-step {
+  height: 76rpx;
+  padding: 0 10rpx;
+  box-sizing: border-box;
+  justify-content: space-between;
+  border: 1rpx solid var(--line);
+  background: var(--surface);
+}
+.stop-editor-panel .day-step-btn {
+  width: 58rpx;
+  height: 58rpx;
+  line-height: 56rpx;
+  border-color: var(--line-soft);
+  background: var(--bg);
+}
+.stop-editor-panel .day-step-val {
+  flex: 1;
+  min-width: 0;
+}
+.stop-editor-panel .stay-chips {
+  margin-bottom: 12rpx;
+}
+.stop-editor-panel .stay-chip {
+  padding: 8rpx 20rpx;
+  font-size: 22rpx;
+}
+.stop-editor-panel .stay-custom {
+  align-items: center;
+}
+.stop-editor-panel .stay-unit {
+  width: 56rpx;
+  text-align: right;
+}
+.stop-geo-action {
+  min-width: 124rpx;
+  height: 76rpx;
+  padding: 0 18rpx;
+  box-sizing: border-box;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--ink-2);
+  background: transparent;
+  border-color: var(--line);
+}
+.stop-geo-action.busy {
+  color: var(--faint);
 }
 .plan-editor-sheet,
 .hotels-editor-sheet {
@@ -1960,9 +2108,27 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
-.stop-editor-sheet .sheet-acts {
-  bottom: 0;
-  padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+.stop-editor-end-acts {
+  display: flex;
+  gap: 16rpx;
+  box-sizing: border-box;
+  margin-top: 28rpx;
+  padding-top: 22rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--line-soft);
+}
+.stop-editor-end-acts .btn {
+  min-height: 84rpx;
+  padding: 0;
+  line-height: 84rpx;
+  border-radius: var(--radius-md);
+}
+.stop-editor-end-acts .btn.ghost {
+  background: transparent;
+  border-color: var(--line);
+}
+.stop-editor-end-acts .btn.solid {
+  box-shadow: none;
 }
 .plan-editor-sheet .sheet-acts,
 .hotels-editor-sheet .sheet-acts {
@@ -2015,6 +2181,10 @@
   }
   .stop-detail-sheet .btn {
     padding: 20rpx 0;
+  }
+  .stop-editor-panel {
+    padding-left: 36rpx;
+    padding-right: 36rpx;
   }
 }
 
@@ -2104,13 +2274,13 @@
 .drag-tip {
   margin: -4rpx 0 12rpx;
   text-align: center;
-  opacity: 0.38;
+  opacity: 0.5;
 }
 .stop-ops {
   width: 46rpx;
   padding: 12rpx 0;
   border-left: 0;
-  opacity: 0.2;
+  opacity: 0.52;
 }
 .stop-del {
   font-size: 18rpx;
@@ -2157,5 +2327,89 @@
     min-height: 48rpx;
     font-size: 19rpx;
   }
+}
+
+/* 参赛收口：行程页默认看路线和当天安排，编辑能力退到次层 */
+.plan-acts {
+  justify-content: flex-end;
+  opacity: 0.68;
+}
+.plan-acts .chip-btn {
+  height: 44rpx !important;
+  min-height: 44rpx !important;
+  padding: 0 6rpx !important;
+  font-size: 18rpx !important;
+  color: var(--faint) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+.plan-acts .chip-btn:first-child {
+  color: var(--muted) !important;
+  background: rgba(255, 255, 255, 0.38) !important;
+  border-color: var(--line-soft) !important;
+}
+.complete-bar.quiet {
+  opacity: 0.52;
+  margin: -6rpx 0 10rpx;
+}
+.complete-bar.quiet .complete-btn {
+  color: var(--faint) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+.drag-tip {
+  opacity: 0.46;
+}
+.stop-ops {
+  opacity: 0.5;
+}
+.stop-meta-pill.warn {
+  color: var(--faint);
+  background: transparent;
+  border-color: var(--line-soft);
+}
+.stop-card {
+  border-color: var(--line-soft);
+}
+.plan-map-wrap {
+  border-color: var(--line-soft);
+}
+
+/* 最终视觉收口：分享按钮、路线空态和编辑提示保持同一套柔和层级 */
+.plan-share {
+  align-items: stretch;
+}
+.plan-share .chip-btn,
+.plan-share .share-btn {
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+}
+.plan-share .chip-btn {
+  border-color: var(--line-soft) !important;
+  background: rgba(255, 255, 255, 0.66) !important;
+}
+.plan-share .share-btn {
+  background: var(--ink) !important;
+  color: var(--bg) !important;
+  border-color: var(--ink) !important;
+}
+.plan-map-empty,
+.stay-empty,
+.stay-empty-ro,
+.stay-manage {
+  border-color: var(--line-soft);
+  background: rgba(255, 255, 255, 0.36);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+.day-head-route,
+.day-opt,
+.complete-bar.quiet .complete-btn {
+  border-color: var(--line-soft) !important;
+  color: var(--muted) !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+.stop-editor-end-acts .btn {
+  border-radius: var(--radius-md) !important;
 }
 

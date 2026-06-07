@@ -30,6 +30,9 @@ function adminRequest(data) {
   if (action.indexOf('ai_') === 0) {
     options.timeout = 45000
     options.retries = 0
+  } else if (action === 'import_plan') {
+    options.timeout = 45000
+    options.retries = 0
   } else if (action === 'weather') {
     options.timeout = 20000
   }

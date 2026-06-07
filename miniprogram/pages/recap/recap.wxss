@@ -50,6 +50,9 @@
   margin-top: 34rpx;
   border-top: 1rpx solid var(--line);
   border-left: 1rpx solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface);
 }
 .cellnum {
   width: 50%;
@@ -70,7 +73,7 @@
   text-align: center;
   padding: 24rpx 0;
   font-size: 28rpx;
-  border: 1rpx solid var(--ink);
+  border: 1rpx solid var(--line-soft);
   border-radius: var(--radius-md);
   color: var(--ink);
   background: var(--surface);
@@ -86,7 +89,7 @@
   flex: none; width: 120rpx; font-size: 24rpx; color: var(--ink);
   overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
-.bar-track { flex: 1; height: 18rpx; background: var(--surface); border: 1rpx solid var(--line); position: relative; overflow: hidden; }
+.bar-track { flex: 1; height: 18rpx; background: var(--surface); border: 1rpx solid var(--line); border-radius: var(--radius-full); position: relative; overflow: hidden; }
 .bar-fill { height: 100%; background: var(--ink); transition: width 0.5s ease; }
 .bar-val { flex: none; min-width: 48rpx; text-align: right; font-size: 24rpx; }
 
@@ -100,7 +103,7 @@
   border: 1rpx solid var(--ink);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  box-shadow: 0 2rpx 8rpx rgba(27,23,18,0.08);
+  box-shadow: var(--shadow-card);
 }
 .rc-stamp-city { font-size: 28rpx; color: var(--ink); }
 .rc-stamp-x { font-size: 20rpx; color: var(--muted); }
@@ -123,13 +126,23 @@
 /* 空 / 错误 */
 .rc-empty {
   margin-top: 60rpx;
-  padding: 64rpx 40rpx;
+  padding: 84rpx 40rpx;
   text-align: center;
-  font-size: 28rpx;
   line-height: 1.8;
   color: var(--muted);
   border: 1rpx dashed var(--line);
   border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.rc-empty .empty-zh {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.rc-empty .empty-hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--faint);
 }
 
 /* 回忆放映 */

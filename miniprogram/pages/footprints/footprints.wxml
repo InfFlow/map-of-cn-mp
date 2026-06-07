@@ -1,3 +1,4 @@
+<page-meta page-style="{{checkin.show || showCompare ? 'overflow: hidden;' : ''}}"></page-meta>
 <view class="page">
   <view class="mast rise d1">
     <view class="mast-row">
@@ -20,13 +21,19 @@
     </view>
   </block>
 
-  <view wx:elif="{{error}}" class="fp-empty">
-    <view>{{error}}</view>
+  <view wx:elif="{{error}}" class="empty fp-empty">
+    <view class="empty-fig empty-fig-plans"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">先给你留着这张地图，稍后再试一次</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 
   <block wx:elif="{{stats.journeyCount === 0}}">
-    <view class="fp-empty">第一座被点亮的城市，还在路上。</view>
+    <view class="empty fp-empty">
+      <view class="empty-fig empty-fig-plans"></view>
+      <view class="empty-zh">第一座被点亮的城市，还在路上</view>
+      <view class="empty-hint">等你们记下第一站，这张地图就会亮起来</view>
+    </view>
   </block>
 
   <block wx:else>

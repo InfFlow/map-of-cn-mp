@@ -57,7 +57,7 @@
 }
 .anni:active {
   transform: translateY(3rpx);
-  box-shadow: 0 2rpx 12rpx rgba(27, 23, 18, 0.06);
+  box-shadow: var(--shadow-card);
 }
 .anni-tag {
   font-size: 16rpx;
@@ -83,7 +83,7 @@
 }
 .anni-hair {
   height: 1rpx;
-  background: var(--ink);
+  background: var(--line);
   width: 48rpx;
   margin: 16rpx 0;
 }
@@ -189,7 +189,7 @@
 }
 .tl-item.pressable:active .tl-cover {
   transform: scale(0.98);
-  box-shadow: 0 2rpx 16rpx rgba(27, 23, 18, 0.08);
+  box-shadow: var(--shadow-card);
 }
 .tl-img {
   width: 100%;
@@ -310,15 +310,6 @@
   border-radius: var(--radius-md);
   background: var(--surface);
 }
-.tl-empty-title {
-  font-size: 36rpx;
-  color: var(--ink);
-}
-.tl-empty-sub {
-  margin-top: 12rpx;
-  font-size: 24rpx;
-  color: var(--muted);
-}
 
 /* AI 手记入口 */
 .tl-foot-row { display: flex; align-items: center; justify-content: space-between; margin-top: 20rpx; }
@@ -361,7 +352,7 @@
 .rec-photo-add { width: 136rpx; height: 136rpx; border: 1rpx dashed var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8rpx; }
 .rec-add-ico { font-size: 40rpx; color: var(--muted); }
 .rec-add-txt { font-size: 20rpx; color: var(--muted); }
-.rec-actions { position: sticky; bottom: 0; display: flex; gap: 20rpx; margin: 20rpx -4rpx 0; padding: 18rpx 4rpx calc(20rpx + env(safe-area-inset-bottom)); background: linear-gradient(180deg, rgba(244,241,234,0), var(--bg) 28rpx); }
+.rec-actions { position: static; display: flex; gap: 20rpx; margin: 26rpx 0 0; padding: 20rpx 0 calc(24rpx + env(safe-area-inset-bottom)); border-top: 1rpx solid var(--line-soft); background: transparent; }
 .rec-cancel { flex: 1; text-align: center; padding: 24rpx; border: 1rpx solid var(--line); font-size: 28rpx; }
 .rec-save { flex: 2; text-align: center; padding: 24rpx; background: var(--ink); color: var(--bg); font-size: 28rpx; }
 .rec-save.disabled { opacity: 0.5; }
@@ -387,13 +378,16 @@
   max-height: 78vh;
   padding: 28rpx 40rpx 0;
   border-radius: 24rpx 24rpx 0 0;
-  box-shadow: 0 -10rpx 34rpx rgba(27, 23, 18, 0.12);
+  box-shadow: var(--shadow-float);
   z-index: 1101;
 }
 .rec-actions {
+  position: static;
   gap: 14rpx;
-  margin-bottom: 0;
-  padding-bottom: calc(22rpx + env(safe-area-inset-bottom));
+  margin: 26rpx 0 0;
+  padding: 20rpx 0 calc(22rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--line-soft);
+  background: transparent;
 }
 .rec-cancel,
 .rec-save {
@@ -420,7 +414,7 @@
   color: var(--ink);
   border: 1rpx solid var(--line);
   border-radius: var(--radius-full);
-  box-shadow: 0 8rpx 24rpx rgba(27, 23, 18, 0.1);
+  box-shadow: var(--shadow-card);
   letter-spacing: 1rpx;
 }
 .rec-fab-plus {

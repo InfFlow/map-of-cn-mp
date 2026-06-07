@@ -35,6 +35,11 @@ function validCoord(lat, lng) {
   return { latitude, longitude }
 }
 
+function isLocationDenied(err) {
+  const msg = String((err && err.errMsg) || '').toLowerCase()
+  return msg.indexOf('deny') >= 0 || msg.indexOf('denied') >= 0 || msg.indexOf('auth') >= 0 || msg.indexOf('permission') >= 0
+}
+
 Page({
   data: {
     title: app.globalData.title,
@@ -59,6 +64,7 @@ Page({
     upcomingPlan: null,
     weather: null,
     weatherDenied: false,
+    locationBusy: false,
     mapCaption: '',
     loading: true,
     showTop: false,
@@ -135,6 +141,9 @@ Page({
   // 获取当前定位：把地图中心移到当前位置，并拉取当地天气
   useLocation(opts) {
     const recenter = !!(opts && opts.recenter)
+    const interactive = !!(opts && opts.interactive)
+    if (interactive && this.data.locationBusy) return
+    if (interactive) this.setData({ locationBusy: true })
     wx.getLocation({
       type: 'gcj02',
       success: (r) => {
@@ -145,6 +154,7 @@ Page({
           userLocated: true,
           includePoints: [],
           weatherDenied: false,
+          locationBusy: false,
         })
         if (recenter) {
           wx.createMapContext('map', this).moveToLocation({
@@ -152,6 +162,7 @@ Page({
             longitude: r.longitude,
           })
         }
+        if (interactive) wx.showToast({ title: recenter ? '已回到你的位置' : '位置已打开', icon: 'none' })
         api
           .getWeather({ location: `${r.longitude},${r.latitude}` })
           .then((w) => {
@@ -159,10 +170,34 @@ Page({
           })
           .catch(() => {})
       },
-      fail: () => {
+      fail: (err) => {
         // 没有定位权限：回退到「全部足迹」自适应视野
         if (!this.data.userLocated) {
-          this.setData({ weatherDenied: true, includePoints: this._allPoints || [] })
+          this.setData({ weatherDenied: true, includePoints: this._allPoints || [], locationBusy: false })
+        } else {
+          this.setData({ locationBusy: false })
+        }
+        if (interactive) {
+          if (isLocationDenied(err)) {
+            wx.showModal({
+              title: '还没打开位置权限',
+              content: '打开后就能把地图移到你所在的位置。',
+              confirmText: '去设置',
+              cancelText: '先不了',
+              success: (res) => {
+                if (!res.confirm) return
+                wx.openSetting({
+                  success: (setting) => {
+                    if (setting.authSetting && setting.authSetting['scope.userLocation'] !== false) {
+                      this.useLocation({ recenter: true, interactive: true })
+                    }
+                  },
+                })
+              },
+            })
+          } else {
+            wx.showToast({ title: '暂时没找到当前位置', icon: 'none' })
+          }
         }
       },
     })
@@ -171,7 +206,31 @@ Page({
   // 地图上「我的位置」按钮：重新定位并平移到当前位置
   locateMe() {
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
-    this.useLocation({ recenter: true })
+    wx.getSetting({
+      success: (res) => {
+        if (res.authSetting && res.authSetting['scope.userLocation'] === false) {
+          wx.showModal({
+            title: '还没打开位置权限',
+            content: '打开后就能把地图移到你所在的位置。',
+            confirmText: '去设置',
+            cancelText: '先不了',
+            success: (r) => {
+              if (!r.confirm) return
+              wx.openSetting({
+                success: (setting) => {
+                  if (setting.authSetting && setting.authSetting['scope.userLocation'] !== false) {
+                    this.useLocation({ recenter: true, interactive: true })
+                  }
+                },
+              })
+            },
+          })
+          return
+        }
+        this.useLocation({ recenter: true, interactive: true })
+      },
+      fail: () => this.useLocation({ recenter: true, interactive: true }),
+    })
   },
 
   // 地图上「全部足迹」按钮：恢复成自适应显示全部去过的城市
@@ -186,12 +245,12 @@ Page({
     wx.getSetting({
       success: (res) => {
         if (res.authSetting['scope.userLocation'] === false) {
-          wx.openSetting({ success: () => this.useLocation() })
+          wx.openSetting({ success: () => this.useLocation({ interactive: true }) })
         } else {
-          this.useLocation()
+          this.useLocation({ interactive: true })
         }
       },
-      fail: () => this.useLocation(),
+      fail: () => this.useLocation({ interactive: true }),
     })
   },
 

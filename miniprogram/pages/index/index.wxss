@@ -148,7 +148,7 @@
   position: absolute;
   width: 16rpx;
   height: 16rpx;
-  border: 2rpx solid var(--ink);
+  border: 1rpx solid var(--line);
 }
 .tick.tl { left: -2rpx; top: -2rpx; border-right: 0; border-bottom: 0; }
 .tick.tr { right: -2rpx; top: -2rpx; border-left: 0; border-bottom: 0; }
@@ -163,9 +163,7 @@
   position: absolute;
   right: 20rpx;
   bottom: 20rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  width: 176rpx;
   transition: bottom 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 4;
 }
@@ -174,20 +172,27 @@
 }
 .map-btn {
   margin-top: 12rpx;
-  padding: 10rpx 24rpx;
+  width: 176rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  padding: 0;
+  box-sizing: border-box;
   font-size: 20rpx;
   letter-spacing: 1rpx;
-  color: var(--ink);
+  color: #1b1712;
   background: rgba(250, 248, 243, 0.94);
-  border: 1rpx solid var(--ink);
-  border-radius: var(--radius-full);
+  border: 1rpx solid rgba(27, 23, 18, 0.18);
+  border-radius: 999rpx;
   text-align: center;
   transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1), background 0.18s ease;
 }
 .map-btn.pressed {
   transform: scale(0.94);
-  background: var(--ink);
-  color: var(--paper);
+  background: #1b1712;
+  color: #faf8f3;
+}
+.map-btn.busy {
+  opacity: 0.72;
 }
 .map-cap {
   margin-top: 14rpx;
@@ -445,6 +450,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16rpx;
   padding: 28rpx 32rpx;
   background: linear-gradient(135deg, var(--surface) 0%, var(--paper) 100%);
@@ -468,6 +474,7 @@
   align-items: center;
   gap: 16rpx;
   min-width: 0;
+  flex: 1 1 360rpx;
 }
 .wx-temp {
   font-size: 64rpx;
@@ -494,13 +501,15 @@
   margin-top: 4rpx;
 }
 .wx-tip {
-  flex: 0 1 auto;
+  flex: 1 1 220rpx;
   font-family: Georgia, "Songti SC", serif;
   font-style: italic;
   font-size: 20rpx;
   color: var(--ink-2);
   text-align: right;
-  max-width: 320rpx;
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.55;
 }
 .wx-off {
   justify-content: center;
@@ -602,7 +611,7 @@
   background: var(--ink);
 }
 .marker-ph {
-  opacity: 0.12;
+  opacity: 1;
 }
 .marker-mid {
   flex: 1;
@@ -665,7 +674,7 @@
 }
 .otd.pressable:active {
   transform: translateY(2rpx);
-  box-shadow: 0 2rpx 12rpx rgba(27, 23, 18, 0.04);
+  box-shadow: var(--shadow-card);
 }
 .otd-badge {
   flex: none;
@@ -865,6 +874,10 @@
   .map-ctrl.with-preview {
     bottom: 152rpx;
   }
+  .map-ctrl,
+  .map-btn {
+    width: 164rpx;
+  }
 }
 
 /* 日常体验打磨：首屏只让地图、今日回忆和最近足迹成为视觉主角 */
@@ -900,7 +913,7 @@
 }
 .marker-card {
   border-color: rgba(27, 23, 18, 0.16);
-  box-shadow: 0 14rpx 40rpx rgba(27, 23, 18, 0.14);
+  box-shadow: var(--shadow-card);
 }
 .anv-mini,
 .wx-strip {
@@ -928,4 +941,36 @@
   .map-cap {
     font-size: 18rpx;
   }
+}
+
+/* 最终视觉收口：首页地图点击反馈更像回忆卡片 */
+.map-btn {
+  border-color: var(--line-soft);
+  background: rgba(250, 248, 243, 0.9);
+  box-shadow: var(--shadow-card);
+}
+.marker-card {
+  gap: 16rpx;
+  padding: 18rpx;
+  border-color: var(--line-soft);
+  background: rgba(250, 248, 243, 0.98);
+  box-shadow: var(--shadow-card);
+}
+.marker-img {
+  border-radius: var(--radius-md);
+}
+.marker-go {
+  border-color: var(--line-soft);
+  color: var(--ink-2);
+  background: rgba(255, 255, 255, 0.52);
+}
+.marker-close {
+  color: var(--faint);
+  background: rgba(250, 248, 243, 0.72);
+  border-radius: var(--radius-full);
+}
+.daily-memory,
+.idx-row,
+.otd {
+  border-color: var(--line-soft);
 }

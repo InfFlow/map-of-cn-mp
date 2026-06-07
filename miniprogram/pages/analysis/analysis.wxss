@@ -25,7 +25,7 @@
 .tabs {
   display: flex;
   background: var(--surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: 8rpx;
   margin-bottom: 24rpx;
 }
@@ -47,7 +47,7 @@
 .card {
   background: var(--bg);
   border: 1rpx solid var(--line);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: 32rpx;
   margin-bottom: 24rpx;
 }
@@ -67,7 +67,7 @@
 .btn-share {
   margin-top: 24rpx;
   padding: 12rpx 32rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--ink);
   color: var(--bg);
   font-size: 26rpx;
   border-radius: var(--radius-md);
@@ -83,7 +83,7 @@
 .place-card {
   background: var(--bg);
   border: 1rpx solid var(--line);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: 24rpx;
   margin-bottom: 24rpx;
 }
@@ -97,7 +97,7 @@
   height: 56rpx;
   line-height: 56rpx;
   text-align: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--ink);
   color: var(--bg);
   font-size: 28rpx;
   font-weight: 700;
@@ -153,4 +153,70 @@
   padding: 120rpx 0;
   text-align: center;
   color: var(--muted);
+}
+.empty-zh {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.empty-hint {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--faint);
+  line-height: 1.7;
+}
+
+/* 参赛收口：分析页回到全局黑白杂志风，避免像独立工具页 */
+.page {
+  padding: 32rpx 36rpx calc(56rpx + env(safe-area-inset-bottom));
+}
+.header {
+  padding: 36rpx 0 28rpx;
+}
+.header-title {
+  font-family: Georgia, "Songti SC", STSong, serif;
+  font-size: 56rpx;
+  line-height: 1.1;
+}
+.tabs {
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.tab {
+  font-size: 24rpx;
+  border-radius: var(--radius-sm);
+}
+.card,
+.place-card {
+  background: var(--surface);
+  border-color: var(--line-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.btn-share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72rpx;
+  padding: 0 34rpx;
+  background: var(--ink);
+  color: var(--bg);
+  border: 1rpx solid var(--ink);
+  border-radius: var(--radius-md);
+}
+.place-rank {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: var(--radius-sm);
+}
+.photo-score {
+  background: rgba(27, 23, 18, 0.78);
+  color: var(--bg);
+}
+.photo-item,
+.group-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
 }

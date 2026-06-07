@@ -138,7 +138,11 @@
         </view>
       </block>
 
-      <view wx:else class="exp-empty">这部分还空着。等下一次出发，再把花费也收进来。</view>
+      <view wx:else class="empty exp-empty">
+        <view class="empty-fig empty-fig-logs"></view>
+        <view class="empty-zh">这部分还空着</view>
+        <view class="empty-hint">等下一次出发，再把花费也收进来</view>
+      </view>
     </view>
 
     <view class="foot rise d5">
@@ -148,7 +152,9 @@
   </block>
 
   <view wx:if="{{error}}" class="empty">
-    <view>{{error}}</view>
+    <view class="empty-fig empty-fig-plans"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">先歇一下，数字会重新排好队</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 

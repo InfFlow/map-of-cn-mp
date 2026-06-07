@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0);
+  background: transparent;
   z-index: 1300;
   display: none;
   transition: background 0.3s ease;
@@ -13,7 +13,7 @@
 
 .ai-drawer.show {
   display: block;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--mask-soft);
 }
 .ai-drawer-content {
   position: absolute;
@@ -23,7 +23,7 @@
   height: 86vh;
   max-height: calc(100vh - 48rpx);
   background: var(--bg);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-radius: 24rpx 24rpx 0 0;
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
@@ -45,7 +45,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 20rpx 32rpx;
-  border-bottom: 1rpx solid var(--line);
+  border-bottom: 1rpx solid var(--line-soft);
 }
 .ai-drawer-title-wrap {
   min-width: 0;
@@ -109,6 +109,9 @@
 .ai-error {
   text-align: center;
   padding: 80rpx 32rpx;
+  border: 1rpx dashed var(--line-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
 }
 .ai-error-txt {
   font-size: 24rpx;
@@ -134,17 +137,18 @@
   display: inline-flex;
   margin-top: 24rpx;
   padding: 10rpx 20rpx;
-  border: 1rpx solid var(--ink);
+  border: 1rpx solid var(--line);
   border-radius: var(--radius-full);
   font-size: 22rpx;
   color: var(--ink);
+  background: var(--surface);
 }
 .ai-drawer-tabs {
   flex: none;
   display: flex;
   padding: 16rpx 32rpx 32rpx;
   gap: 12rpx;
-  border-top: 1rpx solid var(--line);
+  border-top: 1rpx solid var(--line-soft);
   flex-wrap: wrap;
 }
 .ai-tab {

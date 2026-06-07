@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  padding: 40rpx 36rpx 120rpx;
+  padding: 40rpx 36rpx calc(56rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .wish-list {
-  border-top: 2rpx solid var(--ink);
+  border-top: 1rpx solid var(--line-soft);
 }
 .wish {
   display: flex;
@@ -78,7 +78,7 @@
 }
 .wish:active {
   transform: translateY(2rpx);
-  box-shadow: 0 2rpx 12rpx rgba(27, 23, 18, 0.04);
+  box-shadow: var(--shadow-card);
 }
 .wish-check {
   flex: none;
@@ -211,7 +211,7 @@
   bottom: 0;
   z-index: 61;
   background: var(--paper);
-  border-top: 2rpx solid var(--ink);
+  border-top: 1rpx solid var(--line-soft);
   padding: 32rpx 36rpx 0;
   max-height: 82vh;
   overflow-y: auto;
@@ -274,10 +274,8 @@
   color: var(--faint);
 }
 .sheet-save {
-  position: sticky;
-  bottom: calc(18rpx + env(safe-area-inset-bottom));
-  z-index: 3;
-  margin: 14rpx -2rpx calc(18rpx + env(safe-area-inset-bottom));
+  position: static;
+  margin: 28rpx 0 calc(24rpx + env(safe-area-inset-bottom));
   text-align: center;
   padding: 24rpx 0;
   background: var(--ink);
@@ -285,6 +283,10 @@
   font-size: 28rpx;
   letter-spacing: 2rpx;
   border-radius: var(--radius-sm);
+}
+.wish-editor .field:last-of-type {
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx solid var(--line-soft);
 }
 .wish-plan { font-size:20rpx; color:var(--muted); padding:8rpx 18rpx; border:1rpx solid var(--line); border-radius:var(--radius-full); }
 .sheet-mask { position:fixed; inset:0; background:var(--mask-soft); z-index:100; display:flex; align-items:flex-end; }
@@ -370,7 +372,7 @@
 .plan-sheet,
 .dest-sheet {
   border-radius: 24rpx 24rpx 0 0;
-  box-shadow: 0 -16rpx 44rpx rgba(27, 23, 18, 0.14);
+  box-shadow: var(--shadow-float);
 }
 .plan-sheet::before,
 .dest-sheet::before {
@@ -406,4 +408,68 @@
     padding-left: 32rpx;
     padding-right: 32rpx;
   }
+}
+
+/* 最终视觉收口：心愿页弹层、推荐卡和按钮层级与全局一致 */
+.sheet-mask,
+.dest-mask {
+  background: var(--mask-soft) !important;
+}
+.wish-editor.sheet,
+.plan-sheet,
+.dest-sheet {
+  border-top: 1rpx solid var(--line-soft);
+  box-shadow: var(--shadow-float);
+}
+.wish-editor .finput,
+.wish-editor .ftext {
+  border-color: var(--line-soft);
+  background: rgba(255, 255, 255, 0.52);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+.wish-editor .finput {
+  height: 76rpx;
+  padding: 0 20rpx;
+  border-bottom: 1rpx solid var(--line-soft);
+}
+.wish-editor .ftext {
+  min-height: 132rpx;
+}
+.sheet-save,
+.next-dest-btn,
+.empty-action,
+.dest-add {
+  min-height: 76rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.dest-card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.dest-add {
+  border-color: var(--line-soft);
+  color: var(--ink-2);
+  background: var(--surface);
+  border-radius: var(--radius-full);
+}
+.wish-actions {
+  opacity: 0.72;
+}
+.next-dest-btn {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 34rpx 0 0 !important;
+  padding: 0 28rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 84rpx !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+  white-space: normal !important;
 }

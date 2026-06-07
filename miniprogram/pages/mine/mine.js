@@ -204,14 +204,14 @@ Page({
     const user = this.data.user
     if (!user || !user.openid) return
     wx.showModal({
-      title: '管理员认领',
+      title: '整理权限',
       editable: true,
-      placeholderText: '输入管理员口令',
+      placeholderText: '输入整理口令',
       success: async (r) => {
         if (!r.confirm) return
         const passcode = (r.content || '').trim()
         if (!passcode) return
-        wx.showLoading({ title: '校验中', mask: true })
+        wx.showLoading({ title: '确认中', mask: true })
         try {
           await api.admin({ action: 'claim_admin', openid: user.openid, passcode })
           const next = { ...user, isAdmin: true }
@@ -219,11 +219,11 @@ Page({
           wx.setStorageSync('user', next)
           this.setData({ user: next })
           wx.hideLoading()
-          wx.showToast({ title: '已认领', icon: 'success' })
+          wx.showToast({ title: '已开启整理权限', icon: 'success' })
           setTimeout(() => wx.navigateTo({ url: '/pages/admin/admin' }), 500)
         } catch (e) {
           wx.hideLoading()
-          wx.showToast({ title: (e && e.data && e.data.message) || '口令不正确', icon: 'none' })
+          wx.showToast({ title: (e && e.data && e.data.message) || '口令好像不对', icon: 'none' })
         }
       },
     })
@@ -252,7 +252,7 @@ Page({
     } catch (e) {
       wx.hideLoading()
       this.setData({ loggingIn: false })
-      const msg = (e && e.data && e.data.message) || (e && e.errMsg) || '登录失败，请重试'
+      const msg = (e && e.data && e.data.message) || (e && e.errMsg) || '暂时没登录上'
       wx.showToast({ title: msg, icon: 'none', duration: 3000 })
     }
   },
@@ -276,7 +276,7 @@ Page({
       wx.showToast({ title: '已更新头像', icon: 'success' })
     } catch (err) {
       wx.hideLoading()
-      wx.showToast({ title: '头像更新失败', icon: 'none' })
+      wx.showToast({ title: '头像暂时没换好', icon: 'none' })
     }
   },
 
@@ -294,7 +294,7 @@ Page({
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (e) {
       this.setData({ savingName: false })
-      wx.showToast({ title: '保存失败', icon: 'none' })
+      wx.showToast({ title: '昵称暂时没保存好', icon: 'none' })
     }
   },
 

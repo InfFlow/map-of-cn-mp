@@ -9,7 +9,9 @@
 </view>
 
 <view wx:elif="{{error}}" class="empty">
-  <view>{{error}}</view>
+  <view class="empty-fig empty-fig-album"></view>
+  <view class="empty-zh">{{error}}</view>
+  <view class="empty-hint">这段回忆暂时没翻出来，稍后再看一次</view>
   <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
 </view>
 
@@ -42,7 +44,7 @@
       <text class="sec-zh">那天的画面</text>
       <text class="sec-en">Frames · {{trip.photos.length}}</text>
     </view>
-    <view wx:if="{{trip.photos.length > 4}}" class="photos-hint">点击看大图，长按保存</view>
+    <view wx:if="{{trip.photos.length > 4}}" class="photos-hint">这些画面按那天的顺序留在这里</view>
     <view class="photos {{trip.photoCountClass}}">
       <view
         wx:for="{{trip.photos}}"
@@ -58,9 +60,10 @@
       </view>
     </view>
   </view>
-  <view wx:else class="photo-empty rise d3">
-    <view class="photo-empty-title serif">照片还在路上</view>
-    <view class="photo-empty-sub">这一站已经被地图记住了，等补上一张照片就更完整。</view>
+  <view wx:else class="empty photo-empty rise d3">
+    <view class="empty-fig empty-fig-album"></view>
+    <view class="empty-zh">照片还在路上</view>
+    <view class="empty-hint">这一站已经被地图记住了，等补上一张照片就更完整</view>
   </view>
 
   <view wx:if="{{trip.intro}}" class="d-lede dropcap rise d3">{{trip.intro}}</view>
@@ -90,9 +93,17 @@
     <text wx:for="{{trip.tags}}" wx:key="*this" class="chip" bindtap="searchTag" data-tag="{{item}}">#{{item}}</text>
   </view>
 
+  <view wx:if="{{trip.restNotes.length}}" class="block rise d4">
+    <view class="sec">
+      <text class="sec-zh">手记</text>
+      <text class="sec-en">Notes</text>
+    </view>
+    <view wx:for="{{trip.restNotes}}" wx:key="*this" class="note serif" bindlongpress="copyNote" data-text="{{item}}">{{item}}</view>
+  </view>
+
   <view class="d-actions rise d4">
     <view class="da-main pressable" hover-class="pressed" bindtap="makePoster">
-      <text class="da-main-zh">生成回忆海报</text>
+      <text class="da-main-zh">做成回忆海报</text>
       <text class="da-main-en serif">POSTER ›</text>
     </view>
     <view class="da-row">
@@ -102,17 +113,9 @@
       </view>
       <view class="da-sub pressable {{sharing ? 'disabled' : ''}}" hover-class="pressed" bindtap="shareCard">
         <text class="da-sub-ico">▣</text>
-        <text class="da-sub-t">{{sharing ? '生成中…' : '分享卡片'}}</text>
+        <text class="da-sub-t">{{sharing ? '整理中…' : '分享给 TA'}}</text>
       </view>
     </view>
-  </view>
-
-  <view wx:if="{{trip.restNotes.length}}" class="block rise d4">
-    <view class="sec">
-      <text class="sec-zh">手记</text>
-      <text class="sec-en">Notes</text>
-    </view>
-    <view wx:for="{{trip.restNotes}}" wx:key="*this" class="note serif" bindlongpress="copyNote" data-text="{{item}}">{{item}}</view>
   </view>
 
   <view class="foot rise d5">

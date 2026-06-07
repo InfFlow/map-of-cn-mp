@@ -1,3 +1,4 @@
+<page-meta page-style="{{editor.show || planSheet.show || showNextDest ? 'overflow: hidden;' : ''}}"></page-meta>
 <view class="page">
   <view class="mast rise d1">
     <view class="mast-row">
@@ -33,7 +34,6 @@
     <view wx:elif="{{!wishes.length}}" class="empty">
       <view class="empty-fig empty-fig-wish"></view>
       <view class="empty-zh">下一站想去哪儿？</view>
-      <view class="empty-en">No wishes yet</view>
       <view class="empty-hint">把想一起去的地方记在这里，攒够了就出发</view>
       <view class="empty-action pressable" hover-class="pressed" bindtap="openEditor">写下第一个心愿</view>
     </view>
@@ -56,15 +56,15 @@
         </view>
         <view class="wish-actions">
           <view wx:if="{{aiEnabled && !item.done}}" class="wish-plan pressable" hover-class="pressed" data-place="{{item.placeName}}" bindtap="genPlan">想象一下</view>
-          <view class="wish-del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="del">移除</view>
+          <view class="wish-del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="del">拿掉</view>
         </view>
       </view>
     </view>
 
-    <view wx:if="{{aiEnabled}}" class="next-dest-btn pressable" hover-class="pressed" bindtap="getNextDest">✦ 帮我们挑下一站</view>
+    <view wx:if="{{aiEnabled}}" class="next-dest-btn pressable" hover-class="pressed" bindtap="getNextDest">帮我们挑下一站</view>
   </block>
 
-  <!-- AI 攻略弹层 -->
+  <!-- 下一站玩法弹层 -->
   <view wx:if="{{planSheet.show}}" class="sheet-mask" catchtap="closePlanSheet">
     <view class="plan-sheet" catchtap="noop">
       <view class="sheet-title serif">{{planSheet.place}}</view>
@@ -81,7 +81,7 @@
     </view>
   </view>
 
-  <!-- AI 推荐下一站弹层 -->
+  <!-- 推荐下一站弹层 -->
   <view wx:if="{{showNextDest}}" class="dest-mask" catchtap="closeNextDest">
     <view class="dest-sheet" catchtap="noop">
       <view class="dest-title serif">下一站可以是</view>

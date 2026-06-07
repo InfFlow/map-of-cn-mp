@@ -2,7 +2,7 @@
   <view class="mast rise d1">
     <view class="mast-row">
       <text class="mast-name">MAP OF US</text>
-      <text class="mast-vol">AI</text>
+      <text class="mast-vol">IDEA</text>
     </view>
     <view class="rule"></view>
   </view>
@@ -18,10 +18,10 @@
 
   <view class="intro rise d2">
     <view class="h1 display">
-      {{mode === 'dish' ? '今天吃点什么' : mode === 'scene' ? '这地方怎么玩' : mode === 'place' ? '带你了解这地方' : '一键生成行程'}}
+      {{mode === 'dish' ? '今天吃点什么' : mode === 'scene' ? '这地方怎么玩' : mode === 'place' ? '带你了解这地方' : '帮我们安排下一程'}}
     </view>
     <view class="lede">
-      {{mode === 'dish' ? '说出口味 / 菜系 / 想吃的，帮你们凑几道菜' : mode === 'scene' ? '问问当地玩法、美食、行程，先有个出发前的小主意' : mode === 'place' ? '怎么玩、怎么逛、附近吃什么，一次说清' : '排好每天的行程，可一键导入到你们的计划'}}
+      {{mode === 'dish' ? '说出口味 / 菜系 / 想吃的，帮你们凑几道菜' : mode === 'scene' ? '问问当地玩法、美食、行程，先有个出发前的小主意' : mode === 'place' ? '怎么玩、怎么逛、附近吃什么，一次说清' : '排好每天的行程，带进你们的出发计划'}}
     </view>
   </view>
 
@@ -116,7 +116,7 @@
     </view>
   </view>
 
-  <!-- 行程攻略：时间轴 + 一键导入 -->
+  <!-- 行程攻略：时间轴 + 带进计划 -->
   <view wx:elif="{{tripPlan && mode === 'trip'}}" class="answer-box rise">
     <view class="answer-head">
       <text class="figno">小建议 · 仅供参考</text>
@@ -148,7 +148,7 @@
     </view>
 
     <view class="import-btn pressable {{importing ? 'disabled' : ''}}" hover-class="pressed" bindtap="importPlan">
-      {{importing ? '导入中…' : '一键导入到我的计划'}}
+      {{importing ? '正在带进计划…' : '带进我们的计划'}}
     </view>
   </view>
 </view>

@@ -119,14 +119,14 @@ page {
   text-transform: uppercase;
 }
 
-/* 标签：极简描边，无填充 */
+/* 标签：极简描边胶囊，无填充 */
 .chip {
   display: inline-flex;
   align-items: center;
   color: var(--ink-2);
   border: 1rpx solid var(--line);
   padding: 7rpx 16rpx;
-  border-radius: 4rpx;
+  border-radius: var(--radius-full);
   font-size: 20rpx;
   line-height: 1.2;
   margin-right: 12rpx;
@@ -230,22 +230,6 @@ page {
   box-shadow: 0 -10rpx 48rpx rgba(27, 23, 18, 0.16);
   border-radius: 24rpx 24rpx 0 0 !important;
 }
-.sheet::before,
-.ck-sheet::before,
-.rec-sheet::before,
-.ed-sheet::before,
-.cmp-sheet::before,
-.plan-sheet::before,
-.dest-sheet::before {
-  content: '';
-  display: block;
-  width: 72rpx;
-  height: 8rpx;
-  background: var(--line);
-  border-radius: 999rpx;
-  margin: 0 auto 28rpx;
-}
-
 /* 行首字母/数字下沉（杂志手记） */
 .dropcap::first-letter {
   font-family: Georgia, "Songti SC", "STSong", serif;
@@ -356,7 +340,7 @@ page {
   color: var(--muted);
   letter-spacing: 1rpx;
 }
-/* 加载失败时的重试按钮（全局统一） */
+/* 没接上时的重试按钮（全局统一） */
 .retry-btn {
   display: inline-block;
   margin-top: 28rpx;
@@ -364,7 +348,7 @@ page {
   font-size: 24rpx;
   color: var(--ink);
   border: 1rpx solid var(--ink);
-  border-radius: 999rpx;
+  border-radius: var(--radius-full);
   background: var(--surface);
 }
 .retry-btn.pressed {
@@ -466,22 +450,17 @@ page {
   .dest-sheet {
     max-height: 82vh !important;
   }
-  .checkin-fab,
-  .rec-fab,
-  .add-fab {
-    right: 32rpx !important;
-    bottom: calc(var(--tabbar-h) + 22rpx) !important;
-  }
 }
 
-/* 第三轮视觉统一：按钮、卡片、弹层和遮罩统一成一套安静的作品感 */
+/* 参赛最终视觉收口：按钮、卡片、弹层、空状态统一在一套规则里 */
 page {
+  --card-pad: 24rpx;
+  --sheet-pad-x: 40rpx;
+  --control-h: 72rpx;
+  --mask-soft: rgba(27, 23, 18, 0.36);
   --shadow-card: 0 2rpx 14rpx rgba(27, 23, 18, 0.045);
   --shadow-float: 0 12rpx 34rpx rgba(27, 23, 18, 0.12);
-  --radius-sm: 6rpx;
-  --radius-md: 12rpx;
   --radius-lg: 16rpx;
-  --mask-soft: rgba(27, 23, 18, 0.36);
 }
 
 .mask,
@@ -494,49 +473,71 @@ page {
   background: var(--mask-soft) !important;
 }
 
+.editor,
 .sheet,
+.stop-editor-panel,
 .ck-sheet,
 .rec-sheet,
 .ed-sheet,
 .cmp-sheet,
 .plan-sheet,
-.dest-sheet {
+.dest-sheet,
+.wish-editor,
+.ai-drawer-content {
   border-radius: 24rpx 24rpx 0 0 !important;
-  box-shadow: 0 -10rpx 34rpx rgba(27, 23, 18, 0.12) !important;
-  border-top: 1rpx solid var(--line-soft);
+  border-top: 1rpx solid var(--line-soft) !important;
+  box-shadow: 0 -12rpx 38rpx rgba(27, 23, 18, 0.13) !important;
 }
 
+.editor::before,
 .sheet::before,
-.ck-sheet::before,
-.rec-sheet::before,
-.ed-sheet::before,
 .cmp-sheet::before,
 .plan-sheet::before,
 .dest-sheet::before,
 .grab-handle,
 .sheet-grab,
 .ai-drawer-handle {
+  content: '';
+  display: block;
   width: 64rpx !important;
   height: 6rpx !important;
-  border-radius: 999rpx !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border-radius: var(--radius-full) !important;
   background: var(--line) !important;
+}
+
+.sheet-title,
+.dest-title,
+.cmp-title,
+.ai-drawer-head {
+  border-bottom-color: var(--line-soft) !important;
+  border-bottom-width: 1rpx !important;
 }
 
 .btn.solid,
 .sbtn.solid,
-.chip-btn.solid,
-.retry-btn.pressed,
+.ask-btn,
+.import-btn,
+.editor-save,
 .sheet-save,
 .ck-save,
 .rec-save,
+.ed-save,
 .empty-action,
 .next-dest-btn,
 .da-main,
+.action-btn.primary,
 .rc-btn.primary,
+.profile-name-save,
+.pcard .profile-name-save,
+.upload-btn,
+.btn-share,
 .share-btn {
+  min-height: var(--control-h) !important;
   background: var(--ink) !important;
   color: var(--bg) !important;
-  border-color: var(--ink) !important;
+  border: 1rpx solid var(--ink) !important;
 }
 
 .btn.ghost,
@@ -546,15 +547,17 @@ page {
 .geo-btn,
 .complete-btn,
 .mono-btn,
-.ck-cancel,
-.rec-cancel,
+.da-sub,
 .action-btn,
 .story-btn,
 .rc-btn,
-.dest-add {
-  background: var(--surface);
-  color: var(--ink);
-  border: 1rpx solid var(--line);
+.ck-cancel,
+.rec-cancel,
+.ed-cancel {
+  min-height: var(--control-h);
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1rpx solid var(--line) !important;
 }
 
 .btn,
@@ -568,36 +571,62 @@ page {
 .ck-save,
 .rec-cancel,
 .rec-save,
+.ed-cancel,
+.ed-save,
 .action-btn,
 .story-btn,
 .rc-btn,
 .empty-action,
 .next-dest-btn,
-.dest-add,
-.sheet-save {
+.sheet-save,
+.editor-save,
+.profile-name-save,
+.pcard .profile-name-save,
+.upload-btn,
+.ask-btn,
+.import-btn,
+.btn-share {
+  box-sizing: border-box !important;
   border-radius: var(--radius-md) !important;
   box-shadow: none !important;
 }
 
-.daily-memory,
-.plan-mini,
-.idx-row,
-.tl-item,
-.tl-photo-card,
-.wish,
-.plan-soft-summary,
-.complete-bar,
-.stay-card,
-.stop-main,
-.plan-map-wrap,
-.photo,
-.photo-empty,
-.rc-badge,
-.rc-stamp,
-.fp-city,
-.fp-map-wrap {
-  box-shadow: var(--shadow-card) !important;
-  border-radius: var(--radius-md) !important;
+.editor-save,
+.ask-btn,
+.import-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.profile-name-save,
+.pcard .profile-name-save,
+.upload-btn,
+.btn-share,
+.empty-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.copy,
+.map-btn,
+.marker-go,
+.wish-plan,
+.dest-add {
+  min-height: 0 !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1rpx solid var(--line) !important;
+  box-shadow: none !important;
+}
+
+.copy,
+.map-btn,
+.marker-go,
+.wish-plan {
+  border-radius: var(--radius-full) !important;
 }
 
 .danger,
@@ -605,8 +634,121 @@ page {
 .wish-del,
 .stop-del,
 .exp-del,
-.he-seg-del {
+.he-seg-del,
+.cover-op.danger {
+  min-height: auto !important;
   color: var(--faint) !important;
-  border-color: transparent !important;
   background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.daily-memory,
+.plan-mini,
+.idx-row,
+.otd,
+.answer-box,
+.card,
+.place-card,
+.wish,
+.dest-card,
+.capsule-card,
+.latest-card,
+.tl-item,
+.tl-photo-card,
+.plan-soft-summary,
+.complete-bar,
+.stay-card,
+.stop-card,
+.stop-main,
+.plan-map-wrap,
+.photo,
+.photo-empty,
+.rc-badge,
+.rc-stamp,
+.fp-city,
+.fp-map-wrap,
+.ph,
+.admin-entry {
+  border-radius: var(--radius-md) !important;
+  border-color: var(--line-soft) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.checkin-fab,
+.rec-fab,
+.add-fab {
+  border-radius: var(--radius-full) !important;
+  box-shadow: 0 8rpx 24rpx rgba(27, 23, 18, 0.1) !important;
+}
+
+.loading {
+  color: var(--muted);
+  letter-spacing: 1rpx;
+}
+
+.empty {
+  padding: 104rpx 0;
+}
+
+.empty .empty-zh {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.empty .empty-en {
+  color: var(--faint);
+}
+
+.answer-err,
+.rd-err,
+.ai-error {
+  color: var(--muted) !important;
+  background: var(--surface);
+  border: 1rpx dashed var(--line-soft) !important;
+}
+
+.marker-ph,
+.photo-empty,
+.d-cover-empty {
+  background:
+    linear-gradient(135deg, rgba(250, 248, 243, 0.7), rgba(255, 255, 255, 0.88)),
+    repeating-linear-gradient(45deg, rgba(27, 23, 18, 0.045) 0, rgba(27, 23, 18, 0.045) 1rpx, transparent 1rpx, transparent 18rpx) !important;
+}
+
+.md-content {
+  font-size: 28rpx !important;
+  line-height: 1.78 !important;
+}
+
+.wish-list,
+.wish-editor.sheet {
+  border-top-color: var(--line-soft) !important;
+  border-top-width: 1rpx !important;
+}
+
+.profile-name-input,
+.pcard .profile-name-input {
+  border-bottom: 1rpx solid var(--line) !important;
+}
+
+.tick,
+.ea-ring,
+.ea-diamond {
+  border-width: 1rpx !important;
+  border-color: var(--line) !important;
+}
+
+.ea-dot {
+  background: var(--line) !important;
+}
+
+.add-fab:active,
+.photo:active,
+.otd.pressable:active,
+.wish:active,
+.anni:active,
+.tl-item.pressable:active .tl-cover,
+.admin-entry.pressed {
+  box-shadow: var(--shadow-card) !important;
 }

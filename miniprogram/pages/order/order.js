@@ -55,14 +55,18 @@ Page({
     this.setData({ remark: e.detail.value })
   },
 
+  goMenu() {
+    wx.switchTab({ url: '/pages/menu/menu' })
+  },
+
   async submit() {
     if (this.data.submitting) return
     if (!this.data.items.length) {
-      wx.showToast({ title: '还没有选菜', icon: 'none' })
+      wx.showToast({ title: '先选几道想吃的', icon: 'none' })
       return
     }
     this.setData({ submitting: true })
-    wx.showLoading({ title: '提交中', mask: true })
+    wx.showLoading({ title: '正在确认这一桌', mask: true })
     try {
       let user = app.getUser()
       if (!user || !user.openid) {
@@ -83,7 +87,7 @@ Page({
     } catch (e) {
       wx.hideLoading()
       this.setData({ submitting: false })
-      const msg = (e && e.data && e.data.message) || '提交失败，请重试'
+      const msg = (e && e.data && e.data.message) || '这份点单暂时没送出'
       wx.showToast({ title: msg, icon: 'none' })
     }
   },

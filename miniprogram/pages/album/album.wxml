@@ -64,8 +64,7 @@
 
     <view wx:else class="empty">
       <view class="empty-fig empty-fig-album"></view>
-      <view class="empty-zh">还没有照片</view>
-      <view class="empty-en">No photos yet</view>
+      <view class="empty-zh">这段回忆还缺一张照片</view>
       <view class="empty-hint">这段回忆还缺几张照片，补上之后就能在这里汇成相册</view>
     </view>
 
@@ -76,7 +75,9 @@
   </block>
 
   <view wx:if="{{error}}" class="empty">
-    <view>{{error}}</view>
+    <view class="empty-fig empty-fig-album"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">先给你留着这本相册，稍后再试一次</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 

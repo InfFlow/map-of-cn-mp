@@ -17,6 +17,63 @@ function validCoord(lat, lng) {
   if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null
   return { latitude, longitude }
 }
+function planGeoCityHint(plan) {
+  const raw = String((plan && plan.title) || '').trim().replace(/\s+/g, '')
+  if (!raw) return ''
+  const hit = raw.match(/^([\u4e00-\u9fa5]{2,8}?)(?:市)?(?:[0-9一二三四五六七八九十两]+[天日晚]|旅行|旅游|行程|计划|攻略|慢游|深度|周末)/)
+  if (hit && hit[1]) return hit[1]
+  return raw
+    .replace(/我们的|我们|情侣|旅行|旅游|行程|计划|攻略|路线|出发|慢游|深度|周末/g, '')
+    .replace(/[0-9一二三四五六七八九十两]+[天日晚]/g, '')
+    .slice(0, 8)
+}
+function spreadCoord(coord, index, total) {
+  if (!coord || total <= 1) return coord
+  const ringSize = Math.min(total, 8)
+  const ring = Math.floor(index / 8)
+  const pos = index % 8
+  const angle = ((Math.PI * 2 * pos) / ringSize) - Math.PI / 2
+  const radius = 0.0009 + ring * 0.00045
+  const lngScale = Math.max(0.35, Math.cos((coord.latitude * Math.PI) / 180))
+  return {
+    latitude: coord.latitude + Math.sin(angle) * radius,
+    longitude: coord.longitude + (Math.cos(angle) * radius) / lngScale,
+  }
+}
+function displayCoordsFor(points) {
+  const clusters = []
+  const output = points.map((s) => s.coord)
+  points.forEach((s, index) => {
+    const coord = s.coord
+    let cluster = clusters.find((c) => haversineM(c.center.latitude, c.center.longitude, coord.latitude, coord.longitude) <= 70)
+    if (!cluster) {
+      cluster = { center: { ...coord }, indexes: [] }
+      clusters.push(cluster)
+    }
+    cluster.indexes.push(index)
+    const count = cluster.indexes.length
+    cluster.center = {
+      latitude: (cluster.center.latitude * (count - 1) + coord.latitude) / count,
+      longitude: (cluster.center.longitude * (count - 1) + coord.longitude) / count,
+    }
+  })
+  clusters.forEach((cluster) => {
+    if (cluster.indexes.length <= 1) return
+    cluster.indexes.forEach((pointIndex, order) => {
+      output[pointIndex] = spreadCoord(points[pointIndex].coord, order, cluster.indexes.length)
+    })
+  })
+  return output
+}
+function coordClusterCount(stop, stops, meters = 30) {
+  const coord = validCoord(stop && stop.latitude, stop && stop.longitude)
+  if (!coord) return 0
+  return (stops || []).filter((s) => {
+    if (!s || s.id === stop.id) return false
+    const other = validCoord(s.latitude, s.longitude)
+    return other && haversineM(coord.latitude, coord.longitude, other.latitude, other.longitude) <= meters
+  }).length + 1
+}
 function weatherLine(w) {
   if (!w) return ''
   const desc = w.dayWeather || w.weather || ''
@@ -78,8 +135,8 @@ function stopCompleteness(s) {
   if (!s.address) missing.push('地址')
   if (!s.openHours) missing.push('营业')
   if (!s.ticket) missing.push('门票')
-  if (s.latitude == null || s.longitude == null) missing.push('定位')
-  return missing.length ? '待补 ' + missing.join(' / ') : ''
+  if (s.latitude == null || s.longitude == null) missing.push('路线')
+  return missing.length ? '还差 ' + missing.join(' / ') : ''
 }
 function needsStopCompletion(s) {
   return !s.address || !s.openHours || !s.ticket || s.latitude == null || s.longitude == null
@@ -117,7 +174,7 @@ function aiGuideCacheKey(name, context = {}) {
   for (let i = 0; i < raw.length; i++) h = ((h << 5) - h + raw.charCodeAt(i)) | 0
   return 'ai_guide_' + Math.abs(h)
 }
-// 两坐标球面距离（米）
+// 两点之间的球面距离（米）
 function haversineM(aLat, aLng, bLat, bLng) {
   if (aLat == null || aLng == null || bLat == null || bLng == null) return null
   const R = 6371000
@@ -279,6 +336,8 @@ Page({
     focusField: '', // 当前聚焦的输入框 key，用于描边高亮
     rowH: 88, // px，onLoad 计算
     dayHeadH: 72,
+    stopEditorSheetH: 560,
+    stopEditorScrollH: 420,
     areaH: 0,
     dragId: 0,
 
@@ -292,7 +351,7 @@ Page({
     geoStopCount: 0,
     mapDayChips: [], // 多天时的「全部 / 第N天」筛选
     mapDayFilter: 0, // 0=全部
-    posterMaking: false, // 导出长图生成中
+    posterMaking: false, // 长图整理中
     posterW: 300,
     posterH: 100,
     // 按天分组
@@ -337,7 +396,7 @@ Page({
       { v: 30, t: '30 分' }, { v: 60, t: '1 小时' }, { v: 90, t: '1.5 小时' },
       { v: 120, t: '2 小时' }, { v: 180, t: '3 小时' }, { v: 240, t: '半天' },
     ],
-    // 点击目的地弹出的「怎么去 + 一键导航」抽屉
+    // 点击目的地弹出的「怎么去 + 打开导航」抽屉
     stopSheet: {
       show: false, id: 0, name: '', address: '', note: '', plannedTime: '', openHours: '', ticket: '', bookingUrl: '', latitude: null, longitude: null,
       originName: '', canNav: false, canRoute: false,
@@ -357,17 +416,36 @@ Page({
     },
   },
 
+  calcLayoutMetrics(sys) {
+    sys = sys || (wx.getWindowInfo ? wx.getWindowInfo() : { windowWidth: 375, windowHeight: 667 })
+    const windowWidth = sys.windowWidth || 375
+    const windowHeight = sys.windowHeight || 667
+    const rpx = windowWidth / 750
+    const rowH = Math.round((ROW_RPX * windowWidth) / 750)
+    const dayHeadH = Math.round((DAY_HEAD_RPX * windowWidth) / 750)
+    const stopEditorSheetH = Math.max(460, Math.round(windowHeight * 0.86))
+    const fixedHeadH = Math.round(128 * rpx)
+    const stopEditorScrollH = Math.max(300, stopEditorSheetH - fixedHeadH)
+    return { rowH, dayHeadH, stopEditorSheetH, stopEditorScrollH }
+  },
+
   onLoad() {
     const sys = wx.getWindowInfo ? wx.getWindowInfo() : { windowWidth: 375 }
-    const rowH = Math.round((ROW_RPX * sys.windowWidth) / 750)
-    const dayHeadH = Math.round((DAY_HEAD_RPX * sys.windowWidth) / 750)
-    this.setData({ rowH, dayHeadH })
+    this.setData(this.calcLayoutMetrics(sys))
     const user = app.getUser()
     if (user && user.openid) this.setData({ openid: user.openid, canEdit: true })
     app.refreshAiEnabled && app.refreshAiEnabled().then((enabled) => {
       if (this.data.aiEnabled !== enabled) this.setData({ aiEnabled: enabled })
     })
     this.refreshAdminThenLoad()
+  },
+
+  onResize(res) {
+    const size = res && res.size
+    const sys = size
+      ? { windowWidth: size.windowWidth, windowHeight: size.windowHeight }
+      : (wx.getWindowInfo ? wx.getWindowInfo() : null)
+    this.setData(this.calcLayoutMetrics(sys))
   },
 
   onShow() {
@@ -469,7 +547,7 @@ Page({
         day,
         dayTag: multiDay ? 'D' + day : '',
         hasGeo,
-        geoText: hasGeo ? '已定位' : '未定位',
+        geoText: hasGeo ? '路线已补' : '待补路线',
         completenessText: stopCompleteness(s),
       }
     })
@@ -552,7 +630,7 @@ Page({
     ].filter(Boolean).join(' · ')
     active.mapSummary = [
       multiDay ? `${dayGroups.length} 天` : '',
-      geo.length ? `${geo.length} 个已定位地点` : '',
+      geo.length ? `${geo.length} 个地点可连线` : '',
       totalSpan ? `约 ${minHuman(totalSpan)}` : '',
     ].filter(Boolean).join(' · ')
 
@@ -577,36 +655,49 @@ Page({
     const groups = (filterDay && filterDay !== 0)
       ? dayGroups.filter((g) => g.day === filterDay)
       : dayGroups
+    const markerPoints = []
     groups.forEach((g) => {
       const color = multiDay ? dayColor(g.day) : '#1b1712'
       const geo = (g.stops || [])
         .map((s) => ({ ...s, coord: validCoord(s.latitude, s.longitude) }))
         .filter((s) => s.coord)
       geo.forEach((s, i) => {
-        markers.push({
-          id: s.id,
-          latitude: s.coord.latitude,
-          longitude: s.coord.longitude,
-          iconPath: '/assets/pin.png',
-          width: 26, height: 32, anchor: { x: 0.5, y: 1 },
-          label: {
-            content: multiDay ? (g.day + '-' + (i + 1)) : s.no,
-            color, fontSize: 10, anchorX: -8, anchorY: -34,
-            bgColor: '#faf8f3', borderColor: color, borderWidth: 1, borderRadius: 8, padding: 3,
-          },
-          callout: {
-            content: (multiDay ? ('第' + g.day + '天 · ') : '') + s.name,
-            color: '#1f1d1b', fontSize: 12, borderRadius: 10, borderWidth: 1,
-            borderColor: '#00000014', padding: 8, bgColor: '#ffffff', display: 'BYCLICK',
-          },
-        })
-        include.push(s.coord)
+        markerPoints.push({ day: g.day, stop: s, coord: s.coord, color, indexInDay: i })
       })
-      // 连线：当天出发点（若有坐标）→ 各站
+    })
+    const displayCoords = displayCoordsFor(markerPoints)
+    markerPoints.forEach((p, i) => {
+      const coord = displayCoords[i] || p.coord
+      p.displayCoord = coord
+      markers.push({
+        id: p.stop.id,
+        latitude: coord.latitude,
+        longitude: coord.longitude,
+        iconPath: '/assets/pin.png',
+        width: 26, height: 32, anchor: { x: 0.5, y: 1 },
+        label: {
+          content: multiDay ? (p.day + '-' + (p.indexInDay + 1)) : String(i + 1).padStart(2, '0'),
+          color: p.color, fontSize: 10, anchorX: -8, anchorY: -34,
+          bgColor: '#faf8f3', borderColor: p.color, borderWidth: 1, borderRadius: 8, padding: 3,
+        },
+        callout: {
+          content: (multiDay ? ('第' + p.day + '天 · ') : '') + p.stop.name,
+          color: '#1f1d1b', fontSize: 12, borderRadius: 10, borderWidth: 1,
+          borderColor: '#00000014', padding: 8, bgColor: '#ffffff', display: 'BYCLICK',
+        },
+      })
+      include.push(coord)
+    })
+    groups.forEach((g) => {
+      const color = multiDay ? dayColor(g.day) : '#1b1712'
+      // 连线：当天出发点（若有位置信息）→ 各站；marker 很近时使用轻微散开的显示点，避免路线预览糊成一团。
       const pts = []
       const start = g.startCoord ? validCoord(g.startCoord.lat, g.startCoord.lng) : null
-      if (start) pts.push(start)
-      geo.forEach((s) => pts.push(s.coord))
+      if (start) {
+        pts.push(start)
+        include.push(start)
+      }
+      markerPoints.filter((p) => p.day === g.day).forEach((p) => pts.push(p.displayCoord || p.coord))
       if (pts.length > 1) polylines.push({ points: pts, color: color + 'B3', width: multiDay ? 3 : 2, dottedLine: !multiDay, arrowLine: true })
     })
     let scale = 11
@@ -901,7 +992,7 @@ Page({
     }
   },
 
-  // 隐藏/恢复自定义 tabBar：打开底部编辑面板时隐藏，避免它盖住面板底部的「取消/保存」
+  // 打开底部编辑面板时收起自定义 tabBar，避免它盖住面板底部的「取消/保存」
   setTabBarHidden(hidden) {
     const tb = typeof this.getTabBar === 'function' ? this.getTabBar() : null
     if (tb) tb.setData({ hidden })
@@ -948,21 +1039,22 @@ Page({
       this.loadExpenses(true)
     } catch (e) {
       wx.hideLoading()
-      wx.showToast({ title: '记账失败', icon: 'none' })
+      wx.showToast({ title: '这笔花费暂时没记上', icon: 'none' })
     }
   },
   delExpense(e) {
     const id = e.currentTarget.dataset.id
     wx.showModal({
-      title: '删除这笔花费',
-      content: '确定删除吗？',
+      title: '拿掉这笔花费',
+      content: '从这趟记录里拿掉吗？',
+      confirmText: '拿掉',
       success: async (r) => {
         if (!r.confirm) return
         try {
           await api.admin({ action: 'del_expense', openid: this.data.openid, id })
           this.loadExpenses(true)
         } catch (err) {
-          wx.showToast({ title: '删除失败', icon: 'none' })
+          wx.showToast({ title: '这笔花费暂时没拿掉', icon: 'none' })
         }
       },
     })
@@ -971,7 +1063,7 @@ Page({
   async budgetAnalysis() {
     const plan = this.data.active
     const total = this.data.expenseTotal
-    if (!total || total <= 0) { wx.showToast({ title: '还没有花费记录', icon: 'none' }); return }
+    if (!total || total <= 0) { wx.showToast({ title: '先记一笔花费再整理', icon: 'none' }); return }
     const openid = this.data.openid
     if (!openid) { wx.showToast({ title: '请先登录', icon: 'none' }); return }
     this.setTabBarHidden(true)
@@ -1048,7 +1140,7 @@ Page({
     const k = e.currentTarget.dataset.field
     this.setData({ [`planEditor.${k}`]: e.detail.value })
   },
-  // 酒店地址 → 坐标（复用 geo 接口）
+  // 酒店地址 → 路线所需位置信息（复用 geo 接口）
   async geocodeHotel() {
     const ed = this.data.planEditor
     const addr = (ed.hotelAddress || ed.hotelName || '').trim()
@@ -1058,7 +1150,7 @@ Page({
     }
     this.setData({ 'planEditor.hotelGeoLoading': true })
     try {
-      const r = await api.admin({ action: 'geo', openid: this.data.openid, address: addr })
+      const r = await api.admin({ action: 'geo', openid: this.data.openid, address: addr, city: planGeoCityHint(this.data.active) })
       const coord = r ? validCoord(r.latitude, r.longitude) : null
       if (coord) {
         this.setData({
@@ -1067,14 +1159,14 @@ Page({
           'planEditor.hotelAddress': r.formatted || ed.hotelAddress,
           'planEditor.hotelGeoLoading': false,
         })
-        wx.showToast({ title: '已定位', icon: 'success' })
+        wx.showToast({ title: '路线信息已补好', icon: 'success' })
       } else {
         this.setData({ 'planEditor.hotelGeoLoading': false })
-        wx.showToast({ title: '未找到该地点', icon: 'none' })
+        wx.showToast({ title: '这处地点暂时没找到', icon: 'none' })
       }
     } catch (err) {
       this.setData({ 'planEditor.hotelGeoLoading': false })
-      wx.showToast({ title: (err && err.data && err.data.message) || '定位失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '路线信息暂时没补上', icon: 'none' })
     }
   },
   closePlanEditor() {
@@ -1128,7 +1220,7 @@ Page({
         const filePath = res.tempFiles && res.tempFiles[0] && res.tempFiles[0].tempFilePath
         if (!filePath) return
         this.setData({ 'planEditor.uploadingCover': true })
-        wx.showLoading({ title: '上传中', mask: true })
+        wx.showLoading({ title: '正在收好封面', mask: true })
         api
           .uploadImage(filePath, this.data.openid)
           .then((d) => {
@@ -1138,7 +1230,7 @@ Page({
           .catch((err) => {
             wx.hideLoading()
             this.setData({ 'planEditor.uploadingCover': false })
-            wx.showToast({ title: (err && err.message) || '上传失败', icon: 'none' })
+            wx.showToast({ title: (err && err.message) || '封面暂时没收好', icon: 'none' })
           })
       },
     })
@@ -1188,23 +1280,23 @@ Page({
         await this.load()
       }
     } catch (e) {
-      wx.showToast({ title: (e && e.data && e.data.message) || '保存失败', icon: 'none' })
+      wx.showToast({ title: (e && e.data && e.data.message) || '这份计划暂时没保存好', icon: 'none' })
     }
   },
   delPlan() {
     const p = this.data.active
     if (!p) return
     wx.showModal({
-      title: '删除计划', content: `确定删除「${p.title}」及其所有目的地吗？`, confirmColor: '#1b1712',
+      title: '拿掉这份计划', content: `把「${p.title}」和里面的目的地一起拿掉吗？`, confirmText: '拿掉', confirmColor: '#1b1712',
       success: async (res) => {
         if (!res.confirm) return
         try {
           await api.admin({ action: 'del_plan', openid: this.data.openid, id: p.id })
           this.setData({ activeIndex: 0 })
           await this.load()
-          wx.showToast({ title: '已删除', icon: 'success' })
+          wx.showToast({ title: '已拿掉', icon: 'success' })
         } catch (e) {
-          wx.showToast({ title: '删除失败', icon: 'none' })
+          wx.showToast({ title: '这份计划暂时没拿掉', icon: 'none' })
         }
       },
     })
@@ -1216,7 +1308,7 @@ Page({
       await api.admin({ action: 'toggle_plan', openid: this.data.openid, id: p.id })
       await this.load()
     } catch (e) {
-      wx.showToast({ title: '操作失败', icon: 'none' })
+      wx.showToast({ title: '这份计划暂时没切换成功', icon: 'none' })
     }
   },
 
@@ -1276,7 +1368,7 @@ Page({
     }
     this.setData({ 'stopEditor.geoLoading': true })
     try {
-      const r = await api.admin({ action: 'geo', openid: this.data.openid, address: addr })
+      const r = await api.admin({ action: 'geo', openid: this.data.openid, address: addr, city: planGeoCityHint(this.data.active) })
       const coord = r ? validCoord(r.latitude, r.longitude) : null
       if (coord) {
         const updates = {
@@ -1291,11 +1383,11 @@ Page({
         wx.showToast({ title: (r.openHours || r.ticket) ? '已补全信息' : '已补全地址', icon: 'success' })
       } else {
         this.setData({ 'stopEditor.geoLoading': false })
-        wx.showToast({ title: '未找到该地点', icon: 'none' })
+        wx.showToast({ title: '这处地点暂时没找到', icon: 'none' })
       }
     } catch (e) {
       this.setData({ 'stopEditor.geoLoading': false })
-      wx.showToast({ title: (e && e.data && e.data.message) || '定位失败', icon: 'none' })
+      wx.showToast({ title: (e && e.data && e.data.message) || '路线信息暂时没补上', icon: 'none' })
     }
   },
   async completePlanStops() {
@@ -1303,27 +1395,29 @@ Page({
     const active = this.data.active
     const openid = this.data.openid
     if (!active || !openid) return
-    const targets = (active.stops || []).filter(needsStopCompletion)
+    const allStops = active.stops || []
+    const targets = allStops.filter((s) => needsStopCompletion(s) || coordClusterCount(s, allStops, 20) >= 3)
     if (!targets.length) {
-      wx.showToast({ title: '资料已完整', icon: 'success' })
+      wx.showToast({ title: '这份行程已经很完整', icon: 'success' })
       return
     }
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     this.setData({ completingStops: true, completionStatus: `0/${targets.length}` })
-    wx.showLoading({ title: '补全中…', mask: true })
+    wx.showLoading({ title: '正在补上…', mask: true })
     let changed = 0
     for (let i = 0; i < targets.length; i++) {
       const s = targets[i]
       this.setData({ completionStatus: `${i + 1}/${targets.length}` })
-      const query = (s.address || s.name || '').trim()
+      const crowdedCoord = coordClusterCount(s, allStops, 20) >= 3
+      const query = (crowdedCoord ? (s.name || s.address || '') : (s.address || s.name || '')).trim()
       if (!query) continue
       try {
-        const r = await api.admin({ action: 'geo', openid, address: query })
+        const r = await api.admin({ action: 'geo', openid, address: query, city: planGeoCityHint(active) })
         if (!r || !r.longitude || !r.latitude) continue
         const next = {
-          address: s.address || r.formatted || '',
-          latitude: s.latitude == null ? String(r.latitude) : s.latitude,
-          longitude: s.longitude == null ? String(r.longitude) : s.longitude,
+          address: crowdedCoord ? (r.formatted || s.address || '') : (s.address || r.formatted || ''),
+          latitude: (s.latitude == null || crowdedCoord) ? String(r.latitude) : s.latitude,
+          longitude: (s.longitude == null || crowdedCoord) ? String(r.longitude) : s.longitude,
           openHours: s.openHours || r.openHours || '',
           ticket: s.ticket || r.ticket || '',
         }
@@ -1359,7 +1453,7 @@ Page({
     wx.hideLoading()
     this.setData({ completingStops: false, completionStatus: '' })
     await this.load()
-    wx.showToast({ title: changed ? `已补全 ${changed} 个` : '暂无可补信息', icon: 'none' })
+    wx.showToast({ title: changed ? `已补好 ${changed} 个细节` : '暂时没有可补的细节', icon: 'none' })
   },
   async saveStop() {
     const ed = this.data.stopEditor
@@ -1391,21 +1485,21 @@ Page({
       await this.load()
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (e) {
-      wx.showToast({ title: (e && e.data && e.data.message) || '保存失败', icon: 'none' })
+      wx.showToast({ title: (e && e.data && e.data.message) || '这个目的地暂时没保存好', icon: 'none' })
     }
   },
   delStop(e) {
     const id = e.currentTarget.dataset.id
     wx.showModal({
-      title: '删除目的地', content: '确定删除该目的地吗？', confirmColor: '#1b1712',
+      title: '拿掉目的地', content: '把这个目的地从行程里拿掉吗？', confirmText: '拿掉', confirmColor: '#1b1712',
       success: async (res) => {
         if (!res.confirm) return
         try {
           await api.admin({ action: 'del_stop', openid: this.data.openid, id })
           await this.load()
-          wx.showToast({ title: '已删除', icon: 'success' })
+          wx.showToast({ title: '已拿掉', icon: 'success' })
         } catch (err) {
-          wx.showToast({ title: '删除失败', icon: 'none' })
+          wx.showToast({ title: '这个目的地暂时没拿掉', icon: 'none' })
         }
       },
     })
@@ -1571,11 +1665,11 @@ Page({
         } catch (e) {}
         this.setData({ aiDrawerContent: content, aiDrawerHtml: markdownToHtml(content), aiDrawerLoading: false, aiDrawerCached: false })
       } else {
-        this.setData({ aiDrawerError: '暂无内容', aiDrawerLoading: false })
+        this.setData({ aiDrawerError: '这次没整理出内容，换个写法再试一次', aiDrawerLoading: false })
       }
     } catch (err) {
-      console.error('[AI] 加载失败', err)
-      const msg = (err && err.data && err.data.message) || err.message || 'AI 暂时不可用'
+      console.error('[inspiration] load failed', err)
+      const msg = (err && err.data && err.data.message) || err.message || '灵感暂时没接上'
       this.setData({ aiDrawerError: msg, aiDrawerLoading: false })
     }
   },
@@ -1606,6 +1700,7 @@ Page({
 
   // 阻止冒泡
   stopProp() {},
+  stopTouchMove() {},
 
   /* ---------------- 拖动排序（movable-view 竖向） ---------------- */
   onStopTouchStart(e) {
@@ -1688,8 +1783,8 @@ Page({
     if (!grp) return
     const dayStops = (plan.stops || []).filter((s) => Number(s.day) === day)
     const geo = dayStops.filter((s) => validCoord(s.latitude, s.longitude))
-    if (geo.length < 3) { wx.showToast({ title: '需 3 个以上带坐标的点', icon: 'none' }); return }
-    // 起点坐标
+    if (geo.length < 3) { wx.showToast({ title: '至少 3 站补好路线后可整理', icon: 'none' }); return }
+    // 起点位置信息
     let cur = null
     if (grp.startCustom) {
       const ds = (plan.dayStarts || {})[day] || (plan.dayStarts || {})[String(day)]
@@ -1715,7 +1810,7 @@ Page({
       ordered.push(nx)
       cur = { lat: nx.latitude, lng: nx.longitude }
     }
-    // 无坐标的点保持原相对顺序，接在当天末尾
+    // 未补路线信息的点保持原相对顺序，接在当天末尾
     const noGeo = dayStops.filter((s) => s.latitude == null || s.longitude == null)
     const newDayOrder = ordered.concat(noGeo)
     // 拼回全局顺序：其它天保持原序，本天替换为新序
@@ -1730,11 +1825,11 @@ Page({
       wx.showToast({ title: '已按最短路程重排', icon: 'none' })
     } catch (err) {
       wx.hideLoading()
-      wx.showToast({ title: '优化失败', icon: 'none' })
+      wx.showToast({ title: '这次路线暂时没排好', icon: 'none' })
     }
   },
 
-  /* ---------------- 目的地抽屉：怎么去 + 一键导航 ---------------- */
+  /* ---------------- 目的地抽屉：怎么去 + 打开导航 ---------------- */
   // 计算某个目的地的「出发点」：同一天的上一站；当天第一站则用当天自定义出发点或酒店
   originForStop(stop) {
     const plan = this.data.active
@@ -1903,7 +1998,7 @@ Page({
       await this.load()
       wx.showToast({ title: '已改到第 ' + newDay + ' 天', icon: 'none' })
     } catch (err) {
-      wx.showToast({ title: (err && err.data && err.data.message) || '调整失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '这次调整暂时没保存', icon: 'none' })
     }
   },
   // 抽屉里把这站在「当天」内上移/下移
@@ -1928,7 +2023,7 @@ Page({
       await this.load()
       wx.showToast({ title: '已调整顺序', icon: 'none' })
     } catch (err) {
-      wx.showToast({ title: (err && err.data && err.data.message) || '调整失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '这次调整暂时没保存', icon: 'none' })
     }
   },
   /* ---------------- 当天全程：串联各段 + 估算总通勤时长 + 逐段导航 ---------------- */
@@ -1965,7 +2060,7 @@ Page({
     let anyOk = false
     for (let i = 0; i < legs.length; i++) {
       if (!legs[i].hasGeo) {
-        this.setData({ [`dayRouteSheet.legs[${i}].dur`]: '缺坐标' })
+        this.setData({ [`dayRouteSheet.legs[${i}].dur`]: '缺路线信息' })
         continue
       }
       const a = seq[i]
@@ -1995,11 +2090,11 @@ Page({
     if (d.lat == null || d.lat === '') return
     wx.openLocation({ latitude: Number(d.lat), longitude: Number(d.lng), name: d.name || '', scale: 16 })
   },
-  // 一键导航：唤起微信内置地图（可再跳第三方地图 App）
+  // 打开导航：唤起微信内置地图（可再跳第三方地图 App）
   navStop() {
     const s = this.data.stopSheet
     if (s.latitude == null || s.longitude == null) {
-      wx.showToast({ title: '该地点未定位', icon: 'none' })
+      wx.showToast({ title: '这站还没补好路线信息', icon: 'none' })
       return
     }
     wx.openLocation({ latitude: Number(s.latitude), longitude: Number(s.longitude), name: s.name, address: s.address || '', scale: 16 })
@@ -2062,14 +2157,14 @@ Page({
           'dayStartEditor.address': r.formatted || ed.address,
           'dayStartEditor.geoLoading': false,
         })
-        wx.showToast({ title: '已定位', icon: 'success' })
+        wx.showToast({ title: '路线信息已补好', icon: 'success' })
       } else {
         this.setData({ 'dayStartEditor.geoLoading': false })
-        wx.showToast({ title: '未找到该地点', icon: 'none' })
+        wx.showToast({ title: '这处地点暂时没找到', icon: 'none' })
       }
     } catch (err) {
       this.setData({ 'dayStartEditor.geoLoading': false })
-      wx.showToast({ title: (err && err.data && err.data.message) || '定位失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '路线信息暂时没补上', icon: 'none' })
     }
   },
   async saveDayStart() {
@@ -2090,10 +2185,10 @@ Page({
       await this.load()
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (err) {
-      wx.showToast({ title: (err && err.data && err.data.message) || '保存失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '出发点暂时没保存好', icon: 'none' })
     }
   },
-  // 恢复默认：删除当天自定义出发点，回落到酒店
+  // 恢复默认：清空当天自定义出发点，回落到酒店
   async resetDayStart() {
     const ed = this.data.dayStartEditor
     const plan = this.data.active
@@ -2105,7 +2200,7 @@ Page({
       await this.load()
       wx.showToast({ title: '已恢复默认', icon: 'success' })
     } catch (err) {
-      wx.showToast({ title: (err && err.data && err.data.message) || '操作失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '暂时没恢复默认', icon: 'none' })
     }
   },
 
@@ -2198,11 +2293,11 @@ Page({
         })
       } else {
         this.setData({ [`hotelsEditor.list[${i}].geoLoading`]: false })
-        wx.showToast({ title: '未找到坐标', icon: 'none' })
+        wx.showToast({ title: '这处地址暂时没找到', icon: 'none' })
       }
     } catch (err) {
       this.setData({ [`hotelsEditor.list[${i}].geoLoading`]: false })
-      wx.showToast({ title: (err && err.data && err.data.message) || '定位失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '路线信息暂时没补上', icon: 'none' })
     }
   },
   async saveHotels() {
@@ -2223,7 +2318,7 @@ Page({
       await this.load()
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (err) {
-      wx.showToast({ title: (err && err.data && err.data.message) || '保存失败', icon: 'none' })
+      wx.showToast({ title: (err && err.data && err.data.message) || '住宿信息暂时没保存好', icon: 'none' })
     }
   },
 
@@ -2245,7 +2340,7 @@ Page({
   copyPlan() {
     const text = this.planSummary()
     if (!text) {
-      wx.showToast({ title: '还没有行程', icon: 'none' })
+      wx.showToast({ title: '先把行程放进来', icon: 'none' })
       return
     }
     wx.setClipboardData({

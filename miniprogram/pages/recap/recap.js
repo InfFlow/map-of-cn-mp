@@ -238,7 +238,7 @@ Page({
       })
     })
     if (!slides.length) {
-      wx.showToast({ title: '这段时间还没有照片', icon: 'none' })
+      wx.showToast({ title: '这段时间的照片还在路上', icon: 'none' })
       return
     }
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
@@ -269,7 +269,7 @@ Page({
       style: d.posterStyle,
       topPhotos: (d.highlights && d.highlights.topPhotos) || [],
     }
-    wx.showLoading({ title: '生成中…', mask: true })
+    wx.showLoading({ title: '正在整理海报…', mask: true })
     this.setData({ posterMaking: true })
     wx.createSelectorQuery().in(this)
       .select('#recapPoster')
@@ -283,7 +283,7 @@ Page({
           this.previewPoster(tempFilePath)
         } catch (e) {
           wx.hideLoading(); this.setData({ posterMaking: false })
-          wx.showToast({ title: '生成失败，请重试', icon: 'none' })
+          wx.showToast({ title: '回顾海报暂时没整理好', icon: 'none' })
         }
       })
   },
@@ -302,7 +302,7 @@ Page({
       this.setData({ highlights: data, highlightsLoading: false })
     } catch {
       this.setData({ highlightsLoading: false })
-      wx.showToast({ title: '暂时无法生成', icon: 'none' })
+      wx.showToast({ title: '高光时刻暂时没整理好', icon: 'none' })
     }
   },
 

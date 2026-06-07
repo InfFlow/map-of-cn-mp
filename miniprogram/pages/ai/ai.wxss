@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  padding: 40rpx 36rpx 120rpx;
+  padding: 40rpx 36rpx calc(56rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
@@ -275,4 +275,60 @@
 }
 .import-btn.disabled {
   opacity: 0.55;
+}
+
+/* 参赛收口：AI 结果也按同一套作品卡片呈现 */
+.seg {
+  border-color: var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface);
+}
+.seg-item {
+  min-width: 156rpx;
+}
+.finput,
+.ftext {
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1rpx solid var(--line-soft);
+  border-radius: var(--radius-md);
+  padding: 18rpx 22rpx;
+}
+.finput {
+  min-height: 76rpx;
+}
+.ftext {
+  min-height: 160rpx;
+}
+.answer-box {
+  border-color: var(--line-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.answer-head {
+  border-bottom-color: var(--line-soft);
+}
+.copy {
+  min-height: 0;
+  padding: 8rpx 18rpx;
+  border-radius: var(--radius-full);
+  font-size: 22rpx;
+}
+.ask-btn,
+.import-btn {
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+.dsec-h {
+  border-left-color: var(--ink);
+}
+.tl {
+  border-left-color: var(--line-soft);
+}
+.tl-dot {
+  box-shadow: 0 0 0 6rpx var(--surface);
+}
+.tl-desc {
+  padding-left: 0;
 }

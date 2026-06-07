@@ -33,7 +33,9 @@
 
   <!-- 错误重试态 -->
   <view wx:if="{{error && !moments.length}}" class="empty">
+    <view class="empty-fig empty-fig-moments"></view>
     <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">先等一下，路上的剪影会回来的</view>
     <view class="retry-btn pressable" hover-class="pressed" bindtap="loadMore">重试</view>
   </view>
 
@@ -61,10 +63,10 @@
 
   <view wx:elif="{{!loading && !error}}" class="empty">
     <view class="empty-fig empty-fig-moments"></view>
-    <view class="empty-zh">还没有剪影</view>
+    <view class="empty-zh">第一张旅途剪影，还在路上</view>
     <view class="empty-hint">随手拍下路上的瞬间，先存下来再说</view>
   </view>
 
   <view wx:if="{{loading}}" class="loading-tip">正在翻找路上的剪影…</view>
-  <view wx:elif="{{!hasMore && moments.length}}" class="loading-tip">— 已经到底了 —</view>
+  <view wx:elif="{{!hasMore && moments.length}}" class="loading-tip">已经看到最后一张了</view>
 </view>

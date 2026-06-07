@@ -60,7 +60,9 @@
     </view>
 
     <view wx:if="{{amazingPlaces.length === 0}}" class="empty">
-      <text class="empty-text">还没找到特别惊艳的地点</text>
+      <view class="empty-fig empty-fig-plans"></view>
+      <view class="empty-zh">还没找到特别惊艳的地点</view>
+      <view class="empty-hint">再多放进几张照片，地点的线索会更清楚</view>
     </view>
   </view>
 
@@ -75,7 +77,9 @@
     </view>
 
     <view wx:if="{{highlights.length === 0}}" class="empty">
-      <text class="empty-text">再多传几张照片，高光会更清楚</text>
+      <view class="empty-fig empty-fig-album"></view>
+      <view class="empty-zh">高光还在照片里等着</view>
+      <view class="empty-hint">再多传几张照片，这里会帮你们挑出更亮的瞬间</view>
     </view>
   </view>
 
@@ -94,7 +98,9 @@
     </view>
 
     <view wx:if="{{groups.length === 0}}" class="empty">
-      <text class="empty-text">照片还不够分组，先把这一刻收好</text>
+      <view class="empty-fig empty-fig-album"></view>
+      <view class="empty-zh">照片还不够分组</view>
+      <view class="empty-hint">先把这一刻收好，等照片多一点再按时间整理</view>
     </view>
   </view>
 </view>

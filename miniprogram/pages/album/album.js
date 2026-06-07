@@ -138,7 +138,7 @@ Page({
     }
 
     if (this.data.allPhotos.length === 0) {
-      wx.showToast({ title: '还没有照片可以整理', icon: 'none' })
+      wx.showToast({ title: '照片还不够整理', icon: 'none' })
       return
     }
 
@@ -165,7 +165,7 @@ Page({
     } catch (err) {
       wx.hideLoading()
       console.error('[SmartAnalysis] 分析失败', err)
-      wx.showToast({ title: '整理失败，请重试', icon: 'none' })
+      wx.showToast({ title: '这次没整理好，再试一次', icon: 'none' })
     }
   },
 
@@ -211,7 +211,7 @@ Page({
         success: (r) => {
           if (r.statusCode !== 200) {
             wx.hideLoading()
-            wx.showToast({ title: '下载失败', icon: 'none' })
+            wx.showToast({ title: '这张照片暂时没取到', icon: 'none' })
             return
           }
           wx.saveImageToPhotosAlbum({
@@ -222,13 +222,13 @@ Page({
             },
             fail: () => {
               wx.hideLoading()
-              wx.showToast({ title: '保存失败', icon: 'none' })
+              wx.showToast({ title: '这张照片暂时没存好', icon: 'none' })
             },
           })
         },
         fail: () => {
           wx.hideLoading()
-          wx.showToast({ title: '下载失败', icon: 'none' })
+          wx.showToast({ title: '这张照片暂时没取到', icon: 'none' })
         },
       })
     }

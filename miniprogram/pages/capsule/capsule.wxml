@@ -1,3 +1,4 @@
+<page-meta page-style="{{editor.show ? 'overflow: hidden;' : ''}}"></page-meta>
 <view class="page">
   <view class="mast rise d1">
     <view class="mast-row">
@@ -60,8 +61,8 @@
   <!-- 空状态 -->
   <view wx:elif="{{!loading}}" class="empty rise d2">
     <view class="empty-fig empty-fig-capsule"></view>
-    <view class="empty-zh">还没有封存过胶囊</view>
-    <view class="empty-hint">封存一个胶囊，写给N年后的你们</view>
+    <view class="empty-zh">第一颗时间胶囊，还在等一句话</view>
+    <view class="empty-hint">封存一个小约定，写给几年后的你们</view>
   </view>
 
   <!-- 封存按钮 -->

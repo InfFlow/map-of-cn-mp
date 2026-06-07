@@ -1,3 +1,4 @@
+<page-meta page-style="{{recorder.show ? 'overflow: hidden;' : ''}}"></page-meta>
 <view class="wrap">
   <view class="mast rise d1">
     <view class="mast-row">
@@ -24,7 +25,9 @@
   </block>
 
   <view wx:elif="{{error}}" class="empty">
-    <view>{{error}}</view>
+    <view class="empty-fig empty-fig-plans"></view>
+    <view class="empty-zh">{{error}}</view>
+    <view class="empty-hint">先等一下，这些日子会重新排好顺序</view>
     <view class="retry-btn" hover-class="pressed" bindtap="retry">重试</view>
   </view>
 
@@ -64,9 +67,10 @@
         </view>
       </view>
 
-      <view wx:if="{{!filtered.length}}" class="tl-empty">
-        <view class="tl-empty-title serif">这一段还没有回忆</view>
-        <view class="tl-empty-sub">换个年份或季节看看，或者记下新的那一站。</view>
+      <view wx:if="{{!filtered.length}}" class="empty tl-empty">
+        <view class="empty-fig empty-fig-plans"></view>
+        <view class="empty-zh">这一段回忆还在路上</view>
+        <view class="empty-hint">换个年份或季节看看，或者记下新的那一站</view>
       </view>
 
       <view wx:else class="tl">
