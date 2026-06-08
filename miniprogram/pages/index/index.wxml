@@ -68,22 +68,23 @@
           polyline="{{polyline}}"
           show-location
           bindmarkertap="onMarkerTap"
-        ></map>
-        <cover-view class="map-ctrl {{markerPreview ? 'with-preview' : ''}}">
-          <cover-view class="map-btn {{locationBusy ? 'busy' : ''}}" hover-class="pressed" hover-stay-time="80" bindtap="locateMe">{{locationBusy ? '正在找你' : '◎ 我的位置'}}</cover-view>
-          <cover-view wx:if="{{markers.length}}" class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="fitAllFootprints">全部足迹</cover-view>
-        </cover-view>
-        <cover-view wx:if="{{markerPreview}}" class="marker-card rise" catchtap="openMarkerPreview">
-          <cover-image wx:if="{{markerPreview.imageUrl}}" class="marker-img" src="{{markerPreview.imageUrl}}"></cover-image>
-          <cover-view wx:else class="marker-img marker-ph"></cover-view>
-          <cover-view class="marker-mid">
-            <cover-view class="marker-city serif">{{markerPreview.city}}</cover-view>
-            <cover-view class="marker-title">{{markerPreview.title || markerPreview.intro || '打开这段回忆'}}</cover-view>
-            <cover-view class="marker-date">{{markerPreview.date}}</cover-view>
+        >
+          <cover-view class="map-ctrl {{markerPreview ? 'with-preview' : ''}}">
+            <cover-view class="map-btn {{locationBusy ? 'busy' : ''}}" hover-class="pressed" hover-stay-time="80" bindtap="locateMe">{{locationBusy ? '正在找你' : '◎ 我的位置'}}</cover-view>
+            <cover-view wx:if="{{markers.length}}" class="map-btn" hover-class="pressed" hover-stay-time="80" bindtap="fitAllFootprints">全部足迹</cover-view>
           </cover-view>
-          <cover-view class="marker-go">回看</cover-view>
-          <cover-view class="marker-close" catchtap="closeMarkerPreview">×</cover-view>
-        </cover-view>
+          <cover-view wx:if="{{markerPreview}}" class="marker-card rise" catchtap="openMarkerPreview">
+            <cover-image wx:if="{{markerPreview.imageUrl}}" class="marker-img" src="{{markerPreview.imageUrl}}"></cover-image>
+            <cover-view wx:else class="marker-img marker-ph"></cover-view>
+            <cover-view class="marker-mid">
+              <cover-view class="marker-city serif">{{markerPreview.city}}</cover-view>
+              <cover-view class="marker-title">{{markerPreview.title || markerPreview.intro || '打开这段回忆'}}</cover-view>
+              <cover-view class="marker-date">{{markerPreview.date}}</cover-view>
+            </cover-view>
+            <cover-view class="marker-go">回看</cover-view>
+            <cover-view class="marker-close" catchtap="closeMarkerPreview">×</cover-view>
+          </cover-view>
+        </map>
       </view>
       <view class="map-cap">{{mapCaption}}</view>
     </view>

@@ -158,6 +158,8 @@
   width: 100%;
   height: 520rpx;
   display: block;
+  position: relative;
+  overflow: hidden;
 }
 .map-ctrl {
   position: absolute;
