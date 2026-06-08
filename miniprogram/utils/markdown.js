@@ -49,6 +49,13 @@ function markdownToHtml(md) {
       return
     }
 
+    const quoteHeading = line.match(/^「(.{2,28})」$/)
+    if (quoteHeading) {
+      closeList()
+      html.push(`<h3>${inlineMd(quoteHeading[1])}</h3>`)
+      return
+    }
+
     const list = line.match(/^[-*+·]\s*(.+)$/) || line.match(/^\d+[.)、]\s*(.+)$/)
     if (list) {
       if (!listOpen) {

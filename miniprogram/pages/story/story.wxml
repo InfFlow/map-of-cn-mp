@@ -51,9 +51,11 @@
       </view>
     </view>
     <view class="action-row rise d3">
-      <view class="action-btn pressable" hover-class="pressed" bindtap="copyStory">带走故事</view>
-      <view class="story-btn pressable {{exporting ? 'disabled' : ''}}" hover-class="pressed" bindtap="exportStory">{{exporting ? '整理中…' : '保存成海报'}}</view>
-      <view class="action-btn primary pressable" hover-class="pressed" bindtap="retry">再写一版</view>
+      <view class="action-pair">
+        <view class="action-btn pressable" hover-class="pressed" bindtap="copyStory">带走故事</view>
+        <view class="story-btn pressable {{exporting ? 'disabled' : ''}}" hover-class="pressed" bindtap="exportStory">{{exporting ? '整理中…' : '保存成海报'}}</view>
+      </view>
+      <view class="action-btn primary action-main pressable" hover-class="pressed" bindtap="retry">再写一版</view>
     </view>
   </block>
 

@@ -81,9 +81,22 @@
 }
 
 /* 操作按钮 */
-.action-row { display: flex; gap: 18rpx; margin-top: 36rpx; }
-.action-btn {
+.action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 36rpx;
+}
+.action-pair {
+  display: flex;
+  gap: 16rpx;
+}
+.action-pair .action-btn,
+.action-pair .story-btn {
   flex: 1;
+}
+.action-btn {
+  min-width: 0;
   text-align: center;
   padding: 24rpx 0;
   font-size: 28rpx;
@@ -93,13 +106,15 @@
   background: var(--surface);
 }
 .action-btn.primary { background: var(--ink); color: var(--bg); }
+.action-main {
+  width: 100%;
+}
 
 .story-btn {
-  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 0;
   padding: 24rpx 0;
   font-size: 28rpx;
   color: var(--ink);
@@ -129,9 +144,16 @@
 }
 .action-btn,
 .story-btn {
-  min-height: 72rpx;
-  padding: 0 8rpx;
+  min-height: 88rpx;
+  padding: 0 20rpx;
   font-size: 24rpx;
+  line-height: 1.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  white-space: normal;
+  word-break: keep-all;
 }
 @media (max-width: 360px) {
   .story-body {
@@ -140,9 +162,13 @@
   .action-row {
     gap: 12rpx;
   }
+  .action-pair {
+    gap: 12rpx;
+  }
   .action-btn,
   .story-btn {
-    font-size: 24rpx;
-    padding: 22rpx 0;
+    min-height: 82rpx;
+    font-size: 22rpx;
+    padding: 0 14rpx;
   }
 }

@@ -2,6 +2,27 @@ const app = getApp()
 const api = require('../../utils/api')
 const { markdownToHtml } = require('../../utils/markdown')
 
+function cleanStoryText(text) {
+  return String(text || '')
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .map((raw) => {
+      let line = raw.trim()
+      if (!line) return ''
+      line = line.replace(/^[•·]\s*/, '')
+      line = line.replace(/^[-+]\s+/, '')
+      line = line.replace(/^\*\s+/, '')
+      line = line.replace(/\*\*/g, '')
+      line = line.replace(/^\*\s*/, '')
+      line = line.replace(/\s*\*$/, '')
+      line = line.replace(/\s{2,}/g, ' ')
+      return line.trim()
+    })
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 Page({
   data: {
     loading: false,
@@ -62,7 +83,7 @@ Page({
         openid: user.openid,
         year: year || '',
       })
-      const story = data.story || ''
+      const story = cleanStoryText(data.story || '')
       this.setData({ story, storyHtml: markdownToHtml(story), count: data.count || 0, loading: false })
     } catch (e) {
       this.setData({ loading: false })
