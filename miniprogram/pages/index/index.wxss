@@ -170,12 +170,6 @@
 .map-ctrl.with-preview {
   bottom: 178rpx;
 }
-.map-ctrl.avoid-tabbar {
-  bottom: 176rpx;
-}
-.map-ctrl.with-preview.avoid-tabbar {
-  bottom: 322rpx;
-}
 .map-btn {
   margin-top: 12rpx;
   width: 176rpx;
@@ -612,9 +606,6 @@
   box-shadow: var(--shadow-float);
   z-index: 5;
 }
-.marker-card.avoid-tabbar {
-  bottom: 168rpx;
-}
 .marker-img {
   flex: none;
   width: 118rpx;
@@ -879,21 +870,12 @@
     bottom: 18rpx;
     padding: 16rpx;
   }
-  .marker-card.avoid-tabbar {
-    bottom: 148rpx;
-  }
   .marker-img {
     width: 96rpx;
     height: 96rpx;
   }
   .map-ctrl.with-preview {
     bottom: 152rpx;
-  }
-  .map-ctrl.avoid-tabbar {
-    bottom: 148rpx;
-  }
-  .map-ctrl.with-preview.avoid-tabbar {
-    bottom: 288rpx;
   }
   .map-ctrl,
   .map-btn {
