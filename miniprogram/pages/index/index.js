@@ -104,6 +104,7 @@ Page({
     todayMemory: null,
     dailyMemory: null,
     markerPreview: null,
+    mapControlsVisible: true,
     showMemory: false,
     todayAnniversary: null,
     showAnniversary: false,
@@ -113,8 +114,13 @@ Page({
   },
 
   onLoad() {
+    this.initViewportMetrics()
     this.loadAll()
     this.useLocation()
+  },
+
+  onReady() {
+    this.updateMapControlsVisibility()
   },
 
   onShow() {
@@ -148,6 +154,43 @@ Page({
   onPageScroll(e) {
     const show = e.scrollTop > 480
     if (show !== this.data.showTop) this.setData({ showTop: show })
+    this.updateMapControlsVisibility()
+  },
+
+  initViewportMetrics() {
+    try {
+      const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+      const rpx = (info.windowWidth || 375) / 750
+      const safeBottom = info.safeArea && info.screenHeight ? Math.max(0, info.screenHeight - info.safeArea.bottom) : 0
+      this._windowHeight = info.windowHeight || 0
+      this._tabbarPx = 98 * rpx + safeBottom
+    } catch (e) {
+      this._windowHeight = 0
+      this._tabbarPx = 72
+    }
+  },
+
+  updateMapControlsVisibility() {
+    const now = Date.now()
+    if (this._lastMapControlsCheck && now - this._lastMapControlsCheck < 120) return
+    this._lastMapControlsCheck = now
+    const query = wx.createSelectorQuery && wx.createSelectorQuery().in(this)
+    if (!query) return
+    query.select('.map-frame').boundingClientRect((rect) => {
+      if (!rect) return
+      let windowHeight = this._windowHeight
+      if (!windowHeight) {
+        try {
+          const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+          windowHeight = info.windowHeight || 0
+        } catch (e) {}
+      }
+      if (!windowHeight) return
+      const tabbarPx = this._tabbarPx || 72
+      const overlapsTabbar = rect.bottom > windowHeight - tabbarPx
+      const visible = rect.top < windowHeight && rect.bottom > 0 && !overlapsTabbar
+      if (visible !== this.data.mapControlsVisible) this.setData({ mapControlsVisible: visible })
+    }).exec()
   },
 
   backToTop() {
