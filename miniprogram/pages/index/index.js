@@ -40,6 +40,27 @@ function isLocationDenied(err) {
   return msg.indexOf('deny') >= 0 || msg.indexOf('denied') >= 0 || msg.indexOf('auth') >= 0 || msg.indexOf('permission') >= 0
 }
 
+function locationFailMessage(err) {
+  const msg = String((err && err.errMsg) || '').toLowerCase()
+  if (msg.indexOf('system permission denied') >= 0 || msg.indexOf('system') >= 0) return '手机系统定位没打开'
+  if (isLocationDenied(err)) return '还没打开位置权限'
+  if (msg.indexOf('timeout') >= 0) return '定位超时了，稍后再试'
+  return '暂时没找到当前位置'
+}
+
+function ensureLocationPrivacy() {
+  return new Promise((resolve, reject) => {
+    if (!wx.requirePrivacyAuthorize) {
+      resolve()
+      return
+    }
+    wx.requirePrivacyAuthorize({
+      success: resolve,
+      fail: reject,
+    })
+  })
+}
+
 Page({
   data: {
     title: app.globalData.title,
@@ -142,7 +163,8 @@ Page({
   useLocation(opts) {
     const recenter = !!(opts && opts.recenter)
     const interactive = !!(opts && opts.interactive)
-    if (interactive && this.data.locationBusy) return
+    const fromPermissionFlow = !!(opts && opts.fromPermissionFlow)
+    if (interactive && this.data.locationBusy && !fromPermissionFlow) return
     if (interactive) this.setData({ locationBusy: true })
     wx.getLocation({
       type: 'gcj02',
@@ -196,7 +218,7 @@ Page({
               },
             })
           } else {
-            wx.showToast({ title: '暂时没找到当前位置', icon: 'none' })
+            wx.showToast({ title: locationFailMessage(err), icon: 'none' })
           }
         }
       },
@@ -206,31 +228,7 @@ Page({
   // 地图上「我的位置」按钮：重新定位并平移到当前位置
   locateMe() {
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
-    wx.getSetting({
-      success: (res) => {
-        if (res.authSetting && res.authSetting['scope.userLocation'] === false) {
-          wx.showModal({
-            title: '还没打开位置权限',
-            content: '打开后就能把地图移到你所在的位置。',
-            confirmText: '去设置',
-            cancelText: '先不了',
-            success: (r) => {
-              if (!r.confirm) return
-              wx.openSetting({
-                success: (setting) => {
-                  if (setting.authSetting && setting.authSetting['scope.userLocation'] !== false) {
-                    this.useLocation({ recenter: true, interactive: true })
-                  }
-                },
-              })
-            },
-          })
-          return
-        }
-        this.useLocation({ recenter: true, interactive: true })
-      },
-      fail: () => this.useLocation({ recenter: true, interactive: true }),
-    })
+    this.requestLocationAccess({ recenter: true })
   },
 
   // 地图上「全部足迹」按钮：恢复成自适应显示全部去过的城市
@@ -240,17 +238,48 @@ Page({
   },
 
   enableWeather() {
-    // 用户此前拒绝过定位：引导到设置重新授权
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
-    wx.getSetting({
-      success: (res) => {
-        if (res.authSetting['scope.userLocation'] === false) {
-          wx.openSetting({ success: () => this.useLocation({ interactive: true }) })
-        } else {
-          this.useLocation({ interactive: true })
-        }
-      },
-      fail: () => this.useLocation({ interactive: true }),
+    if (this.data.locationBusy) return
+    this.requestLocationAccess({ recenter: false })
+  },
+
+  requestLocationAccess(opts) {
+    const recenter = !!(opts && opts.recenter)
+    this.setData({ locationBusy: true })
+    ensureLocationPrivacy().then(() => {
+      wx.authorize({
+        scope: 'scope.userLocation',
+        success: () => {
+          this.useLocation({ recenter, interactive: true, fromPermissionFlow: true })
+        },
+        fail: (err) => {
+          this.setData({ locationBusy: false, weatherDenied: true })
+          wx.showModal({
+            title: locationFailMessage(err),
+            content: '打开后就能看到你们所在地的天气，也能把地图移到当前位置。',
+            confirmText: '去设置',
+            cancelText: '先不了',
+            success: (res) => {
+              if (!res.confirm) return
+              wx.openSetting({
+                success: (setting) => {
+                  if (setting.authSetting && setting.authSetting['scope.userLocation']) {
+                    this.useLocation({ recenter, interactive: true })
+                  }
+                },
+              })
+            },
+          })
+        },
+      })
+    }).catch(() => {
+      this.setData({ locationBusy: false, weatherDenied: true })
+      wx.showModal({
+        title: '需要同意隐私授权',
+        content: '同意后才能读取当前位置，用来展示所在地天气和地图位置。',
+        confirmText: '知道了',
+        showCancel: false,
+      })
     })
   },
 

@@ -178,8 +178,8 @@
       </view>
       <text class="wx-tip">{{weather.tip}}</text>
     </view>
-    <view wx:elif="{{weatherDenied}}" class="wx-strip wx-off below pressable" hover-class="pressed" bindtap="enableWeather">
-      <text class="wx-off-txt">开启定位，看看今天和你在一起的天气 ›</text>
+    <view wx:elif="{{weatherDenied}}" class="wx-strip wx-off below pressable {{locationBusy ? 'busy' : ''}}" hover-class="pressed" catchtap="enableWeather">
+      <text class="wx-off-txt">{{locationBusy ? '正在打开定位…' : '开启定位，看看今天和你在一起的天气 ›'}}</text>
     </view>
 
     <view class="foot rise d5">

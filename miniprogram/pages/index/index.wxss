@@ -162,13 +162,13 @@
 .map-ctrl {
   position: absolute;
   right: 20rpx;
-  bottom: 20rpx;
+  bottom: calc(var(--tabbar-h) + 20rpx);
   width: 176rpx;
   transition: bottom 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 4;
 }
 .map-ctrl.with-preview {
-  bottom: 178rpx;
+  bottom: calc(var(--tabbar-h) + 178rpx);
 }
 .map-btn {
   margin-top: 12rpx;
@@ -513,6 +513,9 @@
 }
 .wx-off {
   justify-content: center;
+}
+.wx-off.busy {
+  opacity: 0.72;
 }
 .wx-off-txt {
   font-size: 24rpx;
@@ -872,7 +875,7 @@
     height: 96rpx;
   }
   .map-ctrl.with-preview {
-    bottom: 152rpx;
+    bottom: calc(var(--tabbar-h) + 152rpx);
   }
   .map-ctrl,
   .map-btn {

@@ -141,6 +141,7 @@ Page({
     }
   },
   closePlanSheet() { this.setData({ planSheet: { show: false, loading: false, place: '', data: null } }) },
+  noop() {},
 
   del(e) {
     const id = e.currentTarget.dataset.id
