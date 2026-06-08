@@ -8,8 +8,8 @@
 .hero .br { height: 0; }
 .lede { font-size: 28rpx; line-height: 1.8; color: var(--ink-2); margin-top: 30rpx; max-width: 520rpx; }
 
-.cats-bar { white-space: nowrap; margin-top: 40rpx; border-top: 1rpx solid var(--line); border-bottom: 1rpx solid var(--line); padding: 16rpx 0; }
-.cat-chip { display: inline-flex; align-items: center; font-size: 24rpx; padding: 8rpx 20rpx; margin-right: 12rpx; border: 1rpx solid var(--line); color: var(--ink-2); border-radius: var(--radius-full); }
+.cats-bar { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 40rpx; border-top: 1rpx solid var(--line); border-bottom: 1rpx solid var(--line); padding: 16rpx 0; }
+.cat-chip { display: flex; align-items: center; max-width: 100%; font-size: 24rpx; line-height: 1.35; padding: 8rpx 20rpx; border: 1rpx solid var(--line); color: var(--ink-2); border-radius: var(--radius-full); white-space: normal; overflow-wrap: anywhere; box-sizing: border-box; }
 .cat-chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .cat-cnt { font-size: 20rpx; opacity: 0.7; }
 

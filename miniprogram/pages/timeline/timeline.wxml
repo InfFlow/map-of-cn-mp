@@ -37,7 +37,7 @@
         <text class="sec-zh">纪念日</text>
         <text class="sec-en">Milestones</text>
       </view>
-      <scroll-view scroll-x class="anni-scroll" show-scrollbar="{{false}}" enhanced>
+      <view class="anni-scroll">
         <view wx:for="{{anniversaries}}" wx:key="id" class="anni">
           <view class="anni-tag">{{item.repeatYearly ? 'ANNUAL' : 'ANNIVERSARY'}}</view>
           <view class="anni-count serif {{item.countKind}}">{{item.countText}}</view>
@@ -48,7 +48,7 @@
             <text wx:if="{{item.city}}" class="anni-city">· {{item.city}}</text>
           </view>
         </view>
-      </scroll-view>
+      </view>
     </view>
 
     <view class="block rise d3">
@@ -58,10 +58,10 @@
       </view>
 
       <view class="tl-filters">
-        <scroll-view scroll-x class="tl-filter-scroll" show-scrollbar="{{false}}">
+        <view class="tl-filter-scroll">
           <view class="tl-filter-chip {{!filterYear ? 'on' : ''}}" data-y="" bindtap="setYear">全部</view>
           <view wx:for="{{years}}" wx:key="*this" class="tl-filter-chip {{filterYear === item ? 'on' : ''}}" data-y="{{item}}" bindtap="setYear">{{item}}</view>
-        </scroll-view>
+        </view>
         <view class="tl-filter-seasons">
           <view wx:for="{{seasons}}" wx:key="*this" class="tl-filter-chip sm {{filterSeason === item ? 'on' : ''}}" data-s="{{item}}" bindtap="setSeason">{{item}}</view>
         </view>

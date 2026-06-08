@@ -61,12 +61,12 @@
         <view class="fmt-btn {{showRoute ? 'on' : ''}}" bindtap="toggleRoute">路线</view>
       </view>
       <map
+        id="footprintsMap"
         class="fp-map"
         latitude="{{center.latitude}}"
         longitude="{{center.longitude}}"
         scale="{{scale}}"
         markers="{{showHeat ? [] : markers}}"
-        include-points="{{includePoints}}"
         heat-map-data="{{heatMapData}}"
         polyline="{{polyline}}"
         show-location="{{true}}"

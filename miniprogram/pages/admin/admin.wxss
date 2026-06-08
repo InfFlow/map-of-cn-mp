@@ -65,19 +65,25 @@
 
 /* Tabs */
 .tabs {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
   margin: 32rpx 0 28rpx;
 }
 .tab {
-  display: inline-flex;
+  display: flex;
+  flex: 1 1 126rpx;
   align-items: center;
   justify-content: center;
   min-width: 126rpx;
+  max-width: 100%;
   text-align: center;
   padding: 14rpx 22rpx;
-  margin-right: 10rpx;
   font-size: 22rpx;
   letter-spacing: 1rpx;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
   border: 1rpx solid var(--line);
   background: var(--surface);
   color: var(--ink-2);
@@ -172,14 +178,20 @@
 
 /* 分类筛选条 */
 .catbar {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
   margin-bottom: 24rpx;
 }
 .catchip {
-  display: inline-block;
+  display: block;
+  max-width: 100%;
   padding: 12rpx 24rpx;
-  margin-right: 14rpx;
   font-size: 24rpx;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
   border: 1rpx solid var(--line);
   color: var(--ink-2);
   background: var(--surface);
@@ -610,13 +622,19 @@
   line-height: 1.5;
 }
 .tone-row {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
 }
 .tone-chip {
-  display: inline-block;
+  display: block;
+  max-width: 100%;
   padding: 12rpx 24rpx;
-  margin-right: 12rpx;
   font-size: 24rpx;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
   border: 1rpx solid var(--line);
   background: var(--surface);
   color: var(--ink-2);

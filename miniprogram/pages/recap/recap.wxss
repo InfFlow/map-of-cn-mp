@@ -22,12 +22,16 @@
 .lede { font-size: 28rpx; line-height: 1.8; color: var(--ink-2); margin-top: 30rpx; max-width: 520rpx; }
 
 /* 年份切换 */
-.rc-years { white-space: nowrap; margin-top: 44rpx; }
+.rc-years { display: flex; flex-wrap: wrap; gap: 14rpx; margin-top: 44rpx; }
 .rc-year {
-  display: inline-block;
+  display: block;
+  max-width: 100%;
   padding: 12rpx 32rpx;
-  margin-right: 14rpx;
   font-size: 24rpx;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
   color: var(--ink-2);
   border: 1rpx solid var(--line);
   border-radius: var(--radius-full);

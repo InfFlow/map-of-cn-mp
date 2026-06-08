@@ -75,6 +75,23 @@ function drawCover(ctx, img, dx, dy, dw, dh) {
   ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
 }
 
+function drawContain(ctx, img, dx, dy, dw, dh) {
+  const ir = img.width / img.height
+  const dr = dw / dh
+  let w = dw
+  let h = dh
+  if (ir > dr) {
+    h = dw / ir
+  } else {
+    w = dh * ir
+  }
+  const x = dx + (dw - w) / 2
+  const y = dy + (dh - h) / 2
+  ctx.fillStyle = COL.paper
+  ctx.fillRect(dx, dy, dw, dh)
+  ctx.drawImage(img, x, y, w, h)
+}
+
 function drawPosterHeader(ctx, W, pad, y, label) {
   ctx.fillStyle = COL.muted
   ctx.font = '20px Georgia, serif'
@@ -172,7 +189,7 @@ async function buildJourneyPoster(node, trip) {
   // 封面
   if (coverImg) {
     cy += 18
-    drawCover(ctx, coverImg, pad, cy, innerW, coverH)
+    drawContain(ctx, coverImg, pad, cy, innerW, coverH)
     ctx.strokeStyle = COL.line
     ctx.strokeRect(pad, cy, innerW, coverH)
     cy += coverH
@@ -220,7 +237,7 @@ async function buildJourneyPoster(node, trip) {
       const c = i % cols
       const dx = pad + c * (cell + gap)
       const dy = cy + r * (cell + gap)
-      drawCover(ctx, img, dx, dy, cell, cell)
+      drawContain(ctx, img, dx, dy, cell, cell)
       ctx.strokeStyle = COL.line
       ctx.strokeRect(dx, dy, cell, cell)
     })

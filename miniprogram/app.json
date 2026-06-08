@@ -60,7 +60,7 @@
   },
   "permission": {
     "scope.userLocation": {
-      "desc": "用于在地图上显示你们去过的位置、显示当地天气"
+      "desc": "用于在地图上显示你们去过的位置、选择行程地点和显示当地天气"
     }
   },
   "requiredPrivateInfos": ["getLocation", "chooseLocation"],

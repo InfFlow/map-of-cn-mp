@@ -55,16 +55,22 @@
 }
 .chips {
   flex: 1;
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
   min-width: 0;
 }
 .chip {
-  display: inline-block;
+  display: block;
+  max-width: 100%;
   font-size: 22rpx;
   letter-spacing: 1rpx;
   color: var(--faint);
   padding: 6rpx 16rpx;
-  margin-right: 8rpx;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
   border: 1rpx solid rgba(27, 23, 18, 0.055);
   border-radius: var(--radius-full);
 }

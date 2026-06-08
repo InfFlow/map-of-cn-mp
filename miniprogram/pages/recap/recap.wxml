@@ -37,10 +37,10 @@
 
   <block wx:else>
     <!-- 年份切换 -->
-    <scroll-view class="rc-years rise d2" scroll-x enable-flex>
+    <view class="rc-years rise d2">
       <view class="rc-year {{selectedYear === '' ? 'on' : ''}}" data-year="" bindtap="selectYear">全部</view>
       <view wx:for="{{years}}" wx:key="value" class="rc-year {{selectedYear === item.value ? 'on' : ''}}" data-year="{{item.value}}" bindtap="selectYear">{{item.label}}</view>
-    </scroll-view>
+    </view>
 
     <!-- 大标题句 -->
     <view class="rc-headline serif rise d2">{{headline}}</view>

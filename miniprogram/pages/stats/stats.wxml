@@ -90,11 +90,11 @@
         <text class="sec-zh">旅行年历</text>
         <text class="sec-en">Calendar {{calYear}}</text>
       </view>
-      <scroll-view class="cal-years" scroll-x enable-flex>
+      <view class="cal-years">
         <view wx:for="{{calYears}}" wx:key="*this"
           class="cal-yr {{calYear === item ? 'on' : ''}}"
           data-y="{{item}}" bindtap="switchCalYear">{{item}}</view>
-      </scroll-view>
+      </view>
       <view class="cal-grid">
         <view wx:for="{{calendar}}" wx:key="month" class="cal-month">
           <view class="cal-month-label">{{item.month}}月</view>

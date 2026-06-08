@@ -28,20 +28,28 @@
 
 .seg-scroll {
   margin-bottom: 30rpx;
-  white-space: nowrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .seg {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
   border: 1rpx solid var(--ink);
 }
 .seg-item {
-  flex: 1;
+  flex: 1 1 156rpx;
+  min-width: 0;
   text-align: center;
   padding: 16rpx 0;
   font-size: 24rpx;
   letter-spacing: 0;
   color: var(--ink-2);
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
 }
 .seg-item.on {
   background: var(--ink);
@@ -285,7 +293,7 @@
   background: var(--surface);
 }
 .seg-item {
-  min-width: 156rpx;
+  min-width: 0;
 }
 .finput,
 .ftext {

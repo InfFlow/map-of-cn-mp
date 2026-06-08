@@ -25,14 +25,14 @@
 
   <block wx:elif="{{ready}}">
     <!-- Tab 切换 -->
-    <scroll-view class="tabs rise d1" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="tabs rise d1">
       <view class="tab {{tab === 'todo' ? 'on' : ''}}" data-tab="todo" bindtap="switchTab">待整理</view>
       <view class="tab {{tab === 'journeys' ? 'on' : ''}}" data-tab="journeys" bindtap="switchTab">足迹</view>
       <view class="tab {{tab === 'anniversaries' ? 'on' : ''}}" data-tab="anniversaries" bindtap="switchTab">纪念日</view>
       <view class="tab {{tab === 'dishes' ? 'on' : ''}}" data-tab="dishes" bindtap="switchTab">菜品</view>
       <view class="tab {{tab === 'categories' ? 'on' : ''}}" data-tab="categories" bindtap="switchTab">菜单分类</view>
       <view class="tab {{tab === 'orders' ? 'on' : ''}}" data-tab="orders" bindtap="switchTab">点单记录</view>
-    </scroll-view>
+    </view>
 
     <!-- ============ 待补数据 ============ -->
     <block wx:if="{{tab === 'todo'}}">
@@ -72,9 +72,9 @@
 
     <!-- ============ 菜品 ============ -->
     <block wx:elif="{{tab === 'dishes'}}">
-      <scroll-view scroll-x class="catbar" wx:if="{{categories.length}}">
+      <view class="catbar" wx:if="{{categories.length}}">
         <view class="catchip {{activeCat === item.id ? 'on' : ''}}" wx:for="{{categories}}" wx:key="id" data-id="{{item.id}}" bindtap="pickCat">{{item.name}}</view>
-      </scroll-view>
+      </view>
 
       <view wx:if="{{!filteredDishes.length}}" class="empty">
         <view class="empty-fig empty-fig-logs"></view>
@@ -348,9 +348,9 @@
         <textarea class="fld area" value="{{journeyEditor.intro}}" placeholder="一句话简介（可空）" placeholder-class="ph" data-f="intro" bindinput="onJourneyField" maxlength="120" auto-height />
 
         <view class="fl">封面色调</view>
-        <scroll-view scroll-x class="tone-row">
+        <view class="tone-row">
           <view wx:for="{{toneList}}" wx:key="*this" class="tone-chip {{journeyEditor.toneIndex === index ? 'on' : ''}}" data-index="{{index}}" bindtap="pickJourneyTone">{{item}}</view>
-        </scroll-view>
+        </view>
 
         <view class="fl">坐标（用于地图点亮）</view>
         <view class="fl-row">

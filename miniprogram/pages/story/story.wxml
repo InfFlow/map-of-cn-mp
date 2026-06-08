@@ -14,7 +14,7 @@
   </view>
 
   <!-- 年份切换 -->
-  <scroll-view wx:if="{{years.length > 1}}" class="years-scroll rise d2" scroll-x>
+  <view wx:if="{{years.length > 1}}" class="years-scroll rise d2">
     <view class="years-row">
       <view
         wx:for="{{years}}"
@@ -25,7 +25,7 @@
         bindtap="selectYear"
       >{{item}}</view>
     </view>
-  </scroll-view>
+  </view>
 
   <!-- 加载骨架屏 -->
   <block wx:if="{{loading}}">

@@ -15,14 +15,14 @@
   </view>
 
   <!-- 分类标签 -->
-  <scroll-view class="cats-bar rise d2" scroll-x enable-flex>
+  <view class="cats-bar rise d2">
     <view wx:for="{{cats}}" wx:key="key"
       class="cat-chip {{activecat === item.key ? 'on' : ''}}"
       data-key="{{item.key}}" bindtap="switchCat">
       <text>{{item.icon}} {{item.name}}</text>
       <text wx:if="{{counts[item.key] && item.key !== 'all'}}" class="cat-cnt"> {{counts[item.key]}}</text>
     </view>
-  </scroll-view>
+  </view>
 
   <!-- 列表 -->
   <view wx:if="{{loading}}" class="block">

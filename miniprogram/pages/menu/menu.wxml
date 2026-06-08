@@ -28,7 +28,7 @@
   <block wx:elif="{{!error}}">
     <!-- 分类导航：吸顶 -->
     <view wx:if="{{categories.length > 1}}" class="catbar">
-      <scroll-view scroll-x class="catbar-scroll" enhanced show-scrollbar="{{false}}">
+      <view class="catbar-scroll">
         <view
           wx:for="{{categories}}"
           wx:key="id"
@@ -37,7 +37,7 @@
           bindtap="jumpTo"
           data-cat="{{item.id}}"
         >{{item.name}}</view>
-      </scroll-view>
+      </view>
     </view>
 
     <view

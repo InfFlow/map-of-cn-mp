@@ -25,7 +25,7 @@
   <block wx:elif="{{!error}}">
     <!-- 工具条：城市筛选 + 黑白滤镜 + 回忆整理 -->
     <view class="tools rise d2">
-      <scroll-view class="chips" scroll-x="true" enhanced="true" show-scrollbar="false">
+      <view class="chips">
         <view class="chip {{filterCity === '' ? 'on' : ''}}" data-city="" bindtap="onFilter" hover-class="pressed">全部</view>
         <view
           wx:for="{{cities}}"
@@ -35,7 +35,7 @@
           bindtap="onFilter"
           hover-class="pressed"
         >{{item}}</view>
-      </scroll-view>
+      </view>
       <view class="mono-btn {{mono ? 'on' : ''}}" bindtap="toggleMono" hover-class="pressed">
         {{mono ? '原色' : '黑白'}}
       </view>

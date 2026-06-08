@@ -17,6 +17,17 @@ function validCoord(lat, lng) {
   if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null
   return { latitude, longitude }
 }
+function sanitizeMapPoints(points) {
+  return (points || [])
+    .map((p) => {
+      if (!p) return null
+      return validCoord(
+        p.latitude != null ? p.latitude : p.lat,
+        p.longitude != null ? p.longitude : p.lng
+      )
+    })
+    .filter(Boolean)
+}
 function planGeoCityHint(plan) {
   const raw = String((plan && plan.title) || '').trim().replace(/\s+/g, '')
   if (!raw) return ''
@@ -634,14 +645,15 @@ Page({
       totalSpan ? `约 ${minHuman(totalSpan)}` : '',
     ].filter(Boolean).join(' · ')
 
+    const mapInclude = sanitizeMapPoints(md.include)
     this.setData({
       active, areaH: this.stopAreaHeight(stops),
       mapMarkers: md.markers, mapPolyline: md.polylines, mapPolylineBase: md.polylines,
-      mapInclude: md.include, mapCenter: md.center || this.data.mapCenter, mapScale: md.scale || 11, geoStopCount: geo.length,
+      mapInclude, mapCenter: md.center || this.data.mapCenter, mapScale: md.scale || 11, geoStopCount: geo.length,
       mapDayChips: dayChips, mapDayFilter: this.data.mapDayFilter || 0,
       multiDay, dayGroups,
     })
-    this.fitPlanMap(md.include)
+    this.fitPlanMap(mapInclude)
     this.loadExpenses()
     this.loadWeather()
   },
@@ -701,9 +713,10 @@ Page({
       if (pts.length > 1) polylines.push({ points: pts, color: color + 'B3', width: multiDay ? 3 : 2, dottedLine: !multiDay, arrowLine: true })
     })
     let scale = 11
-    if (include.length) {
-      const lats = include.map((p) => Number(p.latitude))
-      const lngs = include.map((p) => Number(p.longitude))
+    const safeInclude = sanitizeMapPoints(include)
+    if (safeInclude.length) {
+      const lats = safeInclude.map((p) => Number(p.latitude))
+      const lngs = safeInclude.map((p) => Number(p.longitude))
       const minLat = Math.min(...lats)
       const maxLat = Math.max(...lats)
       const minLng = Math.min(...lngs)
@@ -715,11 +728,11 @@ Page({
       const span = Math.max(maxLat - minLat, maxLng - minLng)
       scale = span > 2 ? 7 : span > 1 ? 8 : span > 0.45 ? 9 : span > 0.18 ? 10 : span > 0.08 ? 11 : span > 0.03 ? 12 : 13
     }
-    return { markers, polylines, include, center, scale }
+    return { markers, polylines, include: safeInclude, center, scale }
   },
 
   fitPlanMap(points) {
-    const list = (points || []).filter((p) => validCoord(p.latitude, p.longitude))
+    const list = sanitizeMapPoints(points)
     if (!list.length) return
     setTimeout(() => {
       const ctx = wx.createMapContext && wx.createMapContext('planMap', this)
@@ -811,16 +824,17 @@ Page({
     const day = Number(e.currentTarget.dataset.day) || 0
     if (day === this.data.mapDayFilter) return
     const md = this.buildMapData(this.data.dayGroups || [], this.data.multiDay, day)
+    const mapInclude = sanitizeMapPoints(md.include)
     this.setData({
       mapDayFilter: day,
       mapMarkers: md.markers,
       mapPolyline: md.polylines,
       mapPolylineBase: md.polylines,
-      mapInclude: md.include,
+      mapInclude,
       mapCenter: md.center || this.data.mapCenter,
       mapScale: md.scale || 11,
     })
-    this.fitPlanMap(md.include)
+    this.fitPlanMap(mapInclude)
   },
 
   // 点地图标记 → 打开该站抽屉
@@ -1896,8 +1910,9 @@ Page({
       }
       this.setData({
         mapPolyline: (this.data.mapPolylineBase || []).concat([hl]),
-        mapInclude: hl.points,
+        mapInclude: sanitizeMapPoints(hl.points),
       })
+      this.fitPlanMap(hl.points)
     }
     this.setTabBarHidden(true)
     if (canRoute) this.loadStopRoute(origin, stop)
@@ -2264,8 +2279,16 @@ Page({
     const seg = this.data.hotelsEditor.list[i]
     if (!seg) return
     const max = this.data.hotelsEditor.dayMax || 60
-    let v = (Number(seg[field]) || 1) + delta
+    const raw = Number(seg[field]) || 1
+    let v = raw + delta
     v = Math.max(1, Math.min(max, v))
+    if (v === raw) {
+      wx.showToast({
+        title: max <= 1 ? '这趟目前只有 1 天，先调整行程日期' : (delta > 0 ? '已经到最后一天' : '已经是第 1 天'),
+        icon: 'none',
+      })
+      return
+    }
     const patch = { [`hotelsEditor.list[${i}].${field}`]: v }
     // 保持 start ≤ end
     if (field === 'startDay' && v > (Number(seg.endDay) || 1)) patch[`hotelsEditor.list[${i}].endDay`] = v

@@ -34,6 +34,17 @@ function validCoord(lat, lng) {
   if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null
   return { latitude, longitude }
 }
+function sanitizeMapPoints(points) {
+  return (points || [])
+    .map((p) => {
+      if (!p) return null
+      return validCoord(
+        p.latitude != null ? p.latitude : p.lat,
+        p.longitude != null ? p.longitude : p.lng
+      )
+    })
+    .filter(Boolean)
+}
 
 function isLocationDenied(err) {
   const msg = String((err && err.errMsg) || '').toLowerCase()
@@ -195,7 +206,9 @@ Page({
       fail: (err) => {
         // 没有定位权限：回退到「全部足迹」自适应视野
         if (!this.data.userLocated) {
-          this.setData({ weatherDenied: true, includePoints: this._allPoints || [], locationBusy: false })
+          const includePoints = sanitizeMapPoints(this._allPoints)
+          this.setData({ weatherDenied: true, includePoints, locationBusy: false })
+          this.fitIndexMap(includePoints)
         } else {
           this.setData({ locationBusy: false })
         }
@@ -234,7 +247,19 @@ Page({
   // 地图上「全部足迹」按钮：恢复成自适应显示全部去过的城市
   fitAllFootprints() {
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
-    this.setData({ userLocated: false, includePoints: (this._allPoints || []).slice() })
+    const includePoints = sanitizeMapPoints(this._allPoints)
+    this.setData({ userLocated: false, includePoints })
+    this.fitIndexMap(includePoints)
+  },
+
+  fitIndexMap(points) {
+    const list = sanitizeMapPoints(points)
+    if (!list.length) return
+    setTimeout(() => {
+      const ctx = wx.createMapContext && wx.createMapContext('map', this)
+      if (!ctx || !ctx.includePoints) return
+      ctx.includePoints({ points: list, padding: [60, 40, 80, 40] })
+    }, 180)
   },
 
   enableWeather() {
@@ -365,10 +390,10 @@ Page({
         city: j.city,
       }))
 
-      const includePoints = markers.map((m) => ({
+      const includePoints = sanitizeMapPoints(markers.map((m) => ({
         latitude: m.latitude,
         longitude: m.longitude,
-      }))
+      })))
 
       // 足迹连线：按日期顺序把走过的城市连成一条墨色虚线路径
       const routePoints = [...journeys]
@@ -541,11 +566,12 @@ Page({
         if (diff < minDays) { minDays = diff; nextAnn = { label: a.label || a.name || '', days: diff } }
       })
 
+      const safeIncludePoints = this.data.userLocated ? [] : sanitizeMapPoints(includePoints)
       this.setData({
         markers,
         polygons,
         polyline,
-        includePoints: this.data.userLocated ? [] : includePoints,
+        includePoints: safeIncludePoints,
         ledger,
         recent,
         badges,
@@ -564,6 +590,7 @@ Page({
         nextAnniversary: nextAnn,
         nextAnnDays: nextAnn ? nextAnn.days : 0,
       })
+      if (safeIncludePoints.length) this.fitIndexMap(safeIncludePoints)
 
       // 首次加载：在一起天数 + 三个统计数字从0滚动到真实值，下拉刷新不再滚动
       if (!this._animated) {

@@ -40,13 +40,14 @@
 
 /* 纪念日横滑卡 */
 .anni-scroll {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22rpx;
 }
 .anni {
-  display: inline-block;
-  vertical-align: top;
-  width: 300rpx;
-  margin-right: 22rpx;
+  display: block;
+  flex: 1 1 300rpx;
+  max-width: 100%;
   padding: 24rpx 28rpx 32rpx;
   border: 1rpx solid var(--line);
   background: var(--surface);
@@ -297,9 +298,9 @@
 
 /* 筛选条 */
 .tl-filters { margin-bottom: 20rpx; display: flex; flex-direction: column; gap: 12rpx; }
-.tl-filter-scroll { white-space: nowrap; }
-.tl-filter-seasons { display: flex; gap: 10rpx; }
-.tl-filter-chip { display: inline-block; font-size: 20rpx; padding: 8rpx 20rpx; border: 1rpx solid var(--line); color: var(--ink-2); margin-right: 10rpx; }
+.tl-filter-scroll { display: flex; flex-wrap: wrap; gap: 10rpx; }
+.tl-filter-seasons { display: flex; flex-wrap: wrap; gap: 10rpx; }
+.tl-filter-chip { display: block; max-width: 100%; font-size: 20rpx; line-height: 1.35; padding: 8rpx 20rpx; border: 1rpx solid var(--line); color: var(--ink-2); white-space: normal; overflow-wrap: anywhere; box-sizing: border-box; }
 .tl-filter-chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .tl-filter-chip.sm { font-size: 20rpx; padding: 6rpx 16rpx; margin-right: 0; }
 .tl-photo-count { font-size: 20rpx; color: var(--faint); margin-top: 6rpx; }

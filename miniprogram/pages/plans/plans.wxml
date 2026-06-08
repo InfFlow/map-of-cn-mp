@@ -33,7 +33,7 @@
   <block wx:else>
     <!-- 计划选择条 -->
     <view class="block rise d2">
-      <scroll-view scroll-x class="tab-scroll" show-scrollbar="{{false}}" enhanced>
+      <view class="tab-scroll">
         <view wx:if="{{canEdit}}" class="ptab add" bindtap="openPlanAdd">＋ 计划下一次出发</view>
         <view
           wx:for="{{plans}}"
@@ -46,7 +46,7 @@
           <text class="ptab-meta">{{item.stops.length}} 站{{item.planDateText ? ' · ' + item.planDateText : ''}}</text>
           <text wx:if="{{!item.visible}}" class="ptab-hidden">私密</text>
         </view>
-      </scroll-view>
+      </view>
     </view>
 
     <!-- 空状态 -->
@@ -78,11 +78,11 @@
             <text class="map-title serif">{{mapDayFilter ? '当天路线预览' : '整段路线预览'}}</text>
             <text class="map-sub">{{active.mapSummary}}</text>
           </view>
-          <scroll-view wx:if="{{mapDayChips.length > 1}}" class="map-days" scroll-x>
+          <view wx:if="{{mapDayChips.length > 1}}" class="map-days">
             <view wx:for="{{mapDayChips}}" wx:key="day" class="map-day {{mapDayFilter === item.day ? 'on' : ''}}" hover-class="pressed" data-day="{{item.day}}" catchtap="setMapDay">
               <text wx:if="{{item.day !== 0}}" class="map-day-dot" style="background:{{item.color}}"></text>{{item.label}}
             </view>
-          </scroll-view>
+          </view>
           <map
             id="planMap"
             class="plan-map"
@@ -91,7 +91,6 @@
             scale="{{mapScale}}"
             markers="{{mapMarkers}}"
             polyline="{{mapPolyline}}"
-            include-points="{{mapInclude}}"
             show-location="{{false}}"
             enable-rotate="{{false}}"
             enable-overlooking="{{false}}"
@@ -411,7 +410,7 @@
   </view>
   <view class="field">
     <text class="field-label">封面色调</text>
-    <scroll-view scroll-x class="tone-scroll" show-scrollbar="{{false}}">
+    <view class="tone-scroll">
       <view
         wx:for="{{toneSwatches}}"
         wx:key="tone"
@@ -424,7 +423,7 @@
         </view>
         <text class="tone-name">{{item.name}}</text>
       </view>
-    </scroll-view>
+    </view>
   </view>
   <view class="sheet-acts">
     <view class="btn ghost" hover-class="pressed" catchtap="closePlanEditor">取消</view>
@@ -664,15 +663,15 @@
       <view class="he-days">
         <text class="he-days-lab">覆盖</text>
         <view class="he-step">
-          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="-1">－</text>
+          <text class="he-step-btn {{item.startDay <= 1 ? 'disabled' : ''}}" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="-1">－</text>
           <text class="he-step-val">第 {{item.startDay}} 天</text>
-          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="1">＋</text>
+          <text class="he-step-btn {{item.startDay >= hotelsEditor.dayMax ? 'disabled' : ''}}" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="startDay" data-delta="1">＋</text>
         </view>
         <text class="he-days-to">至</text>
         <view class="he-step">
-          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="-1">－</text>
+          <text class="he-step-btn {{item.endDay <= 1 ? 'disabled' : ''}}" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="-1">－</text>
           <text class="he-step-val">第 {{item.endDay}} 天</text>
-          <text class="he-step-btn" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="1">＋</text>
+          <text class="he-step-btn {{item.endDay >= hotelsEditor.dayMax ? 'disabled' : ''}}" hover-class="pressed" catchtap="adjustHotelSegDay" data-i="{{index}}" data-field="endDay" data-delta="1">＋</text>
         </view>
       </view>
     </view>

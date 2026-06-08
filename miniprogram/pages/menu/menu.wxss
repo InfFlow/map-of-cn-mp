@@ -57,15 +57,21 @@
   border-bottom: 1rpx solid var(--line);
 }
 .catbar-scroll {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18rpx 36rpx;
 }
 .catchip {
-  display: inline-block;
+  display: block;
+  max-width: 100%;
   font-size: 24rpx;
   letter-spacing: 1rpx;
   color: var(--muted);
   padding: 8rpx 6rpx;
-  margin-right: 36rpx;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
   position: relative;
 }
 .catchip.on {

@@ -215,8 +215,8 @@
 .prov-name { font-size: 20rpx; color: var(--muted); }
 
 /* 年历 */
-.cal-years { white-space: nowrap; margin-bottom: 20rpx; }
-.cal-yr { display: inline-block; font-size: 24rpx; padding: 8rpx 20rpx; margin-right: 12rpx; border: 1rpx solid var(--line); border-radius: var(--radius-full); color: var(--ink-2); background: var(--surface); }
+.cal-years { display: flex; flex-wrap: wrap; gap: 12rpx; margin-bottom: 20rpx; }
+.cal-yr { display: block; max-width: 100%; font-size: 24rpx; line-height: 1.35; padding: 8rpx 20rpx; border: 1rpx solid var(--line); border-radius: var(--radius-full); color: var(--ink-2); background: var(--surface); white-space: normal; overflow-wrap: anywhere; box-sizing: border-box; }
 .cal-yr.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .cal-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
 .cal-month { width: 48%; margin-bottom: 28rpx; }

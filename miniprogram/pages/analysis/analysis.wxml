@@ -90,11 +90,11 @@
         <text class="group-title">{{item.title}}</text>
         <text class="group-count">{{item.count}}张</text>
       </view>
-      <scroll-view class="group-photos" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="group-photos">
         <view wx:for="{{item.photos}}" wx:for-item="photo" wx:key="imageUrl" class="group-photo" bindtap="previewPhoto" data-url="{{photo.imageUrl}}">
           <image class="group-img" src="{{photo.imageUrl}}" mode="aspectFill"></image>
         </view>
-      </scroll-view>
+      </view>
     </view>
 
     <view wx:if="{{groups.length === 0}}" class="empty">

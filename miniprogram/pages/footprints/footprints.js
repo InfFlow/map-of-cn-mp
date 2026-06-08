@@ -14,6 +14,17 @@ function validCoord(lat, lng) {
   if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null
   return { latitude, longitude }
 }
+function sanitizeMapPoints(points) {
+  return (points || [])
+    .map((p) => {
+      if (!p) return null
+      return validCoord(
+        p.latitude != null ? p.latitude : p.lat,
+        p.longitude != null ? p.longitude : p.lng
+      )
+    })
+    .filter(Boolean)
+}
 
 function isLocationDenied(err) {
   const msg = String((err && err.errMsg) || '').toLowerCase()
@@ -106,6 +117,16 @@ Page({
     wx.pageScrollTo({ scrollTop: 0, duration: 300 })
   },
 
+  fitFootprintsMap(points) {
+    const list = sanitizeMapPoints(points)
+    if (!list.length) return
+    setTimeout(() => {
+      const ctx = wx.createMapContext && wx.createMapContext('footprintsMap', this)
+      if (!ctx || !ctx.includePoints) return
+      ctx.includePoints({ points: list, padding: [60, 40, 80, 40] })
+    }, 180)
+  },
+
   async loadAll() {
     this.setData({ loading: true, error: '' })
     try {
@@ -117,7 +138,7 @@ Page({
       this._all = journeys
 
       const markers = journeys.map(buildMarker)
-      const includePoints = markers.map((m) => ({ latitude: m.latitude, longitude: m.longitude }))
+      const includePoints = sanitizeMapPoints(markers.map((m) => ({ latitude: m.latitude, longitude: m.longitude })))
 
       // 按城市分组
       const map = {}
@@ -164,6 +185,7 @@ Page({
         polyline: [],
         stats: { cityCount: cityGroups.length, provinceCount, journeyCount: journeys.length },
       })
+      this.fitFootprintsMap(includePoints)
     } catch (e) {
       this.setData({ loading: false, error: '这次没翻到足迹地图，请稍后再试' })
     }
@@ -180,12 +202,16 @@ Page({
       .map((j) => validCoord(j.latitude, j.longitude))
       .filter(Boolean)
     if (!pts.length) return
+    const includePoints = this.data.activeCity === key
+      ? sanitizeMapPoints((this.data.markers || []).map((m) => ({ latitude: m.latitude, longitude: m.longitude })))
+      : sanitizeMapPoints(pts)
     this.setData({
       activeCity: this.data.activeCity === key ? '' : key,
-      includePoints: this.data.activeCity === key ? (this.data.markers || []).map((m) => ({ latitude: m.latitude, longitude: m.longitude })) : pts,
+      includePoints,
       center: { latitude: g.lat, longitude: g.lng },
       scale: this.data.activeCity === key ? 4 : 11,
     })
+    this.fitFootprintsMap(includePoints)
     wx.pageScrollTo({ scrollTop: 0, duration: 250 })
   },
 

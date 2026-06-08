@@ -7,14 +7,14 @@
     <view class="rule"></view>
   </view>
 
-  <scroll-view class="seg-scroll rise d1" scroll-x="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+  <view class="seg-scroll rise d1">
     <view class="seg">
       <view class="seg-item {{mode === 'dish' ? 'on' : ''}}" data-mode="dish" bindtap="switchMode">今天吃什么</view>
       <view class="seg-item {{mode === 'scene' ? 'on' : ''}}" data-mode="scene" bindtap="switchMode">这地方怎么玩</view>
       <view class="seg-item {{mode === 'place' ? 'on' : ''}}" data-mode="place" bindtap="switchMode">了解一个地方</view>
       <view class="seg-item {{mode === 'trip' ? 'on' : ''}}" data-mode="trip" bindtap="switchMode">安排下一程</view>
     </view>
-  </scroll-view>
+  </view>
 
   <view class="intro rise d2">
     <view class="h1 display">

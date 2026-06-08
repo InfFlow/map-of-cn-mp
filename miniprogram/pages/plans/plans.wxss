@@ -48,17 +48,24 @@
 
 /* 计划选择条 */
 .tab-scroll {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18rpx;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .ptab {
-  display: inline-block;
-  vertical-align: top;
+  display: block;
+  flex: 1 1 220rpx;
   min-width: 220rpx;
+  max-width: 100%;
   padding: 20rpx 24rpx;
-  margin-right: 18rpx;
   border: 1rpx solid var(--line);
   background: var(--surface);
   white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
   border-radius: var(--radius-md);
 }
 .ptab.on {
@@ -717,6 +724,14 @@
   line-height: 52rpx;
   color: var(--ink);
   background: var(--bg);
+  min-height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.he-step-btn.disabled {
+  color: var(--faint);
+  background: var(--line-soft);
 }
 .he-step-val {
   min-width: 96rpx;
@@ -1345,14 +1360,19 @@
   color: var(--faint);
 }
 .tone-scroll {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18rpx;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .tone-cell {
-  display: inline-flex;
+  display: flex;
+  flex: 0 0 78rpx;
   flex-direction: column;
   align-items: center;
-  margin-right: 18rpx;
-  vertical-align: top;
+  min-width: 0;
 }
 .tone-dot {
   position: relative;
@@ -1552,22 +1572,27 @@
   display: block;
 }
 .map-days {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
   border-bottom: 1rpx solid var(--line-soft);
   padding: 14rpx 16rpx;
   box-sizing: border-box;
 }
 .map-day {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8rpx;
+  max-width: 100%;
   font-size: 20rpx;
   color: var(--muted);
   background: var(--line-soft);
   border-radius: var(--radius-full);
   padding: 8rpx 20rpx;
-  margin-right: 12rpx;
   line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
 }
 .map-day.on {
   color: var(--bg);
@@ -2411,5 +2436,116 @@
 }
 .stop-editor-end-acts .btn {
   border-radius: var(--radius-md) !important;
+}
+
+/* 横向溢出收口：底部弹层和表单内容只允许纵向滚动，长文字换行。 */
+.wrap,
+.sheet,
+.stop-editor-panel,
+.ai-drawer-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.sheet,
+.sheet.show {
+  left: 0;
+  right: 0;
+}
+
+.field-row,
+.he-row,
+.he-days,
+.rd-meta,
+.rd-route-head,
+.dr-head,
+.dr-leg,
+.sheet-acts,
+.stop-editor-end-acts {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.field-row,
+.he-row {
+  flex-wrap: wrap;
+}
+
+.stop-top,
+.daystart-row,
+.map-title-row,
+.plan-map-legend {
+  flex-wrap: wrap;
+}
+
+.field-input.grow,
+.field-area,
+.rd-info-v,
+.dr-leg-line,
+.ai-drawer-title-wrap {
+  min-width: 0;
+}
+
+.geo-btn,
+.stop-geo-action {
+  flex: 0 0 auto;
+  min-width: 124rpx;
+}
+
+.he-scroll {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.he-seg {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sheet-title,
+.stop-name,
+.stop-addr,
+.stop-note,
+.stay-name,
+.stay-addr,
+.daystart-from,
+.map-sub,
+.pm-txt,
+.day-stop-name,
+.rd-addr,
+.rd-route-from,
+.dr-leg-path,
+.stop-section-sub,
+.ai-drawer-title,
+.ai-drawer-basis {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rd-addr,
+.rd-route-from,
+.dr-leg-path {
+  display: block;
+  line-height: 1.55;
+}
+
+.sheet-acts .btn,
+.stop-editor-end-acts .btn {
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 

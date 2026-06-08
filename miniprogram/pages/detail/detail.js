@@ -3,6 +3,23 @@ const api = require('../../utils/api')
 const { prettyDate, toneGradient } = require('../../utils/util')
 const { buildJourneyPoster } = require('../../utils/poster')
 
+function drawCover(ctx, img, dx, dy, dw, dh) {
+  const ir = img.width / img.height
+  const dr = dw / dh
+  let sx = 0
+  let sy = 0
+  let sw = img.width
+  let sh = img.height
+  if (ir > dr) {
+    sw = img.height * dr
+    sx = (img.width - sw) / 2
+  } else {
+    sh = img.width / dr
+    sy = (img.height - sh) / 2
+  }
+  ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+}
+
 Page({
   data: {
     trip: null,
@@ -294,7 +311,7 @@ Page({
         if (photoUrl) {
           const img = canvas.createImage()
           img.onload = () => {
-            ctx.drawImage(img, 0, 0, W, 220)
+            drawCover(ctx, img, 0, 0, W, 220)
             // 渐变遮罩
             const mask = ctx.createLinearGradient(0, 140, 0, 220)
             mask.addColorStop(0, 'rgba(244,241,234,0)')
