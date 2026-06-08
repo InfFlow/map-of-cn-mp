@@ -63,6 +63,24 @@ function is_date(string $s): bool
     return (bool) preg_match('/^\d{4}-\d{2}-\d{2}$/', $s);
 }
 
+function ensure_couple_messages_table(PDO $pdo): void
+{
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS couple_messages (
+          id          VARCHAR(32)   NOT NULL PRIMARY KEY,
+          openid      VARCHAR(64)   NOT NULL DEFAULT '',
+          nickname    VARCHAR(64)   NOT NULL DEFAULT '',
+          avatar_url  VARCHAR(512)  NOT NULL DEFAULT '',
+          content     TEXT          NOT NULL,
+          created_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          deleted_at  DATETIME      DEFAULT NULL,
+          INDEX idx_visible_created (deleted_at, created_at),
+          INDEX idx_openid (openid)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+    );
+}
+
 /** 经纬度规整：合法的数字字符串/数字返回 float，否则返回 null */
 function norm_coord($v): ?float
 {
@@ -357,6 +375,7 @@ try {
         'admin_plans', 'add_plan', 'update_plan', 'del_plan', 'toggle_plan', 'reorder_plans', 'set_day_start', 'set_hotels',
         'add_stop', 'update_stop', 'del_stop', 'reorder_stops',
         'wishes', 'add_wish', 'update_wish', 'del_wish', 'toggle_wish',
+        'board_messages', 'add_board_message', 'del_board_message',
         'expenses', 'add_expense', 'del_expense',
         'add_journey_photo', 'del_journey_photo',
         'geo', 'regeo', 'weather', 'ai_recommend', 'ai_place', 'ai_plan', 'import_plan', 'upload_image',
@@ -1241,6 +1260,72 @@ try {
         case 'del_wish': {
             $id = (string) ($body['id'] ?? '');
             $pdo->prepare('DELETE FROM desire_list WHERE id = ?')->execute([$id]);
+            out(['ok' => true]);
+        }
+
+        /* ============ 情侣留言板：仅已登录的两个人共看共写 ============ */
+        case 'board_messages': {
+            ensure_couple_messages_table($pdo);
+            $limit = min(80, max(1, (int) ($body['limit'] ?? 50)));
+            $rows = $pdo->query(
+                'SELECT id, openid, nickname, avatar_url, content, created_at
+                 FROM couple_messages
+                 WHERE deleted_at IS NULL
+                 ORDER BY created_at DESC, id DESC
+                 LIMIT ' . $limit
+            )->fetchAll();
+            $messages = array_map(static fn ($r) => [
+                'id' => $r['id'],
+                'mine' => (string) $r['openid'] === $openid,
+                'authorLabel' => (string) $r['openid'] === $openid ? '我' : 'TA',
+                'nickname' => $r['nickname'] ?: ((string) $r['openid'] === $openid ? '我' : 'TA'),
+                'avatarUrl' => $r['avatar_url'] ?: '',
+                'content' => $r['content'],
+                'createdAt' => $r['created_at'],
+            ], $rows);
+            out(['ok' => true, 'messages' => $messages]);
+        }
+
+        case 'add_board_message': {
+            ensure_couple_messages_table($pdo);
+            $content = trim((string) ($body['content'] ?? ''));
+            if ($content === '') {
+                fail('留言不能为空');
+            }
+            $content = mb_substr($content, 0, 300);
+            $userRow = $pdo->prepare('SELECT nickname, avatar_url FROM app_users WHERE openid = ?');
+            $userRow->execute([$openid]);
+            $user = $userRow->fetch() ?: [];
+            $id = gen_id('msg_');
+            $pdo->prepare(
+                'INSERT INTO couple_messages (id, openid, nickname, avatar_url, content)
+                 VALUES (?, ?, ?, ?, ?)'
+            )->execute([
+                $id,
+                $openid,
+                mb_substr((string) ($user['nickname'] ?? ''), 0, 64),
+                mb_substr((string) ($user['avatar_url'] ?? ''), 0, 512),
+                $content,
+            ]);
+            out(['ok' => true, 'id' => $id]);
+        }
+
+        case 'del_board_message': {
+            ensure_couple_messages_table($pdo);
+            $id = (string) ($body['id'] ?? '');
+            if ($id === '') {
+                fail('缺少 id');
+            }
+            $st = $pdo->prepare('SELECT openid FROM couple_messages WHERE id = ? AND deleted_at IS NULL');
+            $st->execute([$id]);
+            $owner = (string) ($st->fetchColumn() ?: '');
+            if ($owner === '') {
+                fail('留言不存在', 404);
+            }
+            if ($owner !== $openid && !is_admin_openid($pdo, $openid)) {
+                fail('只能删除自己的留言', 403);
+            }
+            $pdo->prepare('UPDATE couple_messages SET deleted_at = NOW() WHERE id = ?')->execute([$id]);
             out(['ok' => true]);
         }
 

@@ -1,0 +1,57 @@
+<view class="page">
+  <view class="mast rise d1">
+    <view class="mast-row">
+      <text class="mast-name">MAP OF US</text>
+      <text class="mast-vol">BOARD</text>
+    </view>
+    <view class="rule"></view>
+  </view>
+
+  <block wx:if="{{ready && !openid}}">
+    <view class="gate rise d2">
+      <view class="gate-zh display">先登录</view>
+      <view class="gate-sub">留言板只给我们两个人看，登录后才能进入。</view>
+      <view class="gate-btn pressable" hover-class="pressed" bindtap="goLogin">去「我们」登录</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{openid}}">
+    <view class="intro rise d1">
+      <view class="kicker">只给彼此看的话</view>
+      <view class="h1 display">情侣留言板</view>
+      <view class="lede">临时想到的话、想提醒对方的事、今天的小心情，都可以先放在这里。</view>
+    </view>
+
+    <view class="composer rise d2">
+      <textarea class="composer-input" value="{{content}}" maxlength="{{maxLen}}" auto-height="true" bindinput="onInput" placeholder="写给 TA 的一句话..." placeholder-class="ph" />
+      <view class="composer-foot">
+        <text class="count">{{content.length}}/{{maxLen}}</text>
+        <view class="send-btn pressable {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="send">留言</view>
+      </view>
+    </view>
+
+    <view wx:if="{{loading && !messages.length}}" class="loading">正在翻留言...</view>
+
+    <view wx:elif="{{ready && !messages.length}}" class="empty">
+      <view class="empty-zh">还没有留言</view>
+      <view class="empty-hint">第一条可以写一句今天想对 TA 说的话。</view>
+    </view>
+
+    <view wx:else class="message-list rise d3">
+      <view wx:for="{{messages}}" wx:key="id" class="message {{item.mine ? 'mine' : ''}}">
+        <view class="avatar-wrap">
+          <image wx:if="{{item.avatarUrl}}" class="msg-avatar-img" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+          <view wx:else class="msg-avatar serif">{{item.avatarText}}</view>
+        </view>
+        <view class="msg-main">
+          <view class="msg-meta">
+            <text class="msg-author">{{item.authorName}}</text>
+            <text class="msg-time">{{item.timeText}}</text>
+          </view>
+          <view class="msg-content">{{item.content}}</view>
+          <view wx:if="{{item.mine}}" class="msg-del pressable" hover-class="pressed" data-id="{{item.id}}" bindtap="del">删除</view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

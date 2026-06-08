@@ -9,6 +9,7 @@
     "pages/mine/mine",
     "pages/admin/admin",
     "pages/wish/wish",
+    "pages/board/board",
     "pages/album/album",
     "pages/analysis/analysis",
     "pages/stats/stats",

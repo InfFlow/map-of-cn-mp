@@ -132,6 +132,16 @@
         </view>
         <text class="ae-arrow serif">›</text>
       </view>
+      <view class="admin-entry pressable" hover-class="pressed" bindtap="openBoard">
+        <view class="ae-left">
+          <view class="ae-ico ae-ico-board"></view>
+          <view class="ae-mid">
+            <text class="ae-zh serif">情侣留言板</text>
+            <text class="ae-sub">只给我们两个人看的留言</text>
+          </view>
+        </view>
+        <text class="ae-arrow serif">›</text>
+      </view>
       <view class="admin-entry pressable" hover-class="pressed" bindtap="openCapsule">
         <view class="ae-left">
           <view class="ae-ico ae-ico-capsule"></view>

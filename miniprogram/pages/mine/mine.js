@@ -160,6 +160,11 @@ Page({
     wx.navigateTo({ url: '/pages/wish/wish' })
   },
 
+  openBoard() {
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    wx.navigateTo({ url: '/pages/board/board' })
+  },
+
   openSearch() { wx.navigateTo({ url: '/pages/search/search' }) },
 
   openHub() { wx.navigateTo({ url: '/pages/hub/hub' }) },

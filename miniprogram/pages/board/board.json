@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "情侣留言板",
+  "enablePullDownRefresh": true,
+  "backgroundColorTop": "#f4f1ea",
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
+}
