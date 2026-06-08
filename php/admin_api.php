@@ -254,7 +254,7 @@ function deepseek_chat(string $key, string $system, string $user, float $tempera
         return null;
     }
     $payload = json_encode([
-        'model' => 'deepseek-chat',
+        'model' => 'deepseek-v4-pro',
         'messages' => [
             ['role' => 'system', 'content' => $system],
             ['role' => 'user', 'content' => $user],
@@ -286,7 +286,7 @@ function deepseek_json(string $key, string $system, string $user, float $tempera
         return null;
     }
     $payload = json_encode([
-        'model' => 'deepseek-chat',
+        'model' => 'deepseek-v4-pro',
         'messages' => [
             ['role' => 'system', 'content' => $system],
             ['role' => 'user', 'content' => $user],
