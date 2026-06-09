@@ -18,6 +18,19 @@
 - **统一 AI 结果展示**：Markdown 结果统一渲染，标题、列表和重点内容更清晰。
 - **参赛级视觉统一**：统一卡片圆角、按钮层级、弹层遮罩、阴影、空状态和动效节奏。
 
+## 项目截图
+
+<p>
+  <img src="docs/images/gallery/IMG_8186.JPG" alt="项目截图 1" width="32%" />
+  <img src="docs/images/gallery/IMG_8187.JPG" alt="项目截图 2" width="32%" />
+  <img src="docs/images/gallery/IMG_8188.JPG" alt="项目截图 3" width="32%" />
+</p>
+<p>
+  <img src="docs/images/gallery/IMG_8189.JPG" alt="项目截图 4" width="32%" />
+  <img src="docs/images/gallery/IMG_8190.JPG" alt="项目截图 5" width="32%" />
+  <img src="docs/images/gallery/IMG_8193.JPG" alt="项目截图 6" width="32%" />
+</p>
+
 ## Unity2.ai API 使用说明
 
 本作品在开发过程中全程使用 Unity2.ai API 辅助完成。从创意构思、需求拆解、页面结构、交互流程、代码实现、UI 调整、问题修复到参赛材料整理，均借助 Unity2.ai API 进行生成、分析与迭代。
@@ -85,4 +98,3 @@ miniprogram/
 ## 版本说明
 
 当前版本重点完成参赛前 UI 与体验打磨：统一视觉语言、优化首页作品感、弱化工具感、修复移动端遮挡与显示问题，让小程序更像一份两个人共同完成的旅行回忆作品。
-
