@@ -31,6 +31,10 @@
   <img src="docs/images/gallery/IMG_8193.JPG" alt="项目截图 6" width="32%" />
 </p>
 
+## 社区认可
+
+本项目认可并感谢 [LINUX DO](https://linux.do/) 社区。
+
 ## Unity2.ai API 使用说明
 
 本作品在开发过程中全程使用 Unity2.ai API 辅助完成。从创意构思、需求拆解、页面结构、交互流程、代码实现、UI 调整、问题修复到参赛材料整理，均借助 Unity2.ai API 进行生成、分析与迭代。
