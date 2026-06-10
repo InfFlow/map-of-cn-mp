@@ -20,16 +20,16 @@
 
 ## 项目截图
 
-<p>   < p>   “这是什么？”
-  <img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG"“文档/图片/画廊/ IMG_8186.JPG" alt="项目截图 1" width   宽度="32%"   "32%" />
-  <img src="docs/images/gallery/IMG_8187.JPG" alt="项目截图 2" width="32%" /><img src="docs/images/gallery/IMG_8187.JPG"“文档/图片/画廊/ IMG_8187.JPG" alt="项目截图 2" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8187.JPG"“文档/图片/画廊/ IMG_8187.JPG" alt="项目截图 2" width="32%" /><img src="docs/images/gallery/IMG_8187.JPG"“文档/图片/画廊/ IMG_8187.JPG"“文档/图片/画廊/ IMG_8187.JPG"“文档/图片/画廊/ IMG_8187.JPG" alt="项目截图 2" width   宽度="32%"   "32%" />
-  <img src="docs/images/gallery/IMG_8188.JPG" alt="项目截图 3" width="32%" /><img src="docs/images/gallery/IMG_8188.JPG"“文档/图片/画廊/ IMG_8188.JPG" alt="项目截图 3" width   宽度="32%"   "32%" />
-</p>   < / p>   这是一个很好的例子。
-<p>   < p>   “这是什么？”
-  <img src="docs/images/gallery/IMG_8189.JPG" alt="项目截图 4" width="32%" /><img src="docs/images/gallery/IMG_8189.JPG" alt="项目截图 4" width   宽度="32%"   "32%" /><img src="docs/images/gallery/IMG_8189.JPG"“文档/图片/画廊/ IMG_8189.JPG" alt="项目截图 4" width="32%" /><img src="docs/images/gallery/IMG_8189.JPG"“文档/图片/画廊/ IMG_8189.JPG"“文档/图片/画廊/ IMG_8189.JPG" alt="项目截图 4" width   宽度="32%"   "32%" />
-  <img src="docs/images/gallery/IMG_8190.JPG" alt="项目截图 5" width="32%" /><img src="docs/images/gallery/IMG_8190.JPG"“文档/图片/画廊/ IMG_8190.JPG" alt="项目截图 5" width="32%" /><img src="docs/images/gallery/IMG_8190.JPG"“文档/图片/画廊/ IMG_8190.JPG" alt="项目截图 5" width="32%" /><img src="docs/images/gallery/IMG_8190.JPG"“文档/图片/画廊/ IMG_8190.JPG"“文档/图片/画廊/ IMG_8190.JPG"“文档/图片/画廊/ IMG_8190.JPG" alt="项目截图 5" width="32%" />
-  <img src="docs/images/gallery/IMG_8193.JPG" alt="项目截图 6" width="32%" /><img src="docs/images/gallery/IMG_8193.JPG"“文档/图片/画廊/ IMG_8193.JPG" alt="项目截图 6" width="32%" /><img src="docs/images/gallery/IMG_8193.JPG"“文档/图片/画廊/ IMG_8193.JPG" alt="项目截图 6" width="32%" /><img src="docs/images/gallery/IMG_8193.JPG"“文档/图片/画廊/ IMG_8193.JPG"“文档/图片/画廊/ IMG_8193.JPG"“文档/图片/画廊/ IMG_8193.JPG" alt="项目截图 6" width="32%" />
-</p>   < / p>   这是一个很好的例子。
+<p>
+  <img src="docs/images/gallery/IMG_8186.JPG" alt="项目截图 1" width="32%" />
+  <img src="docs/images/gallery/IMG_8187.JPG" alt="项目截图 2" width="32%" />
+  <img src="docs/images/gallery/IMG_8188.JPG" alt="项目截图 3" width="32%" />
+</p>
+<p>
+  <img src="docs/images/gallery/IMG_8189.JPG" alt="项目截图 4" width="32%" />
+  <img src="docs/images/gallery/IMG_8190.JPG" alt="项目截图 5" width="32%" />
+  <img src="docs/images/gallery/IMG_8193.JPG" alt="项目截图 6" width="32%" />
+</p>
 
 ## 社区认可
 
@@ -52,7 +52,7 @@ Unity2.ai API 在本作品开发中主要用于：
 
 ## 页面模块
 
-```text   ' ' '文本
+```text
 miniprogram/
 ├── pages/index       地图首页、今日回忆、最近足迹
 ├── pages/timeline    时间线、年份/季节筛选、记录回忆
@@ -89,7 +89,7 @@ miniprogram/
 
 ## 目录说明
 
-```text   ' ' '文本
+```text
 .
 ├── docs/             参赛说明、演示脚本与演示数据说明
 ├── miniprogram/      微信小程序源码
@@ -98,10 +98,6 @@ miniprogram/
 ├── project.config.json
 └── README.md
 ```
-
-## 社区支持
-
-学 AI，上 L 站:[LinuxDO](https://linux.do/)
 
 ## 版本说明
 
